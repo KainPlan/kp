@@ -1,0 +1,29 @@
+/*
+ * (c) KainPlan 2020
+ * General SCSS config file. Applied to all sites.
+ */
+
+@import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap");
+
+$h-font: "Open Sans", sans-serif;
+$p-font: "Roboto", sans-serif;
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  * {
+    font-family: $p-font;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: $h-font;
+    font-weight: normal;
+  }
+
+  q {
+    font-family: $h-font;
+  }
+}
