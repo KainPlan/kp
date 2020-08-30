@@ -41,9 +41,6 @@ const Footer = () => (
       </div>
       <h3>// Links</h3>
       <div className={style.footerPart}>
-        <Link href="/map">
-          <a>Karte</a>
-        </Link>
         <Link href="/team">
           <a>Team</a>
         </Link>
@@ -52,7 +49,7 @@ const Footer = () => (
         </Link>
       </div>
       <div className={style.copyrightNotice}>
-        &copy; 2020 KainPlan GmbH
+        &copy; 2020 KainPlan
       </div>
     </div>
   </footer>

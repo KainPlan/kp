@@ -1,4 +1,4 @@
-div {
+.root {
   display: inline-block;
   background-size: 200% 100%;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 50%, #622dff 50%, #622dff 100%);
@@ -17,10 +17,6 @@ div {
 
   &:focus {
     outline: none;
-  }
-
-  i {
-    margin-${ this.state.position === HypedIconPosition.AFTER ? 'left' : 'right' }: 7.5px;
   }
 
   a {

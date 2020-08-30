@@ -8,13 +8,13 @@ import { faAngleDoubleDown, faExternalLinkAlt } from '@fortawesome/free-solid-sv
 import HypedLink from '../components/kainplan/HypedLink';
 
 class Index extends React.Component {
-  onScrollClick() {
+  private onScrollClick() {
     window.document.getElementsByTagName('main')[0].scrollIntoView({
       behavior: 'smooth',
     });
   }
 
-  render() {
+  public render() {
     return (
       <>
         <Head>
@@ -23,7 +23,7 @@ class Index extends React.Component {
         <Header>
           <HypedLink
             label="Los geht's!"
-            href="/map"
+            href="/search"
             icon={faExternalLinkAlt}
           />
         </Header>

@@ -1,5 +1,5 @@
 import React from 'react';
-// import TenFingers from '../../tenfingers/TenFingers';
+import TenFingers from '../../tenfingers/TenFingers';
 import Link from 'next/link';
 
 import style from './Header.module.scss';
@@ -20,7 +20,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
   header: HTMLElement;
 
-  componentDidMount() {
+  public componentDidMount() {
     let prev: number = window.scrollY;
     window.onscroll = () => {
       if (!this.header) return;
@@ -34,14 +34,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     };
   }
 
-  render() {
+  public render() {
     return (
       <header className={style.root} ref={e => this.header = e}>
         <Link href="/">
           <h1>
-            {/* <TenFingers
+            <TenFingers
               values={['KainPlan']}
-            /> */}
+            />
           </h1>
         </Link>
         <div>
