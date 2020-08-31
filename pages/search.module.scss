@@ -20,6 +20,38 @@
     top: 0;
     display: flex;
     justify-content: space-between;
+
+    a {
+      display: block;
+      text-decoration: none;
+      color: #999;
+      position: relative;
+      transition: .15s ease;
+      background-color: #fff;
+      font-size: 1.1em;
+
+      &::after {
+        content: '';
+        z-index: -1;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 105%;
+        background-size: 205% 100%;
+        background-image: linear-gradient(to right, #888 0%, #888 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
+        background-position: 100% 0;
+        transition: .15s ease;
+      }
+
+      &:hover {
+        color: #555;
+
+        &::after {
+          background-position: 0 0;
+        }
+      }
+    }
   }
 
   & > footer {
@@ -29,7 +61,7 @@
 
   & > h1 {
     margin: 0;
-    font-size: 3em;
+    font-size: 3.2em;
     margin-bottom: 10px;
     z-index: 2;
     user-select: none;
@@ -38,8 +70,6 @@
   & > form {
     width: 50%;
     max-width: 600px;
-    display: flex;
-    justify-content: space-between;
     background-color: #fff;
     z-index: 2;
 
@@ -47,62 +77,120 @@
       width: 80%;
     }
 
-    & > div {
-      flex-grow: 1;
-      border: 1.5px solid #dedede;
-      border-radius: 14px 0 0 14px;
-      padding: 5px 15px;
+    .queryDiv {
       display: flex;
-      align-items: center;
-      position: relative;
+      justify-content: space-between;
 
-      & > input {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        border: none;
-        font-family: inherit;
-        font-size: 1em;
-        background-color: rgba(0,0,0,0);
-        color: #444;
-
+      & > div {
+        flex-grow: 1;
+        border: 1.5px solid #dedede;
+        padding: 7.5px 15px;
+        display: flex;
+        align-items: center;
+        position: relative;
+  
+        & > input {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          border: none;
+          font-family: inherit;
+          font-size: 1em;
+          background-color: rgba(0,0,0,0);
+          color: #444;
+  
+          &:focus {
+            outline: none;
+          }
+        }
+  
+        & > p {
+          position: absolute;
+          color: #999;
+          z-index: -1;
+          user-select: none;
+        }
+      }
+  
+      & > button {
+        flex-grow: 0;
+        border: 1.5px solid #dedede;
+        background-size: 205% 100%;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 50%, #622dff 50%, #622dff 100%);
+        background-position: 0 0;
+        transition: .15s ease;
+        width: 10%;
+        min-width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #999;
+  
+        &:hover {
+          cursor: pointer;
+          background-position: 100% 0;
+          border-color: #622dff;
+          color: #fff;
+        }
+  
         &:focus {
           outline: none;
         }
       }
-
-      & > p {
-        position: absolute;
-        color: #999;
-        z-index: -1;
-        user-select: none;
-      }
     }
 
-    & > button {
-      flex-grow: 0;
+    .querySuggs {
       border: 1.5px solid #dedede;
-      border-radius: 0 14px 14px 0;
-      background-size: 200% 100%;
-      background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 50%, #622dff 50%, #622dff 100%);
-      background-position: 0 0;
+      border-radius: 0 0 14px 14px;
+      border-top: none;
       transition: .15s ease;
-      width: 10%;
-      min-width: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #999;
 
-      &:hover {
-        cursor: pointer;
-        background-position: 100% 0;
-        color: #fff;
-      }
+      & > div {
+        padding: 5px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
 
-      &:focus {
-        outline: none;
+        & > div {
+          h4 {
+            margin: 0;
+            color: #444;
+          }
+  
+          p {
+            margin: 0;
+            font-size: .9em;
+            color: #111;
+          }
+        }
+
+        i {
+          margin-right: 2.5px;
+          color: #aaa;
+          transform: translateX(200%);
+          opacity: 0;
+          transition: .2s ease;
+        }
+
+        &:not(:last-child) {
+          border-bottom: .5px solid #f2f2f2;
+        }
+
+        &:last-child {
+          border-radius: 0 0 14px 14px;
+        }
+
+        &:hover {
+          cursor: pointer;
+          background-color: #f8f8f8;
+
+          i {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
       }
     }
   }

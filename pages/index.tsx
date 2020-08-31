@@ -42,7 +42,7 @@ class Index extends React.Component<IndexProps, any> {
           <div className={style.topMain}>
             <div className={style.topMainInner}>
               <video autoPlay muted loop>
-                <source src="/media/back_banner_vid.mp4" type="video/mp4" />
+                <source src="/media/index/back_banner_vid.mp4" type="video/mp4" />
               </video>
               <div className={style.topFore}>
                 <img src="/media/logo_and_text.png" />

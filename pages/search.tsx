@@ -2,7 +2,7 @@ import React from 'react';
 
 import style from './search.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import TenFingers from '../components/tenfingers/TenFingers';
 import Particles from 'react-particles-js';
 import { withTranslation, Link } from '../i18n';
@@ -74,21 +74,45 @@ class Search extends React.Component<SearchProps, SearchState> {
             <a>{this.props.t('common:login')}</a>
           </Link>
         </header>
-        <h1>KainPlan</h1>
+        <h1>{this.props.t('common:app_name')}</h1>
         <form onSubmit={this.onSearch.bind(this)}>
-          <div>
-            <input ref={e => this.queryIn = e} onFocus={this.onFocus.bind(this)} onBlur={this.onBlur.bind(this)} type="text" />
-            <p style={{
-              display: (this.state.active || this.queryIn && this.queryIn.value) ? 'none' : 'block',
+          <div className={style.queryDiv}>
+            <div style={{
+              borderRadius: this.state.active ? '14px 0 0 0' : '14px 0 0 14px',
             }}>
-              <TenFingers 
-                values={this.props.t('search:examples', { returnObjects: true, })}
-              />
-            </p>
+              <input ref={e => this.queryIn = e} onFocus={this.onFocus.bind(this)} onBlur={this.onBlur.bind(this)} type="text" />
+              <p style={{
+                display: (this.state.active || this.queryIn && this.queryIn.value) ? 'none' : 'block',
+              }}>
+                <TenFingers 
+                  values={this.props.t('search:examples', { returnObjects: true, })}
+                />
+              </p>
+            </div>
+            <button type="submit" style={{
+              borderRadius: this.state.active ? '0 14px 0 0' : '0 14px 14px 0',
+            }}>
+              <i><FontAwesomeIcon icon={faSearch} /></i>
+            </button>
           </div>
-          <button type="submit">
-            <i><FontAwesomeIcon icon={faSearch} /></i>
-          </button>
+          <div className={style.querySuggs} style={{
+            display: this.state.active ? 'block' : 'none',
+          }}>
+            <div>
+              <div>
+                <h4>HTBLA Kaindorf</h4>
+                <p>Schule im Süden der Steiermark</p>
+              </div>
+              <i><FontAwesomeIcon icon={faArrowRight} /></i>
+            </div>
+            <div>
+              <div>
+                <h4>Volkshochschule Steiermark</h4>
+                <p>Institution in Graz</p>
+              </div>
+              <i><FontAwesomeIcon icon={faArrowRight} /></i>
+            </div>
+          </div>
         </form>
         <style jsx global>{`
           html, body, #__next {
