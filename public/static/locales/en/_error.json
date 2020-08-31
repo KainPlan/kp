@@ -1,0 +1,7 @@
+{
+    "title": "Error {{code, number}}",
+    "description": "An error occurred. Please try again later!",
+    "info": "What does this mean?",
+    "url": "https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#{{code, number}}",
+    "go_back": "Back to safety"
+}

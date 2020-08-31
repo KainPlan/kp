@@ -1,0 +1,7 @@
+{
+    "title": "Fehler {{code, number}}",
+    "description": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es in Kürze erneut!",
+    "info": "Was bedeutet das?",
+    "url": "https://de.wikipedia.org/wiki/HTTP-Statuscode#{{code, number}}",
+    "go_back": "Zurück zur Startseite"
+}

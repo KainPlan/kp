@@ -1,10 +1,11 @@
 import React from 'react';
 import TenFingers from '../../tenfingers/TenFingers';
-import Link from 'next/link';
+import { withTranslation, Link } from '../../../i18n';
+import { WithTranslation } from 'next-i18next';
 
 import style from './Header.module.scss';
 
-interface HeaderProps {
+interface HeaderProps extends WithTranslation {
   children?: React.ReactNode;
 }
 
@@ -40,7 +41,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         <Link href="/">
           <h1>
             <TenFingers
-              values={['KainPlan']}
+              values={[this.props.t('app_name')]}
             />
           </h1>
         </Link>
@@ -52,4 +53,4 @@ class Header extends React.Component<HeaderProps, HeaderState> {
   }
 }
 
-export default Header;
+export default withTranslation('common')(Header);

@@ -1,11 +1,12 @@
-import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelopeSquare, faSchool } from '@fortawesome/free-solid-svg-icons';
 import { faTwitterSquare, faInstagram, faReddit } from '@fortawesome/free-brands-svg-icons';
+import { withTranslation, Link } from '../../../i18n';
+import { WithTranslation } from 'next-i18next';
 
 import style from './Footer.module.scss';
 
-const Footer = () => (
+const Footer = ({ t }: WithTranslation) => (
   <footer className={style.root}>
     <div className={style.footerLogoContainer}>    
       <img src="/media/logo_and_text_bright.png" />
@@ -42,17 +43,17 @@ const Footer = () => (
       <h3>// Links</h3>
       <div className={style.footerPart}>
         <Link href="/team">
-          <a>Team</a>
+          <a>{t('footer:team')}</a>
         </Link>
         <Link href="/login">
-          <a>Login</a>
+          <a>{t('common:login')}</a>
         </Link>
       </div>
       <div className={style.copyrightNotice}>
-        &copy; 2020 KainPlan
+        {t('common:copyright')}
       </div>
     </div>
   </footer>
 );
 
-export default Footer;
+export default withTranslation(['common','footer',])(Footer);

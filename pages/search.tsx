@@ -42,7 +42,8 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   private refreshMeasurements() {
-    let br = this.root.getBoundingClientRect();
+    if (!this.root) return;
+    let br: DOMRect = this.root.getBoundingClientRect();
     this.setState({
       width: br.width,
       height: br.height,
@@ -67,10 +68,10 @@ class Search extends React.Component<SearchProps, SearchState> {
       <div ref={e => this.root = e} className={style.root}>
         <header>
           <Link href="/">
-            <a>{this.props.t('search:home')}</a>
+            <a>{this.props.t('common:home')}</a>
           </Link>
           <Link href="/login">
-            <a>{this.props.t('search:login')}</a>
+            <a>{this.props.t('common:login')}</a>
           </Link>
         </header>
         <h1>KainPlan</h1>
@@ -96,7 +97,7 @@ class Search extends React.Component<SearchProps, SearchState> {
           }
         `}</style>
         <footer>
-          {this.props.t('search:copyright')}
+          {this.props.t('common:copyright')}
         </footer>
         <div className={style.particles}>
           <Particles 
