@@ -1,5 +1,5 @@
+import { appWithTranslation } from '../i18n';
 import '../styles/global.scss';
 
-export default function KPApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
-}
+const KPApp = ({ Component, pageProps }) => <Component {...pageProps} />;
+export default appWithTranslation(KPApp);

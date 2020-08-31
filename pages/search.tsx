@@ -2,13 +2,13 @@ import React from 'react';
 
 import style from './search.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faThList } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import TenFingers from '../components/tenfingers/TenFingers';
 import Particles from 'react-particles-js';
-import Header from '../components/kainplan/landing/Header';
-import Link from 'next/link';
+import { withTranslation, Link } from '../i18n';
+import { WithTranslation } from 'next-i18next';
 
-interface SearchProps {
+interface SearchProps extends WithTranslation {
 }
 
 interface SearchState {
@@ -19,7 +19,6 @@ interface SearchState {
 
 class Search extends React.Component<SearchProps, SearchState> {
   private root: HTMLDivElement;
-  private form: HTMLFormElement;
   private queryIn: HTMLInputElement;
 
   constructor(props) {
@@ -28,6 +27,12 @@ class Search extends React.Component<SearchProps, SearchState> {
       active: false,
       width: 0,
       height: 0,
+    };
+  }
+
+  public static async getInitialProps() {
+    return {
+      namespacesRequired: ['common','search',],
     };
   }
 
@@ -46,6 +51,7 @@ class Search extends React.Component<SearchProps, SearchState> {
 
   private onSearch(e: React.FormEvent) {
     e.preventDefault();
+    let qry: string = this.queryIn.value;
   }
 
   private onFocus() {
@@ -61,25 +67,21 @@ class Search extends React.Component<SearchProps, SearchState> {
       <div ref={e => this.root = e} className={style.root}>
         <header>
           <Link href="/">
-            <a>Home</a>
+            <a>{this.props.t('search:home')}</a>
           </Link>
           <Link href="/login">
-            <a>Login</a>
+            <a>{this.props.t('search:login')}</a>
           </Link>
         </header>
         <h1>KainPlan</h1>
-        <form ref={e => this.form = e} onSubmit={this.onSearch.bind(this)}>
+        <form onSubmit={this.onSearch.bind(this)}>
           <div>
             <input ref={e => this.queryIn = e} onFocus={this.onFocus.bind(this)} onBlur={this.onBlur.bind(this)} type="text" />
             <p style={{
               display: (this.state.active || this.queryIn && this.queryIn.value) ? 'none' : 'block',
             }}>
               <TenFingers 
-                values={[
-                  'HTBLA Kaindorf',
-                  'Volkshochschule Steiermark',
-                  '...'
-                ]}
+                values={this.props.t('search:examples', { returnObjects: true, })}
               />
             </p>
           </div>
@@ -94,7 +96,7 @@ class Search extends React.Component<SearchProps, SearchState> {
           }
         `}</style>
         <footer>
-          &copy; 2020 KainPlan
+          {this.props.t('search:copyright')}
         </footer>
         <div className={style.particles}>
           <Particles 
@@ -123,4 +125,4 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 }
 
-export default Search;
+export default withTranslation()(Search);

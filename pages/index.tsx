@@ -6,8 +6,19 @@ import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import HypedLink from '../components/kainplan/HypedLink';
+import { withTranslation } from '../i18n';
+import { WithTranslation } from 'next-i18next';
 
-class Index extends React.Component {
+interface IndexProps extends WithTranslation {
+}
+
+class Index extends React.Component<IndexProps, any> {
+  public static async getInitialProps() {
+    return {
+      namespacesRequired: ['common','index',],
+    };
+  }
+
   private onScrollClick() {
     window.document.getElementsByTagName('main')[0].scrollIntoView({
       behavior: 'smooth',
@@ -18,12 +29,12 @@ class Index extends React.Component {
     return (
       <>
         <Head>
-          <title>KainPlan</title>
+          <title>{this.props.t('common:app_name')}</title>
         </Head>
         <Header>
           <HypedLink
-            label="Los geht's!"
-            href="/search"
+            label={this.props.t('index:go')}
+            href='/search'
             icon={faExternalLinkAlt}
           />
         </Header>
@@ -94,4 +105,4 @@ class Index extends React.Component {
   }
 }
 
-export default Index;
+export default withTranslation()(Index);

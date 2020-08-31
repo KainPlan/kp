@@ -1,7 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from '../../i18n';
 
 import style from './HypedLink.module.scss';
 
