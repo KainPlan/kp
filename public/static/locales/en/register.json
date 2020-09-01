@@ -1,0 +1,6 @@
+{
+    "email": "Email",
+    "rep_password": "Repeat Password",
+    "short_pwd": "For your personal security, your password must be at least 8 characters long!",
+    "mismatch_pwd": "Your passwords don't match!"
+}

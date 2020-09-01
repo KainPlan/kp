@@ -8,9 +8,8 @@ import { ToastPosition } from '../components/kainplan/Toast';
 import Head from 'next/head';
 import Header from '../components/kainplan/landing/Header';
 import style from './login.module.scss';
-import { withTranslation } from '../i18n';
+import { withTranslation, Link } from '../i18n';
 import { WithTranslation } from 'next-i18next';
-import { Link } from '../i18n';
 
 interface LoginProps extends WithTranslation {
 };

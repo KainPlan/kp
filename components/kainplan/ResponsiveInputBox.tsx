@@ -7,6 +7,7 @@ import style from './ResponsiveInputBox.module.scss';
 interface ResponsiveInputBoxProps {
   label: string|string[];
   type?: string;
+  style?: any;
   onFocus?: (e: FocusEvent) => void;
   onBlur?: (e: FocusEvent) => void;
   onContentChange?: (content: string) => void;
@@ -91,7 +92,7 @@ class ResponsiveInputBox extends React.Component<ResponsiveInputBoxProps, Respon
   render() {
     return (
       <>
-        <div className={style.root}>
+        <div className={style.root} style={this.props.style}>
           <div style={{
             height: this.state.active ? "1.5em" : "0",
           }}></div>
