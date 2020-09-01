@@ -1,44 +1,65 @@
 import React from 'react';
 import ResponsiveInputBox from '../components/kainplan/ResponsiveInputBox';
 import ToastHandler from '../components/kainplan/ToastHandler';
-import { faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons';
-import HypedLink, { HypedIconPosition } from '../components/kainplan/HypedLink';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import HypedLink from '../components/kainplan/HypedLink';
 import WaveBackground, { WaveBackgroundPosition } from '../components/kainplan/WaveBackground';
 import { ToastPosition } from '../components/kainplan/Toast';
 import Head from 'next/head';
 import Header from '../components/kainplan/landing/Header';
 import style from './login.module.scss';
+import { withTranslation } from '../i18n';
+import { WithTranslation } from 'next-i18next';
+import { Link } from '../i18n';
 
-class Login extends React.Component {
+interface LoginProps extends WithTranslation {
+};
+
+class Login extends React.Component<LoginProps> {
   private usernameIn: ResponsiveInputBox;
   private passwordIn: ResponsiveInputBox;
   private toaster: ToastHandler;
 
+  public static getInitialProps() {
+    return {
+      namespacesRequired: ['common','login',],
+    };
+  }
+
   private onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const uname: string = this.usernameIn.input.value;
+    const pwd: string = this.passwordIn.input.value;
+
+    if (!uname || !pwd) {
+      this.toaster.showError(this.props.t('login:missing_in'), 8);
+      return;
+    }
   }
 
   public render() {
     return (
       <>
         <Head>
-          <title>KainPlan ; Login</title>
+          <title>{this.props.t('common:app_name')} ; {this.props.t('common:login')}</title>
         </Head>
         <Header>
           <HypedLink
-            label="Home"
-            href="/"
-            icon={faAngleDoubleLeft}
-            position={HypedIconPosition.BEFORE}
+            label={this.props.t('common:search')}
+            href="/search"
+            icon={faSearch}
           />
         </Header>
         <main className={style.root}>
           <WaveBackground animated position={WaveBackgroundPosition.BOTTOM} />
           <form onSubmit={this.onSubmit.bind(this)}>
-            <h1>Anmelden</h1>
-            <ResponsiveInputBox label="Nutzername" ref={e => this.usernameIn = e} />
-            <ResponsiveInputBox label="Passwort" type="password" ref={e => this.passwordIn = e} />
-            <input type="submit" value="Login" />
+            <h1>
+              {this.props.t('common:login')} 
+              <span>({this.props.t('login:or')} <Link href="/register"><span>{this.props.t('common:register')}</span></Link>)</span>
+            </h1>
+            <ResponsiveInputBox label={this.props.t('login:username')} ref={e => this.usernameIn = e} />
+            <ResponsiveInputBox label={this.props.t('login:password')} type="password" ref={e => this.passwordIn = e} />
+            <input type="submit" value={this.props.t('common:login').toString()} />
           </form>
           <ToastHandler 
             position={ToastPosition.BOTTOM_RIGHT} 
@@ -46,8 +67,7 @@ class Login extends React.Component {
           />
           <footer>
             <span>
-              design &copy; KainPlan
-              <span>jk</span>
+              {this.props.t('common:copyright')}
             </span>
           </footer>
         </main>
@@ -56,4 +76,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withTranslation()(Login);

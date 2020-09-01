@@ -2,5 +2,7 @@
   "app_name": "KainPlan",
   "copyright": "© 2020 KainPlan",
   "login": "Anmelden",
-  "home": "Startseite"
+  "register": "Registrieren",
+  "home": "Startseite",
+  "search": "Suche"
 }
