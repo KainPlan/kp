@@ -49,6 +49,14 @@
           }
         }
       }
+
+      @media only screen and (max-width: 600px) {
+        & > span {
+          display: block;
+          line-height: 2.5em;
+          margin: 0 !important;
+        }
+      }
     }
 
     input[type="submit"] {
