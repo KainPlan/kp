@@ -8,6 +8,7 @@ import { faAngleDoubleDown, faExternalLinkAlt } from '@fortawesome/free-solid-sv
 import HypedLink from '../components/kainplan/HypedLink';
 import { withTranslation } from '../i18n';
 import { WithTranslation } from 'next-i18next';
+import ArticleHeader from '../components/kainplan/landing/ArticleHeader';
 
 interface IndexProps extends WithTranslation {
 }
@@ -39,19 +40,7 @@ class Index extends React.Component<IndexProps, any> {
           />
         </Header>
         <article className={style.root}>
-          <div className={style.topMain}>
-            <div className={style.topMainInner}>
-              <video autoPlay muted loop>
-                <source src="/media/49d6c2a710af4aaf.mp4" type="video/mp4" />
-              </video>
-              <div className={style.topFore}>
-                <img src={require('../images/lgtd.png')} />
-              </div>
-            </div>
-            <div className={style.scrollDownContainer} onClick={this.onScrollClick}>
-              <i><FontAwesomeIcon icon={faAngleDoubleDown} /></i>
-            </div>
-          </div>
+          <ArticleHeader background="/media/49d6c2a710af4aaf.mp4" foreground={require('../images/lgtd.png')} onScrollDown={this.onScrollClick} />
           <main>
             <div className={style.infoElement}>
               <div className={style.quoteDiv}>

@@ -1,0 +1,86 @@
+.root {
+  position: relative;
+
+  @media only screen and (max-width: 600px) {
+    .inner {
+      min-height: 0 !important;
+    }
+  }
+
+  .inner {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+
+    & > video, & > img {
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 0;
+      filter: blur(2.5px);
+    }
+
+    .fore {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+      box-sizing: border-box;
+      padding: 1.6em;
+
+      @media only screen and (max-width: 600px) {
+        & > img {
+          width: 30% !important;
+        }
+      }
+
+      & > img {
+        width: 10em;
+        height: auto;
+        z-index: 1;
+      }
+
+      & > h2 {
+        z-index: 1;
+        font-size: 2em;
+        color: #303841;
+      }
+    }
+  }
+
+  .scrollDownContainer {
+    width: 100%;
+    height: 3em;
+    position: absolute;
+    bottom: -1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    i {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      border-radius: 50%;
+      font-size: 2em;
+      width: 1.5em;
+      height: 1.5em;
+      color: #222;
+      transition: 0.3s ease;
+
+      &:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

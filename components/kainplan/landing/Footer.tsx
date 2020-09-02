@@ -42,7 +42,7 @@ const Footer = ({ t }: WithTranslation) => (
       <h3>// Links</h3>
       <div className={style.footerPart}>
         <Link href="/team">
-          <a>{t('footer:team')}</a>
+          <a>{t('common:team')}</a>
         </Link>
         <Link href="/login">
           <a>{t('common:login')}</a>

@@ -1,0 +1,92 @@
+.root {
+  padding-top: 5em;
+
+  main {
+    font-size: 1.1em;
+
+    & > *:first-child {
+      padding-top: 1.5em;
+    }
+
+    & > div {
+      width: 60%;
+      margin: 0 auto;
+      
+      @media only screen and (max-width: 600px) {
+        width: 85%;
+      }
+    }
+
+    .people {
+      margin: 0 auto;
+      display: flex;
+      justify-content: stretch;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 3em 0;
+
+      & > div {
+        flex-grow: 1;
+        width: 25%;
+        min-width: 200px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        user-select: none;
+        margin: 5px 0;
+        transition: .15s ease;
+
+        &:hover {
+          cursor: pointer;
+          transform: scale(1.1);
+        }
+
+        * {
+          margin: 0;
+        }
+
+        h4 {
+          font-size: 1.2em;
+        }
+
+        p {
+          font-size: .9em;
+        }
+      }
+    }
+
+    .person {
+      border-top: 2.5px solid #f2f2f2;
+
+      & ~ .person {
+        margin-top: 25px;
+      }
+
+      h2 {
+        margin-bottom: 0;
+      }
+
+      h5 {
+        margin-top: 0;
+      }
+
+      & > div {
+        display: flex;
+        justify-content: stretch;
+        align-items: center;
+
+        @media only screen and (max-width: 600px) {
+          flex-direction: column;
+        }
+
+        & > img {
+          width: auto;
+          height: 15em;
+          margin-left: 15px;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+}

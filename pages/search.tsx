@@ -7,6 +7,7 @@ import TenFingers from '../components/tenfingers/TenFingers';
 import Particles from 'react-particles-js';
 import { withTranslation, Link } from '../i18n';
 import { WithTranslation } from 'next-i18next';
+import Head from 'next/head';
 
 interface SearchProps extends WithTranslation {
 }
@@ -65,87 +66,92 @@ class Search extends React.Component<SearchProps, SearchState> {
 
   public render() {
     return (
-      <div ref={e => this.root = e} className={style.root}>
-        <header>
-          <Link href="/">
-            <a>{this.props.t('common:home')}</a>
-          </Link>
-          <Link href="/login">
-            <a>{this.props.t('common:login')}</a>
-          </Link>
-        </header>
-        <h1>{this.props.t('common:app_name')}</h1>
-        <form onSubmit={this.onSearch.bind(this)}>
-          <div className={style.queryDiv}>
-            <div style={{
-              borderRadius: this.state.active ? '14px 0 0 0' : '14px 0 0 14px',
-            }}>
-              <input ref={e => this.queryIn = e} onFocus={this.onFocus.bind(this)} onBlur={this.onBlur.bind(this)} type="text" />
-              <p style={{
-                display: (this.state.active || this.queryIn && this.queryIn.value) ? 'none' : 'block',
+      <>
+        <Head>
+          <title>{this.props.t('common:app_name')} ; {this.props.t('common:search')}</title>
+        </Head>
+        <div ref={e => this.root = e} className={style.root}>
+          <header>
+            <Link href="/">
+              <a>{this.props.t('common:home')}</a>
+            </Link>
+            <Link href="/login">
+              <a>{this.props.t('common:login')}</a>
+            </Link>
+          </header>
+          <h1>{this.props.t('common:app_name')}</h1>
+          <form onSubmit={this.onSearch.bind(this)}>
+            <div className={style.queryDiv}>
+              <div style={{
+                borderRadius: this.state.active ? '14px 0 0 0' : '14px 0 0 14px',
               }}>
-                <TenFingers 
-                  values={this.props.t('search:examples', { returnObjects: true, })}
-                />
-              </p>
+                <input ref={e => this.queryIn = e} onFocus={this.onFocus.bind(this)} onBlur={this.onBlur.bind(this)} type="text" />
+                <p style={{
+                  display: (this.state.active || this.queryIn && this.queryIn.value) ? 'none' : 'block',
+                }}>
+                  <TenFingers 
+                    values={this.props.t('search:examples', { returnObjects: true, })}
+                  />
+                </p>
+              </div>
+              <button type="submit" style={{
+                borderRadius: this.state.active ? '0 14px 0 0' : '0 14px 14px 0',
+              }}>
+                <i><FontAwesomeIcon icon={faSearch} /></i>
+              </button>
             </div>
-            <button type="submit" style={{
-              borderRadius: this.state.active ? '0 14px 0 0' : '0 14px 14px 0',
+            <div className={style.querySuggs} style={{
+              display: this.state.active ? 'block' : 'none',
             }}>
-              <i><FontAwesomeIcon icon={faSearch} /></i>
-            </button>
-          </div>
-          <div className={style.querySuggs} style={{
-            display: this.state.active ? 'block' : 'none',
-          }}>
-            <div>
               <div>
-                <h4>HTBLA Kaindorf</h4>
-                <p>Schule im Süden der Steiermark</p>
+                <div>
+                  <h4>HTBLA Kaindorf</h4>
+                  <p>Schule im Süden der Steiermark</p>
+                </div>
+                <i><FontAwesomeIcon icon={faArrowRight} /></i>
               </div>
-              <i><FontAwesomeIcon icon={faArrowRight} /></i>
-            </div>
-            <div>
               <div>
-                <h4>Volkshochschule Steiermark</h4>
-                <p>Institution in Graz</p>
+                <div>
+                  <h4>Volkshochschule Steiermark</h4>
+                  <p>Institution in Graz</p>
+                </div>
+                <i><FontAwesomeIcon icon={faArrowRight} /></i>
               </div>
-              <i><FontAwesomeIcon icon={faArrowRight} /></i>
             </div>
+          </form>
+          <style jsx global>{`
+            html, body, #__next {
+              width: 100%;
+              height: 100%;
+            }
+          `}</style>
+          <footer>
+            {this.props.t('common:copyright')}
+          </footer>
+          <div className={style.particles}>
+            <Particles 
+              params={{
+                particles: {
+                  number: {
+                    value: 50
+                  },
+                  size: {
+                    value: 3
+                  },
+                  color: {
+                    value: '#999',
+                  },
+                  line_linked: {
+                    color: '#dedede',
+                  },
+                }
+              }} 
+              width={this.state.width + 'px'}
+              height={this.state.height + 'px'}
+            />
           </div>
-        </form>
-        <style jsx global>{`
-          html, body, #__next {
-            width: 100%;
-            height: 100%;
-          }
-        `}</style>
-        <footer>
-          {this.props.t('common:copyright')}
-        </footer>
-        <div className={style.particles}>
-          <Particles 
-            params={{
-              particles: {
-                number: {
-                  value: 50
-                },
-                size: {
-                  value: 3
-                },
-                color: {
-                  value: '#999',
-                },
-                line_linked: {
-                  color: '#dedede',
-                },
-              }
-            }} 
-            width={this.state.width + 'px'}
-            height={this.state.height + 'px'}
-          />
         </div>
-      </div>
+      </>
     );
   }
 }
