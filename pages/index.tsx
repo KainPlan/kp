@@ -42,10 +42,10 @@ class Index extends React.Component<IndexProps, any> {
           <div className={style.topMain}>
             <div className={style.topMainInner}>
               <video autoPlay muted loop>
-                <source src="/media/index/back_banner_vid.mp4" type="video/mp4" />
+                <source src="/media/49d6c2a710af4aaf.mp4" type="video/mp4" />
               </video>
               <div className={style.topFore}>
-                <img src="/media/logo_and_text.png" />
+                <img src={require('../images/lgtd.png')} />
               </div>
             </div>
             <div className={style.scrollDownContainer} onClick={this.onScrollClick}>
@@ -64,7 +64,7 @@ class Index extends React.Component<IndexProps, any> {
                 <q>Neue Aspekte der Schule entdecken - mit KainPlan</q>
               </div>
               <div className={style.imgContainer}>
-                <img src="/media/index/destination-mobile-final-2.png" />
+                <img src={require('../images/index/img1.png')} />
                 <div>
                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
                 </div>
@@ -78,7 +78,7 @@ class Index extends React.Component<IndexProps, any> {
                 <div>
                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
                 </div>
-                <img src="/media/index/routing-desktop-final.png" />
+                <img src={require('../images/index/img2.png')} />
               </div>
             </div>
             <div className={style.infoElement}>
@@ -88,7 +88,7 @@ class Index extends React.Component<IndexProps, any> {
               <div className={style.videoContainer}>
                 <div className={style.videoFinal}>
                   <video autoPlay loop>
-                    <source src="/media/index/usage-desktop.mp4" type="video/mp4" />
+                    <source src="/media/b4fbb5cb4feb4af8.mp4" type="video/mp4" />
                   </video>
                   <div className={style.overlay}></div>
                 </div>

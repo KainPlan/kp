@@ -89,7 +89,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
             </h1>
             <ResponsiveInputBox label={this.props.t('register:email')} type="email" ref={e => this.emailIn = e} />
             <ResponsiveInputBox label={this.props.t('login:username')} ref={e => this.usernameIn = e} />
-            <ResponsiveInputBox label={this.props.t('login:password')} type="password" ref={e => this.passwordIn = e} onContentChange={this.onPasswordChange.bind(this)} />
+            <ResponsiveInputBox label={this.props.t('register:password')} type="password" ref={e => this.passwordIn = e} onContentChange={this.onPasswordChange.bind(this)} />
             <ResponsiveInputBox label={this.props.t('register:rep_password')} type="password" ref={e => this.repPasswordIn = e} style={{
               display: this.state.showRepPass ? 'block' : 'none',
             }} />

@@ -1,5 +1,6 @@
 {
     "email": "E-Mail",
+    "password": "Passwort (min. 8 Zeichen)",
     "rep_password": "Passwort wiederholen",
     "short_pwd": "Zu Ihrer Sicherheit muss Ihr Passwort mindestens 8 Zeichen lang sein!",
     "mismatch_pwd": "Ihre Passwörter stimmen nicht überein!"

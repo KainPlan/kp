@@ -3,13 +3,12 @@ import { faEnvelopeSquare, faSchool } from '@fortawesome/free-solid-svg-icons';
 import { faTwitterSquare, faInstagram, faReddit } from '@fortawesome/free-brands-svg-icons';
 import { withTranslation, Link } from '../../../i18n';
 import { WithTranslation } from 'next-i18next';
-
 import style from './Footer.module.scss';
 
 const Footer = ({ t }: WithTranslation) => (
   <footer className={style.root}>
     <div className={style.footerLogoContainer}>    
-      <img src="/media/logo_and_text_bright.png" />
+      <img src={require('../../../images/lgtb.png')} />
     </div>
     <div className={style.footerContentContainer}>
       <h3>// Kontakt</h3>
