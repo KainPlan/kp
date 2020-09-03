@@ -4,6 +4,7 @@ import NProgress from 'nprogress';
 import '../styles/nprogress.css';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import fetch from 'isomorphic-unfetch';
 
 function KPApp({ Component, pageProps }): React.ReactElement {
   const router = useRouter();
@@ -34,5 +35,17 @@ function KPApp({ Component, pageProps }): React.ReactElement {
 
   return <Component {...pageProps} />;
 }
+
+KPApp.getInitialProps = async function({ Component, ctx }) {
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+  if (ctx.req && ctx.req.session.passport) {
+    const userRes: any = await (await fetch(`http://localhost:3000/api/users/info/${ctx.req.session.passport.user}`)).json();
+    pageProps = { ...pageProps, user: userRes.success ? userRes.user : undefined, };
+  }
+  return { pageProps };
+};
 
 export default appWithTranslation(KPApp);

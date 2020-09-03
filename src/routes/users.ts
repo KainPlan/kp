@@ -1,9 +1,13 @@
 import express from 'express';
+import passport from 'passport';
 import * as users from '../controllers/users';
+import { authenticated } from '../middleware/auth';
 
 const router: express.Router = express.Router();
 
-router.post('/login', users.login);
+router.post('/auth', passport.authenticate('local'), users.auth);
+router.get('/info/:id(\\d+)/', users.info);
 router.post('/register', users.register);
+router.post('/logout', users.logout);
 
 export default router;

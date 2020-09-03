@@ -2,5 +2,6 @@
     "username": "Nutzername",
     "password": "Passwort",
     "or": "oder",
-    "missing_in": "Bitte füllen Sie alle notwendigen Felder aus!"
+    "missing_in": "Bitte füllen Sie alle notwendigen Felder aus!",
+    "wrong_creds": "Falscher Nutzername/Falsches Passwort!"
 }

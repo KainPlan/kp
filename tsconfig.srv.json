@@ -10,7 +10,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src/**/*"],
+  "include": [
+    "./src/env.d.ts",
+    "./src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "**/pages/**/*",

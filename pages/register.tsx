@@ -1,7 +1,7 @@
 import React from 'react';
 import { WithTranslation } from 'next-i18next';
 import Head from 'next/head';
-import { withTranslation, Link } from '../i18n';
+import { withTranslation, Link, Router } from '../i18n';
 import HypedLink from '../components/kainplan/HypedLink';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/kainplan/landing/Header';
@@ -10,6 +10,7 @@ import WaveBackground, { WaveBackgroundPosition } from '../components/kainplan/W
 import ToastHandler from '../components/kainplan/ToastHandler';
 import { ToastPosition } from '../components/kainplan/Toast';
 import ResponsiveInputBox from '../components/kainplan/ResponsiveInputBox';
+import fetch from 'isomorphic-unfetch';
 
 interface RegisterProps extends WithTranslation {
 };
@@ -55,6 +56,10 @@ class Register extends React.Component<RegisterProps, RegisterState> {
       this.toaster.showError(this.props.t('login:missing_in'), 8);
       return;
     }
+    if (email.length > 40) {
+      this.toaster.showError(this.props.t('register:long_email'), 8);
+      return;
+    }
     if (pwd.length < 8) {
       this.toaster.showError(this.props.t('register:short_pwd'), 8);
       return;
@@ -62,6 +67,24 @@ class Register extends React.Component<RegisterProps, RegisterState> {
     if (pwd !== repPwd) {
       this.toaster.showError(this.props.t('register:mismatch_pwd'), 8);
     }
+
+    fetch('/api/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        username: uname,
+        password: pwd,
+      }),
+    }).then(res => {
+      if (res.status !== 200) {
+        this.toaster.showError(this.props.t('common:server_error'), 8);
+        return;
+      }
+      Router.push('/login');
+    }).catch(err => this.toaster.showError(this.props.t('common:server_error'), 8));
   }
 
   public render() {

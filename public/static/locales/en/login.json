@@ -2,5 +2,6 @@
     "username": "Username",
     "password": "Password",
     "or": "or",
-    "missing_in": "Please make sure to fill in all required fields!"
+    "missing_in": "Please make sure to fill in all required fields!",
+    "wrong_creds": "Wrong username/password!"
 }

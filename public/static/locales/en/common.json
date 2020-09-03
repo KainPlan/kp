@@ -5,5 +5,6 @@
   "register": "Register",
   "home": "Home",
   "search": "Search",
-  "team": "Team"
+  "team": "Team",
+  "server_error": "Oops! Something didn't quite work out. Please try again later!"
 }

@@ -2,6 +2,7 @@
     "email": "E-Mail",
     "password": "Passwort (min. 8 Zeichen)",
     "rep_password": "Passwort wiederholen",
+    "long_email": "Ihre Email-Adresse darf die Länge von 40 Zeichen nicht überschreiten!",
     "short_pwd": "Zu Ihrer Sicherheit muss Ihr Passwort mindestens 8 Zeichen lang sein!",
     "mismatch_pwd": "Ihre Passwörter stimmen nicht überein!"
 }
