@@ -7,7 +7,7 @@ interface ErrorProps extends WithTranslation {
   statusCode: number;
 }
 
-function ErrorPage({ statusCode, t }: ErrorProps) {
+const ErrorPage = ({ statusCode, t }: ErrorProps) => {
   return (
     <>
       <Header></Header>
@@ -27,7 +27,7 @@ function ErrorPage({ statusCode, t }: ErrorProps) {
       `}</style>
     </>
   );
-}
+};
 
 ErrorPage.getInitialProps = ({ res, err }) => ({
   statusCode: res ? res.statusCode : err ? err.statusCode : 404,

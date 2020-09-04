@@ -43,7 +43,7 @@ KPApp.getInitialProps = async function({ Component, ctx }) {
   }
   if (ctx.req && ctx.req.session.passport) {
     const userRes: any = await (await fetch(`http://localhost:3000/api/users/info/${ctx.req.session.passport.user}`)).json();
-    pageProps = { ...pageProps, user: userRes.success ? userRes.user : undefined, };
+    pageProps = { ...pageProps, authenticated: Boolean(userRes.success), user: userRes.success ? userRes.user : undefined, };
   }
   return { pageProps };
 };

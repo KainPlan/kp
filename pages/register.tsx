@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { WithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { withTranslation, Link, Router } from '../i18n';
@@ -15,57 +15,43 @@ import fetch from 'isomorphic-unfetch';
 interface RegisterProps extends WithTranslation {
 };
 
-interface RegisterState {
-  showRepPass: boolean;
-};
+const Register = ({ t, }: RegisterProps) => {
+  let emailIn: ResponsiveInputBox;
+  let usernameIn: ResponsiveInputBox;
+  let passwordIn: ResponsiveInputBox;
+  let repPasswordIn: ResponsiveInputBox;
+  let toaster: ToastHandler;
 
-class Register extends React.Component<RegisterProps, RegisterState> {
-  private emailIn: ResponsiveInputBox;
-  private usernameIn: ResponsiveInputBox;
-  private passwordIn: ResponsiveInputBox;
-  private repPasswordIn: ResponsiveInputBox;
-  private toaster: ToastHandler;
+  const [showRepPass, setShowRepPass] = useState(false);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      showRepPass: false,
-    };
-  }
+  const onPasswordChange = (pwd: string) => {
+    if (pwd) return setShowRepPass(true);
+    setShowRepPass(false);
+  };
 
-  public static getInitialProps() {
-    return {
-      namespacesRequired: ['common','login','register',],
-    };
-  }
-
-  private onPasswordChange(pwd: string) {
-    if (pwd) this.setState({ showRepPass: true, });
-    else this.setState({ showRepPass: false, });
-  }
-
-  private onSubmit(e: React.FormEvent) {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email: string = this.emailIn.input.value;
-    const uname: string = this.usernameIn.input.value;
-    const pwd: string = this.passwordIn.input.value;
-    const repPwd: string = this.repPasswordIn.input.value;
+    const email: string = emailIn.input.value;
+    const uname: string = usernameIn.input.value;
+    const pwd: string = passwordIn.input.value;
+    const repPwd: string = repPasswordIn.input.value;
 
     if (!email || !uname || !pwd || !repPwd) {
-      this.toaster.showError(this.props.t('login:missing_in'), 8);
+      toaster.showError(t('login:missing_in'), 8);
       return;
     }
     if (email.length > 40) {
-      this.toaster.showError(this.props.t('register:long_email'), 8);
+      toaster.showError(t('register:long_email'), 8);
       return;
     }
     if (pwd.length < 8) {
-      this.toaster.showError(this.props.t('register:short_pwd'), 8);
+      toaster.showError(t('register:short_pwd'), 8);
       return;
     }
     if (pwd !== repPwd) {
-      this.toaster.showError(this.props.t('register:mismatch_pwd'), 8);
+      toaster.showError(t('register:mismatch_pwd'), 8);
+      return;
     }
 
     fetch('/api/users/register', {
@@ -80,57 +66,59 @@ class Register extends React.Component<RegisterProps, RegisterState> {
       }),
     }).then(res => {
       if (res.status !== 200) {
-        this.toaster.showError(this.props.t('common:server_error'), 8);
+        toaster.showError(t('common:server_error'), 8);
         return;
       }
       Router.push('/login');
-    }).catch(err => this.toaster.showError(this.props.t('common:server_error'), 8));
-  }
+    }).catch(err => toaster.showError(t('common:server_error'), 8));
+  };
 
-  public render() {
-    return (
-      <>
-        <Head>
-          <title>{this.props.t('common:app_name')} ; {this.props.t('common:register')}</title>
-        </Head>
-        <Header>
-          <HypedLink
-            label={this.props.t('common:search')}
-            href="/search"
-            icon={faSearch}
-          />
-        </Header>
-        <main className={style.root}>
-          <WaveBackground animated position={WaveBackgroundPosition.BOTTOM} />
-          <form onSubmit={this.onSubmit.bind(this)}>
-            <h1>
-              <span style={{
-                marginLeft: 0,
-                marginRight: '3.5px',
-              }}>(<Link href="/login"><span>{this.props.t('common:login')}</span></Link> {this.props.t('login:or')})</span>
-              {this.props.t('common:register')}
-            </h1>
-            <ResponsiveInputBox label={this.props.t('register:email')} type="email" ref={e => this.emailIn = e} />
-            <ResponsiveInputBox label={this.props.t('login:username')} ref={e => this.usernameIn = e} />
-            <ResponsiveInputBox label={this.props.t('register:password')} type="password" ref={e => this.passwordIn = e} onContentChange={this.onPasswordChange.bind(this)} />
-            <ResponsiveInputBox label={this.props.t('register:rep_password')} type="password" ref={e => this.repPasswordIn = e} style={{
-              display: this.state.showRepPass ? 'block' : 'none',
-            }} />
-            <input type="submit" value={this.props.t('common:register').toString()} />
-          </form>
-          <ToastHandler 
-            position={ToastPosition.BOTTOM_RIGHT} 
-            ref={e => this.toaster = e}
-          />
-          <footer>
-            <span>
-              {this.props.t('common:copyright')}
-            </span>
-          </footer>
-        </main>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Head>
+        <title>{t('common:app_name')} ; {t('common:register')}</title>
+      </Head>
+      <Header>
+        <HypedLink
+          label={t('common:search')}
+          href="/search"
+          icon={faSearch}
+        />
+      </Header>
+      <main className={style.root}>
+        <WaveBackground animated position={WaveBackgroundPosition.BOTTOM} />
+        <form onSubmit={onSubmit}>
+          <h1>
+            <span style={{
+              marginLeft: 0,
+              marginRight: '3.5px',
+            }}>(<Link href="/login"><span>{t('common:login')}</span></Link> {t('login:or')})</span>
+            {t('common:register')}
+          </h1>
+          <ResponsiveInputBox label={t('register:email')} type="email" ref={e => emailIn = e} />
+          <ResponsiveInputBox label={t('login:username')} ref={e => usernameIn = e} />
+          <ResponsiveInputBox label={t('register:password')} type="password" ref={e => passwordIn = e} onContentChange={onPasswordChange} />
+          <ResponsiveInputBox label={t('register:rep_password')} type="password" ref={e => repPasswordIn = e} style={{
+            display: showRepPass ? 'block' : 'none',
+          }} />
+          <input type="submit" value={t('common:register').toString()} />
+        </form>
+        <ToastHandler 
+          position={ToastPosition.BOTTOM_RIGHT} 
+          ref={e => toaster = e}
+        />
+        <footer>
+          <span>
+            {t('common:copyright')}
+          </span>
+        </footer>
+      </main>
+    </>
+  );
+};
+
+Register.getInitialProps = () => ({
+  namespacesRequired: ['common','login','register',],
+});
 
 export default withTranslation()(Register);

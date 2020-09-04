@@ -1,4 +1,5 @@
 export interface WithUser {
+  authenticated: boolean;
   user?: User;
 };
 

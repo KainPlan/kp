@@ -11,28 +11,23 @@ import style from './login.module.scss';
 import { withTranslation, Link, Router } from '../i18n';
 import { WithTranslation } from 'next-i18next';
 import fetch from 'isomorphic-unfetch';
+import { WithUser } from '../models/User';
 
-interface LoginProps extends WithTranslation {
+interface LoginProps extends WithTranslation, WithUser {
 };
 
-class Login extends React.Component<LoginProps> {
-  private usernameIn: ResponsiveInputBox;
-  private passwordIn: ResponsiveInputBox;
-  private toaster: ToastHandler;
+const Login = ({ t, }: LoginProps) => {
+  let usernameIn: ResponsiveInputBox;
+  let passwordIn: ResponsiveInputBox;
+  let toaster: ToastHandler;
 
-  public static getInitialProps() {
-    return {
-      namespacesRequired: ['common','login',],
-    };
-  }
-
-  private onSubmit(e: React.FormEvent) {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const uname: string = this.usernameIn.input.value;
-    const pwd: string = this.passwordIn.input.value;
+    const uname: string = usernameIn.input.value;
+    const pwd: string = passwordIn.input.value;
 
     if (!uname || !pwd) {
-      this.toaster.showError(this.props.t('login:missing_in'), 8);
+      toaster.showError(t('login:missing_in'), 8);
       return;
     }
 
@@ -47,54 +42,56 @@ class Login extends React.Component<LoginProps> {
       }),
     }).then(res => {
       if (res.status === 401) {
-        this.toaster.showError(this.props.t('login:wrong_creds'), 8);
+        toaster.showError(t('login:wrong_creds'), 8);
         return;
       }
       if (res.status !== 200) {
-        this.toaster.showError(this.props.t('common:server_error'), 8);
+        toaster.showError(t('common:server_error'), 8);
         return;
       }
       Router.push('/dashboard');
     });
-  }
+  };
 
-  public render() {
-    return (
-      <>
-        <Head>
-          <title>{this.props.t('common:app_name')} ; {this.props.t('common:login')}</title>
-        </Head>
-        <Header>
-          <HypedLink
-            label={this.props.t('common:search')}
-            href="/search"
-            icon={faSearch}
-          />
-        </Header>
-        <main className={style.root}>
-          <WaveBackground animated position={WaveBackgroundPosition.BOTTOM} />
-          <form onSubmit={this.onSubmit.bind(this)}>
-            <h1>
-              {this.props.t('common:login')} 
-              <span>({this.props.t('login:or')} <Link href="/register"><span>{this.props.t('common:register')}</span></Link>)</span>
-            </h1>
-            <ResponsiveInputBox label={this.props.t('login:username')} ref={e => this.usernameIn = e} />
-            <ResponsiveInputBox label={this.props.t('login:password')} type="password" ref={e => this.passwordIn = e} />
-            <input type="submit" value={this.props.t('common:login').toString()} />
-          </form>
-          <ToastHandler 
-            position={ToastPosition.BOTTOM_RIGHT} 
-            ref={e => this.toaster = e}
-          />
-          <footer>
-            <span>
-              {this.props.t('common:copyright')}
-            </span>
-          </footer>
-        </main>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Head>
+        <title>{t('common:app_name')} ; {t('common:login')}</title>
+      </Head>
+      <Header>
+        <HypedLink
+          label={t('common:search')}
+          href="/search"
+          icon={faSearch}
+        />
+      </Header>
+      <main className={style.root}>
+        <WaveBackground animated position={WaveBackgroundPosition.BOTTOM} />
+        <form onSubmit={onSubmit}>
+          <h1>
+            {t('common:login')} 
+            <span>({t('login:or')} <Link href="/register"><span>{t('common:register')}</span></Link>)</span>
+          </h1>
+          <ResponsiveInputBox label={t('login:username')} ref={e => usernameIn = e} />
+          <ResponsiveInputBox label={t('login:password')} type="password" ref={e => passwordIn = e} />
+          <input type="submit" value={t('common:login').toString()} />
+        </form>
+        <ToastHandler 
+          position={ToastPosition.BOTTOM_RIGHT} 
+          ref={e => toaster = e}
+        />
+        <footer>
+          <span>
+            {t('common:copyright')}
+          </span>
+        </footer>
+      </main>
+    </>
+  );
+};
+
+Login.getInitialProps = async () => ({
+  namespacesRequired: ['common','login',],
+});
 
 export default withTranslation()(Login);
