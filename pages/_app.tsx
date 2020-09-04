@@ -4,7 +4,7 @@ import NProgress from 'nprogress';
 import '../styles/nprogress.css';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import fetch from 'isomorphic-unfetch';
+import { UserProvider } from '../components/kainplan/auth/UserContext';
 
 function KPApp({ Component, pageProps }): React.ReactElement {
   const router = useRouter();
@@ -33,7 +33,11 @@ function KPApp({ Component, pageProps }): React.ReactElement {
     };
   }, []);
 
-  return <Component {...pageProps} />;
+  return (
+    <UserProvider passport={pageProps.passport}>
+      <Component {...pageProps} />
+    </UserProvider>
+  );
 }
 
 KPApp.getInitialProps = async function({ Component, ctx }) {
@@ -42,8 +46,7 @@ KPApp.getInitialProps = async function({ Component, ctx }) {
     pageProps = await Component.getInitialProps(ctx);
   }
   if (ctx.req && ctx.req.session.passport) {
-    const userRes: any = await (await fetch(`http://localhost:3000/api/users/info/${ctx.req.session.passport.user}`)).json();
-    pageProps = { ...pageProps, authenticated: Boolean(userRes.success), user: userRes.success ? userRes.user : undefined, };
+    pageProps = {...pageProps, passport: ctx.req.session.passport, };
   }
   return { pageProps };
 };

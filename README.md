@@ -44,6 +44,14 @@ $ npm i
 
 ... and you _should_ be grand! (If you're not, feel free to ask for support ^^).
 
+## To-Do
+
+The following is a list of things that have to be done - it is only included here so one doesn't forget to do these things.
+
+* [ ] Fix translation "Let's go" on `/team` page
+* [ ] Fix ugly transition between `/login` and `/register`
+* [ ] Proper landing page, `/`
+* [ ] Fix registration checks - duplicate email, etc.
 ---
 
 | Version | Date       | Clearance      |

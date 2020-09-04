@@ -9,6 +9,7 @@ import { withTranslation, Link } from '../i18n';
 import { WithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { WithUser } from '../models/User';
+import useUser from '../components/kainplan/auth/UserContext';
 
 interface SearchProps extends WithTranslation, WithUser {
 }
@@ -26,8 +27,9 @@ const Search = ({ t, }: SearchProps) => {
   const [msr, setMsr] = useState({ width: 0, height: 0, });
   const [active, setActive] = useState(false);
 
+  const { user, authenticated, loading, } = useUser();
+
   const refreshMeasurements = () => {
-    console.log('asdf');
     if (!root) return;
     let br: DOMRect = root.getBoundingClientRect();
     setMsr({
@@ -64,9 +66,15 @@ const Search = ({ t, }: SearchProps) => {
           <Link href="/">
             <a>{t('common:home')}</a>
           </Link>
-          <Link href="/login">
-            <a>{t('common:login')}</a>
-          </Link>
+          {
+            !loading && authenticated
+            ? <Link href="/dashboard">
+                <a><FontAwesomeIcon icon={faUser} /> {user!.username}</a>
+              </Link>
+            : <Link href="/login">
+                <a>{t('common:login')}</a>
+              </Link>
+          }
         </header>
         <h1>{t('common:app_name')}</h1>
         <form onSubmit={onSearch}>

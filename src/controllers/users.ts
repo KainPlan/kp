@@ -3,15 +3,11 @@ import User from '../models/User';
 import { ESRCH } from 'constants';
 
 export function auth (req: express.Request, res: express.Response): void {
-    res.send({ success: true, user: (<User>req.user).sanitize(), });
+    info(req, res);
 }
 
 export function info (req: express.Request, res: express.Response): void {
-    User.load(+req.params.id)
-        .then(user => {
-            res.send({ success: true, user: (<User>user).sanitize(), });
-        })
-        .catch(err => res.send({ msg: 'Failed to get user!', }));
+    res.send({ success: true, user: (<User>req.user).sanitize(), });
 }
 
 export function register (req: express.Request, res: express.Response): void {

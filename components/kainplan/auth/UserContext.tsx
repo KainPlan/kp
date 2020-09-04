@@ -1,33 +1,40 @@
-import React from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import fetch from 'isomorphic-unfetch';
 import User from "../../../models/User";
 
-export interface UserContextProps {
+interface UserContextProps {
   authenticated: boolean;
+  loading: boolean;
   user?: User;
 };
 
-const UserContext: React.Context<UserContextProps> = React.createContext<UserContextProps>({
-  authenticated: false,
-});
+const UserContext = createContext<UserContextProps>({ authenticated: false, loading: true, });
 
-export default UserContext;
+export const UserProvider = ({ passport, children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const baseURL = 'http://localhost:3000/api/users';
 
-interface UserProviderProps {
-  children: React.ReactElement|React.ReactElement[];
+  useEffect(() => {
+    (async () => {
+      if (!passport) return setLoading(false);
+      const res = await fetch(`${baseURL}/info`);
+      if (!res.ok) return setLoading(false);
+      const json = await res.json();
+      if (!json.success) return setLoading(false);
+      setUser(User.load(json.user));
+      setLoading(false);
+    })();
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ authenticated: Boolean(user), user, loading, }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
-interface UserProviderState extends UserContextProps {
-};
-
-export class UserProvider extends React.Component<UserProviderProps, UserProviderState> {
-  private static baseURL: string = 'http://localhost/api/users';
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      authenticated: false,
-    };
-  }
-
-  
+export default function useUser() {
+  const context = useContext(UserContext);
+  return context;
 }
