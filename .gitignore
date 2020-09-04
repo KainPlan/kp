@@ -3,3 +3,5 @@ dist
 node_modules
 .next
 **/*.mp4
+log/*
+!log/.gitignore

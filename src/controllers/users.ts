@@ -1,12 +1,13 @@
 import express from 'express';
 import User from '../models/User';
+import utils from '../utils';
 
 export function auth (req: express.Request, res: express.Response): void {
     info(req, res);
 }
 
 export function info (req: express.Request, res: express.Response): void {
-    res.send({ success: true, user: (<User>req.user).sanitize(), });
+    utils.respond(res, { user: (<User>req.user).sanitize(), });
 }
 
 export function register (req: express.Request, res: express.Response): void {
@@ -14,35 +15,26 @@ export function register (req: express.Request, res: express.Response): void {
     const username: string = req.body.username;
     const password: string = req.body.password;
     
-    if (!email || !username || !password) {
-        res.send({ msg: 'Missing arguments!', });
-        return;
-    }
-    if (email.length > 40) {
-        res.send({ msg: 'Email longer than 40 characters!', });
-        return;
-    }
-    if (password.length < 8) {
-        res.send({ msg: 'Password less than 8 characters!', });
-        return;
-    }
+    if (!email || !username || !password) return utils.respond(res, 400, 'Missing arguments!');
+    if (email.length > 40) return utils.respond(res, 400, 'Email longer than 40 characters!');
+    if (password.length < 8) return utils.respond(res, 400, 'Password shorter than 8 characters!');
 
     User.isEmailTaken(email)
         .then(taken => {
-            if (taken) return res.send({ msg: 'email_taken', });
+            if (taken) return utils.respond(res, 400, 'email_taken');
             User.isUsernameTaken(username)
                 .then(taken => {
-                    if (taken) return res.send({ msg: 'username_taken', });
+                    if (taken) return utils.respond(res, 400, 'username_taken');
                     User.make(email, username, password)
                         .then(() => res.send({ success: true, }))
-                        .catch(err => res.send({ msg: 'other_error', }));
+                        .catch(err => utils.respond(res, 500, 'other_error', err));
                 })
-                .catch(err => res.send({ msg: 'other_error', }));
+                .catch(err => utils.respond(res, 500, 'other_error', err));
         })
-        .catch(err => res.send({ msg: 'other_error', }));
+        .catch(err => utils.respond(res, 500, 'other_error', err));
 }
 
-export function logout(req: express.Request, res: express.Response): void {
+export function logout (req: express.Request, res: express.Response): void {
     req.logout();
-    res.send({ success: true, });
+    utils.respond(res);
 }
