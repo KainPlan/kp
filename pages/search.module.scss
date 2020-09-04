@@ -111,6 +111,22 @@
           z-index: -1;
           user-select: none;
         }
+
+        & > i {
+          position: absolute;
+          right: 10px;
+          color: #999;
+          font-size: .8em;
+          top: 50%;
+          transform: translateY(-50%);
+          transition: .15s ease;
+
+          &:hover {
+            cursor: pointer;
+            transform: translateY(-50%) scale(1.2);
+            color: #FF493A;
+          }
+        }
       }
   
       & > button {

@@ -56,4 +56,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance      |
 | ------- | ---------- | -------------- |
-| 0.1     | 2020.09.03 | _No clearance_ |
+| 0.2     | 2020.09.04 | _No clearance_ |

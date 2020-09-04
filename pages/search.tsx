@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import style from './search.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowRight, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowRight, faUser, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TenFingers from '../components/tenfingers/TenFingers';
 import Particles from 'react-particles-js';
 import { withTranslation, Link } from '../i18n';
@@ -56,6 +56,11 @@ const Search = ({ t, }: SearchProps) => {
     setActive(Boolean(queryIn && queryIn.value));
   };
 
+  const onClearInput = () => {
+    queryIn.value = '';
+    queryIn.focus();
+  };
+
   return (
     <>
       <Head>
@@ -90,6 +95,9 @@ const Search = ({ t, }: SearchProps) => {
                   values={t('search:examples', { returnObjects: true, })}
                 />
               </p>
+              <i onClick={onClearInput} style={{
+                display: active ? 'block' : 'none',
+              }}><FontAwesomeIcon icon={faTimes} /></i>
             </div>
             <button type="submit" style={{
               borderRadius: active ? '0 14px 0 0' : '0 14px 14px 0',
