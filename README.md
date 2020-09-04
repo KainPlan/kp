@@ -75,7 +75,6 @@ CREATE TABLE users (
 
 The following is a list of things that have to be done - it is only included here so one doesn't forget to do these things.
 
-* [ ] Fix translation "Let's go" on `/team` page
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
 * [ ] Fix registration checks - duplicate email, etc.
@@ -83,4 +82,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance      |
 | ------- | ---------- | -------------- |
-| 0.3     | 2020.09.04 | _No clearance_ |
+| 0.4     | 2020.09.04 | _No clearance_ |

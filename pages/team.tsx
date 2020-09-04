@@ -26,7 +26,7 @@ const Team = ({ t, }: TeamProps) => {
       </Head>
       <Header>
         <HypedLink
-          label={t('index:go')}
+          label={t('team:start_now')}
           href='/search'
           icon={faExternalLinkAlt}
         />
