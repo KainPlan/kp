@@ -6,9 +6,10 @@ interface UserContextProps {
   authenticated: boolean;
   loading: boolean;
   user?: User;
+  refresh: ()=>Promise<void>;
 };
 
-const UserContext = createContext<UserContextProps>({ authenticated: false, loading: true, });
+const UserContext = createContext<UserContextProps>({ authenticated: false, loading: true, refresh: ()=>new Promise(resolve => resolve()), });
 
 export const UserProvider = ({ passport, children }) => {
   const [user, setUser] = useState(null);
@@ -16,19 +17,28 @@ export const UserProvider = ({ passport, children }) => {
   const baseURL = 'http://localhost:3000/api/users';
 
   useEffect(() => {
-    (async () => {
-      if (!passport) return setLoading(false);
-      const res = await fetch(`${baseURL}/info`);
-      if (!res.ok) return setLoading(false);
-      const json = await res.json();
-      if (!json.success) return setLoading(false);
-      setUser(User.load(json.user));
-      setLoading(false);
-    })();
+    if (!passport) return setLoading(false);
+    refresh();
   }, []);
 
+  const refresh = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      fetch(`${baseURL}/info`)
+        .then(res => {
+          if (!res.ok) resolve(setLoading(false));
+          return res.json();
+        })
+        .then(res => {
+          if (!res.success) resolve(setLoading(false));
+          setUser(User.load(res.body.user));
+          resolve(setLoading(false));
+        })
+        .catch(reject);
+    });
+  };
+
   return (
-    <UserContext.Provider value={{ authenticated: Boolean(user), user, loading, }}>
+    <UserContext.Provider value={{ authenticated: Boolean(user), user, loading, refresh, }}>
       {children}
     </UserContext.Provider>
   );

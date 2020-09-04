@@ -1,5 +1,5 @@
 import React from 'react';
-import { withTranslation } from '../i18n';
+import { withTranslation, Link } from '../i18n';
 import { WithTranslation } from 'next-i18next';
 import { WithUser } from '../models/User';
 import style from './dashboard.module.scss';
@@ -8,23 +8,34 @@ import useUser from '../components/kainplan/auth/UserContext';
 interface DashboardProps extends WithTranslation, WithUser {
 };
 
-const Dashboard = ({}: DashboardProps) => {
+const Dashboard = ({ t, }: DashboardProps) => {
   const { authenticated, user, loading, } = useUser();
 
   return (
     <div className={style.root}>
-      {
-        loading
-        ? <h1>Loading ... </h1>
-        : <>
-            <h1>Welcome back <u>{user.username}</u>!</h1>
-            <h3>({user.email})</h3>
-          </>
-      }
+      <div>
+        <Link href="/">
+          <img src={require('../images/lgb.png')} />
+        </Link>
+        <div>
+          {
+            !loading && authenticated
+            ? <>
+                <h4>{user!.username}</h4>
+                <p>{user!.email}</p>
+              </>
+            : ''
+          }
+        </div>
+      </div>
+      <main>
+        <span>{t('common:copyright')}</span>
+      </main>
       <style jsx global>{`
         html, body, #__next {
           width: 100%;
           height: 100%;
+          box-sizing: border-box;
         }
       `}</style>
     </div>

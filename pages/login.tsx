@@ -12,6 +12,7 @@ import { withTranslation, Link, Router } from '../i18n';
 import { WithTranslation } from 'next-i18next';
 import fetch from 'isomorphic-unfetch';
 import { WithUser } from '../models/User';
+import useUser from '../components/kainplan/auth/UserContext';
 
 interface LoginProps extends WithTranslation, WithUser {
 };
@@ -20,6 +21,8 @@ const Login = ({ t, }: LoginProps) => {
   let usernameIn: ResponsiveInputBox;
   let passwordIn: ResponsiveInputBox;
   let toaster: ToastHandler;
+
+  const { refresh } = useUser();
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +52,7 @@ const Login = ({ t, }: LoginProps) => {
         toaster.showError(t('common:server_error'), 8);
         return;
       }
-      Router.push('/dashboard');
+      refresh().then(() => Router.push('/dashboard'));
     });
   };
 
