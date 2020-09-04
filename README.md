@@ -29,6 +29,8 @@ The current requirements are ...
 
 ### Installation
 
+#### Node
+
 Firstly, clone this repository to your local machine ... 
 
 ```bash
@@ -44,6 +46,31 @@ $ npm i
 
 ... and you _should_ be grand! (If you're not, feel free to ask for support ^^).
 
+#### Postgres
+
+Since the user authentication update, the node server will now also be looking to connect to the local `Postgres` server - you need to install / set it up.
+
+First of all, if you don't have Postgres installed, install it and any interface/manager you like (`pgadmin`, [`pgcli`](https://www.pgcli.com/), ...).
+
+Then, simply run the following SQL script to set up the database, user and tables (of course you need to replace `[PWD]` with the proper password):
+
+```sql
+-- Create & use the database ...
+CREATE DATABASE kainplan;
+USE kainplan;
+-- Create user & grant privileges ...
+CREATE USER kainplan WITH PASSWORD '[PWD]';
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO kainplan;
+GRANT SELECT, UPDATE, USAGE ON ALL SEQUENCES IN SCHEMA public TO kainplan;
+-- Create tables ...
+CREATE TABLE users (
+    id          SERIAL PRIMARY KEY,
+    email       VARCHAR(40) UNIQUE NOT NULL,
+    username    VARCHAR(32) UNIQUE NOT NULL,
+    password    VARCHAR(60) NOT NULL
+);
+```
+
 ## To-Do
 
 The following is a list of things that have to be done - it is only included here so one doesn't forget to do these things.
@@ -56,4 +83,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance      |
 | ------- | ---------- | -------------- |
-| 0.2     | 2020.09.04 | _No clearance_ |
+| 0.3     | 2020.09.04 | _No clearance_ |
