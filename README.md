@@ -78,6 +78,7 @@ The following is a list of things that have to be done - it is only included her
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
 * [ ] Fix registration checks - duplicate email, etc.
+* [ ] Add proper logging (winston, ...)
 ---
 
 | Version | Date       | Clearance      |

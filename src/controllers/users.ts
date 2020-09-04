@@ -1,6 +1,5 @@
 import express from 'express';
 import User from '../models/User';
-import { ESRCH } from 'constants';
 
 export function auth (req: express.Request, res: express.Response): void {
     info(req, res);
@@ -28,11 +27,19 @@ export function register (req: express.Request, res: express.Response): void {
         return;
     }
 
-    User.make(email, username, password)
-        .then(() => res.send({ success: true, }))
-        .catch(err => {
-            res.send({ msg: 'Couldn\'t create user!', });
-        });
+    User.isEmailTaken(email)
+        .then(taken => {
+            if (taken) return res.send({ msg: 'email_taken', });
+            User.isUsernameTaken(username)
+                .then(taken => {
+                    if (taken) return res.send({ msg: 'username_taken', });
+                    User.make(email, username, password)
+                        .then(() => res.send({ success: true, }))
+                        .catch(err => res.send({ msg: 'other_error', }));
+                })
+                .catch(err => res.send({ msg: 'other_error', }));
+        })
+        .catch(err => res.send({ msg: 'other_error', }));
 }
 
 export function logout(req: express.Request, res: express.Response): void {

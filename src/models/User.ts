@@ -77,4 +77,24 @@ export default class User {
         .catch(reject);
     });
   }
+
+  public static isEmailTaken(email: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM users WHERE email = $1', [email,])
+        .then(res => {
+          resolve(res.rowCount !== 0);
+        })
+        .catch(reject);
+    });
+  }
+
+  public static isUsernameTaken(username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM users WHERE username = $1', [username,])
+        .then(res => {
+          resolve(res.rowCount !== 0);
+        })
+        .catch(reject);
+    });
+  }
 };

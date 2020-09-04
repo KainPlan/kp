@@ -15,6 +15,11 @@ import fetch from 'isomorphic-unfetch';
 interface RegisterProps extends WithTranslation {
 };
 
+interface RegisterResponse {
+  success: boolean;
+  msg?: string;
+};
+
 const Register = ({ t, }: RegisterProps) => {
   let emailIn: ResponsiveInputBox;
   let usernameIn: ResponsiveInputBox;
@@ -67,6 +72,12 @@ const Register = ({ t, }: RegisterProps) => {
     }).then(res => {
       if (res.status !== 200) {
         toaster.showError(t('common:server_error'), 8);
+        return;
+      }
+      return res.json();
+    }).then((res: RegisterResponse) => {
+      if (!res.success) {
+        toaster.showError(t(`register:${res.msg}`), 8);
         return;
       }
       Router.push('/login');
