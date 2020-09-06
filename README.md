@@ -77,10 +77,9 @@ The following is a list of things that have to be done - it is only included her
 
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
-* [ ] Fix confirm password
 
 ---
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.6     | 2020.09.04 | _Team only_ |
+| 0.7     | 2020.09.06 | _Team only_ |

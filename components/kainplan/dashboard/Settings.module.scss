@@ -1,0 +1,12 @@
+.root {
+  height: 100%;
+  padding: 15px 0;
+  box-sizing: border-box;
+
+  & > div {
+    background-color: #fefefe;
+    height: 100%;
+    border-radius: 2px;
+    padding: 15px;
+  }
+}

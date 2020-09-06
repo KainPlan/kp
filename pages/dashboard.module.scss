@@ -5,6 +5,7 @@
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;
+  background-color: #f2f2f2;
 
   & > div {
     flex-grow: 0;
@@ -13,8 +14,9 @@
     align-items: stretch;
     height: 4em;
     background-color: #622dff;
-    box-shadow: 0 1px 4px #f2f2f2;
+    box-shadow: 0 1px 4px #ddd;
     padding: 3px 15px;
+    z-index: 3;
 
     & > img {
       width: auto;
@@ -55,14 +57,24 @@
   & > main {
     flex-grow: 1;
     position: relative;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    padding: 0 15px;
+
+    .content {
+      flex-grow: 1;
+      height: 100%;
+      z-index: 1;
+    }
 
     & > span {
       position: absolute;
-      z-index: -1;
       color: #dedede;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      user-select: none;
     }
   }
 }
