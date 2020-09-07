@@ -60,15 +60,15 @@ const Dashboard = ({ t, }: DashboardProps) => {
         <Sidebar onComponentChange={onComponentChange} elements={[
           <>
             <i><FontAwesomeIcon icon={faHome} /></i>
-            <span>Overview</span>
+            <span>{t('dashboard:overview')}</span>
           </>,
           <>
             <i><FontAwesomeIcon icon={faMap} /></i>
-            <span>Maps</span>
+            <span>{t('dashboard:maps')}</span>
           </>,
           <>
             <i><FontAwesomeIcon icon={faCog} /></i>
-            <span>Settings</span>
+            <span>{t('dashboard:settings')}</span>
           </>,
         ]} components={[
           <Overview />,
@@ -85,7 +85,6 @@ const Dashboard = ({ t, }: DashboardProps) => {
           width: 100%;
           height: 100%;
           box-sizing: border-box;
-          overflow-y: hidden;
         }
       `}</style>
     </div>

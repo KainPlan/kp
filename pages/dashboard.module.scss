@@ -59,13 +59,21 @@
     position: relative;
     display: flex;
     justify-content: stretch;
-    align-items: stretch;
+    align-items: flex-start;
     padding: 0 15px;
+    box-sizing: border-box;
+    overflow: hidden;
 
     .content {
+      display: block;
       flex-grow: 1;
       height: 100%;
       z-index: 1;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     & > span {

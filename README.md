@@ -119,13 +119,17 @@ The following is a list of things that have to be done - it is only included her
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
 * [ ] Fix `/search` "clear input"-problems
+* [ ] Proper `/search` query error handling
+* [ ] Proper `/dashboard` fetch error handling
 * [ ] Dashboard pages
   * [ ] Overview
   * [ ] Settings
-* [ ] Check MongoDB user permissions
+* [ ] API
+  * [ ] Check MongoDB user permissions
+  * [ ] Limit amount of maps per `/api/maps` request
 
 ---
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.9     | 2020.09.07 | _Team only_ |
+| 0.10    | 2020.09.07 | _Team only_ |

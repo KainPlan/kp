@@ -1,0 +1,15 @@
+.root {
+  & > h3 {
+    margin: 0;
+    padding: 15px;
+    border-bottom: 4px solid #f2f2f2;
+
+    & > i {
+      margin-right: 7.5px;
+    }
+  }
+
+  & > div {
+    padding: 15px;
+  }
+}

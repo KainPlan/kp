@@ -1,5 +1,7 @@
 import db from '../db';
 import mongoose from 'mongoose';
+import User from '../../models/User';
+import utils from '../utils';
 
 export interface Node {
   _type: string;
@@ -7,6 +9,12 @@ export interface Node {
   y: number;
   edges: number[];
   body?: any;
+};
+
+interface MapRow {
+  id: number;
+  user: number;
+  map: string;
 };
 
 export interface MapHead {
@@ -77,9 +85,32 @@ export default class Map {
         { _id: 1, name: 1, desc: 1, },
         { limit: 10, },
         (err, res) => {
-        if (err) return reject(err);
-        resolve(res.map(m => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
-      })
+          if (err) return reject(err);
+          resolve(res.map(m => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
+        }
+      );
+    });
+  }
+
+  public static of (id: number): Promise<MapHead[]>;
+  public static of (user: User): Promise<MapHead[]>;
+
+  public static of (user: User|number): Promise<MapHead[]> {
+    const id = typeof user === 'object' ? user.id : user;
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM maps WHERE "user" = $1', [id,])
+        .then(res => {
+          const ids = res.rows.map((r: MapRow) => mongoose.Types.ObjectId(r.map));
+          MapModel.find(
+            { _id: { $in: ids, }, },
+            { _id: 1, name: 1, desc: 1, },
+            (err, res) => {
+              if (err) return reject(err);
+              resolve(res.map(m => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
+            }
+          );
+        })
+        .catch(reject);
     });
   }
 };

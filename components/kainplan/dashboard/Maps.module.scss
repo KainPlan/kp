@@ -1,3 +1,114 @@
 .root {
-  
+  height: 100%;
+  padding: 15px 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  @media only screen and (max-width: 600px) {
+    display: block;
+
+    & > div {
+      &:first-child {
+        margin-right: 0 !important;
+        height: auto;
+        margin-bottom: 8px;
+      }
+
+      &:last-child {
+        margin-left: 0 !important;
+        margin-top: 8px;
+        display: block !important;
+        height: auto;
+      }
+    }
+  }
+
+  & > div {
+    flex-grow: 1;
+    height: 100%;
+
+    &:first-child {
+      background-color: #fcfcfc;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    
+    &:last-child {
+      margin-left: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      align-items: stretch;
+      
+      & > div {
+        flex-grow: 1;
+        background-color: #fcfcfc;
+        border-radius: 4px;
+
+        &:first-child {
+          margin-bottom: 8px;
+
+          :global(table) {
+            width: 100%;
+            box-sizing: border-box;
+
+            @media only screen and (max-width: 600px) {
+              display: block;
+              overflow-x: auto;
+            }
+
+            & > tr {
+              & > th {
+                font-size: 1.05em;
+              }
+              
+              & > th, & > td {
+                text-align: left;
+                padding: 5px;
+                
+                &:last-child {
+                  text-align: center;
+
+                  & > a {
+                    text-decoration: none;
+                    color: #666;
+                  }
+                }
+              }
+
+              &:nth-child(even) {
+                background-color: #f6f6f6;
+              }
+            }
+          }
+
+          :global(button) {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 5px;
+            border: none;
+            background-color: #ddd;
+            font-size: 1em;
+            opacity: .9;
+            transition: .15s ease;
+
+            &:hover {
+              cursor: pointer;
+              opacity: 1;
+            }
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+
+        &:last-child {
+          margin-top: 8px;
+        }
+      }
+    }
+  }
 }
