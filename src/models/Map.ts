@@ -1,6 +1,6 @@
 import db from '../db';
 import mongoose from 'mongoose';
-import User from '../../models/User';
+import User from './User';
 import utils from '../utils';
 
 export interface Node {

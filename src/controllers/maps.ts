@@ -1,7 +1,7 @@
 import express from 'express';
 import Map from '../models/Map';
 import utils from '../utils';
-import User from '../../models/User';
+import User from '../models/User';
 
 export function getAll (req: express.Request, res: express.Response): void {
   Map.of(<User>req.user)
