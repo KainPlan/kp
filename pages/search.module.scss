@@ -177,6 +177,15 @@
         background-color: darkgrey;
       }
 
+      & > span {
+        display: block;
+        font-size: .9em;
+        text-align: center;
+        padding: 7.5px;
+        color: #aaa;
+        font-style: italic;
+      }
+
       & > div {
         padding: 5px 15px;
         display: flex;

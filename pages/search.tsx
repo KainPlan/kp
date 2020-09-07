@@ -125,13 +125,15 @@ const Search = ({ t, }: SearchProps) => {
             display: active ? 'block' : 'none',
           }}>
             {
-              res.map(r => <div onClick={() => onView(r._id)}>
-                <div>
-                  <h4>{r.name}</h4>
-                  <p>{r.desc}</p>
-                </div>
-                <i><FontAwesomeIcon icon={faArrowRight} /></i>
-              </div>)
+              res.length > 0 
+                ? res.map(r => <div onClick={() => onView(r._id)}>
+                    <div>
+                      <h4>{r.name}</h4>
+                      <p>{r.desc}</p>
+                    </div>
+                    <i><FontAwesomeIcon icon={faArrowRight} /></i>
+                  </div>)
+                : <span>{t('search:no_matches')}</span>
             }
           </div>
         </form>
