@@ -8,8 +8,9 @@ import Overview from '../components/kainplan/dashboard/Overview';
 import Settings from '../components/kainplan/dashboard/Settings';
 import Sidebar from '../components/kainplan/dashboard/Sidebar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCog, faMap } from '@fortawesome/free-solid-svg-icons';
 import anime from 'animejs';
+import Maps from '../components/kainplan/dashboard/Maps';
 
 interface DashboardProps extends WithTranslation, WithUser {
 };
@@ -62,11 +63,16 @@ const Dashboard = ({ t, }: DashboardProps) => {
             <span>Overview</span>
           </>,
           <>
+            <i><FontAwesomeIcon icon={faMap} /></i>
+            <span>Maps</span>
+          </>,
+          <>
             <i><FontAwesomeIcon icon={faCog} /></i>
             <span>Settings</span>
           </>,
         ]} components={[
           <Overview />,
+          <Maps />,
           <Settings />,
         ]} />
         <div className={style.content} ref={e => content = e}>

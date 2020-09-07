@@ -64,12 +64,52 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO kainplan;
 GRANT SELECT, UPDATE, USAGE ON ALL SEQUENCES IN SCHEMA public TO kainplan;
 -- Create tables ...
 CREATE TABLE users (
-    id          SERIAL PRIMARY KEY,
+    id          BIGSERIAL PRIMARY KEY,
     email       VARCHAR(40) UNIQUE NOT NULL,
     username    VARCHAR(32) UNIQUE NOT NULL,
     password    VARCHAR(60) NOT NULL
 );
+CREATE TABLE maps (
+    id          BIGSERIAL PRIMARY KEY,
+    user        BIGINT NOT NULL,
+    map         VARCHAR(24) NOT NULL,
+    CONSTRAINT fk_user
+        FOREIGN KEY(user)
+            REFERENCES users(id);
+);
 ```
+
+#### MongoDB
+
+Ever since adding maps to KainPlan, you'll also be required to have a `MongoDB` server up and running on your local machine.
+
+First of all, if you don't have the [`MongoDB Community Server`](https://www.mongodb.com/try/download/community) installed, install it and any interfaces/db managers you require ([`mongosh`](https://www.mongodb.com/try/download/shell), [`compass`](https://www.mongodb.com/try/download/compass), ...).
+
+Then simply open your command line interface and execute the following commands, or do it manually in your GUI:
+
+```js
+// Create & use the databse ...
+use kainplan;
+// Create collections ...
+db.createCollection('maps');
+// Create user & grant privileges ...
+db.createRole({
+    role: "kainplan",
+    privileges: [
+        { resource: { db: "kainplan", collection: "" }, actions: [ "find", "insert", "update", "remove" ] }
+    ],
+    roles: []
+});
+db.createUser({
+    user: "kainplan",
+    pwd: "[PWD]",
+    roles: [ "kainplan" ],
+    authenticationRestrictions: [ { clientSource: [ "127.0.0.1" ], serverAddress: [ "127.0.0.1" ] } ]
+});
+
+```
+
+... obviously you'll have to replace `[PWD]` with the real password.
 
 ## To-Do
 
@@ -77,9 +117,13 @@ The following is a list of things that have to be done - it is only included her
 
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
+* [ ] Dashboard pages
+  * [ ] Overview
+  * [ ] Settings
+* [ ] Check MongoDB user permissions
 
 ---
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.7     | 2020.09.06 | _Team only_ |
+| 0.8     | 2020.09.07 | _Team only_ |

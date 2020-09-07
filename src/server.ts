@@ -16,12 +16,19 @@ declare global {
     interface ProcessEnv {
       HOST: string;
       PORT: string;
+
+      MGUSER: string;
+      MGHOST: string;
+      MGPASSWORD: string;
+      MGDATABASE: string;
+      MGPORT: number;
     }
   }
 }
 
 import users from './routes/users';
 import User from './models/User';
+import maps from './routes/maps';
 
 const dev = process.env.NODE_ENV !== 'production';
 const server: Server = next({ dev });
@@ -51,8 +58,9 @@ server.prepare().then(() => {
 
   const api: express.Router = express.Router();
   api.use('/users', users);
+  api.use('/maps', maps);
+  
   app.use('/api', api);
-
   app.use('/*/dashboard', auth.authenticatedOrRedirect);
   app.get('*', (req, res) => handle(req, res));
 

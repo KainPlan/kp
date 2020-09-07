@@ -27,7 +27,7 @@ export default class User {
   public checkPassword(password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       bcrypt.compare(password, this.password, (err: Error, same: boolean) => {
-        if (err) reject(err);
+        if (err) return reject(err);
         resolve(same);
       })
     });
@@ -44,7 +44,7 @@ export default class User {
   public static make(email: string, username: string, password: string): Promise<void> {
     return new Promise((resolve, reject) => {
       bcrypt.hash(password, 12, (err: Error, hash: string) => {
-        if (err) reject(err);
+        if (err) return reject(err);
         db.query('INSERT INTO users (email, username, password) VALUES ($1, $2, $3)', [email, username, hash,])
           .then(res => resolve())
           .catch(reject);
