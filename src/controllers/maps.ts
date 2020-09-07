@@ -10,3 +10,9 @@ export function get (req: express.Request, res: express.Response): void {
     })
     .catch(err => utils.respond(res, 500, 'other_error', err));
 }
+
+export function search (req: express.Request, res: express.Response): void {
+  Map.find(req.params.qry)
+    .then(maps => utils.respond(res, maps))
+    .catch(err => utils.respond(res, 500, 'other_error', err));
+}

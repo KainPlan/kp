@@ -92,6 +92,7 @@ Then simply open your command line interface and execute the following commands,
 use kainplan;
 // Create collections ...
 db.createCollection('maps');
+db.maps.createIndex({ name: "text", desc: "text" });
 // Create user & grant privileges ...
 db.createRole({
     role: "kainplan",
@@ -117,6 +118,7 @@ The following is a list of things that have to be done - it is only included her
 
 * [ ] Fix ugly transition between `/login` and `/register`
 * [ ] Proper landing page, `/`
+* [ ] Fix `/search` "clear input"-problems
 * [ ] Dashboard pages
   * [ ] Overview
   * [ ] Settings
@@ -126,4 +128,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.8     | 2020.09.07 | _Team only_ |
+| 0.9     | 2020.09.07 | _Team only_ |

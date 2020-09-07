@@ -10,22 +10,19 @@ import { WithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { WithUser } from '../models/User';
 import useUser from '../components/kainplan/auth/UserContext';
+import fetch from 'isomorphic-unfetch';
 
 interface SearchProps extends WithTranslation, WithUser {
-}
-
-interface SearchState {
-  active: boolean;
-  width: number;
-  height: number;
 }
 
 const Search = ({ t, }: SearchProps) => {
   var root: HTMLDivElement;
   var queryIn: HTMLInputElement;
+  var cuTimeout: number;
 
   const [msr, setMsr] = useState({ width: 0, height: 0, });
   const [active, setActive] = useState(false);
+  const [res, setRes] = useState([]);
 
   const { user, authenticated, loading, } = useUser();
 
@@ -43,9 +40,24 @@ const Search = ({ t, }: SearchProps) => {
     refreshMeasurements();
   }, []);
   
-  const onSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    let qry: string = queryIn.value;
+  const onSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    let qry: string = queryIn.value.trim();
+    if (qry === '') return setRes([]);
+    fetch(`/api/maps/search/${qry}`)
+      .then(res => {
+        if (!res.ok) return window.alert('error');
+        return res.json();
+      })
+      .then(res => {
+        if (!res.success) return window.alert('error');
+        setRes(res.body);
+      });
+  };
+
+  const onInputChange = () => {
+    if (cuTimeout) window.clearTimeout(cuTimeout);
+    cuTimeout = window.setTimeout(() => onSearch(), 400);
   };
 
   const onFocus = () => {
@@ -59,6 +71,10 @@ const Search = ({ t, }: SearchProps) => {
   const onClearInput = () => {
     queryIn.value = '';
     queryIn.focus();
+  };
+
+  const onView = (id: string) => {
+    console.log(`Opening map ${id} ... `);
   };
 
   return (
@@ -87,7 +103,7 @@ const Search = ({ t, }: SearchProps) => {
             <div style={{
               borderRadius: active ? '14px 0 0 0' : '14px 0 0 14px',
             }}>
-              <input ref={e => queryIn = e} onFocus={onFocus} onBlur={onBlur} type="text" />
+              <input ref={e => queryIn = e} onFocus={onFocus} onBlur={onBlur} onKeyUp={onInputChange} type="text" />
               <p style={{
                 display: active ? 'none' : 'block',
               }}>
@@ -108,20 +124,15 @@ const Search = ({ t, }: SearchProps) => {
           <div className={style.querySuggs} style={{
             display: active ? 'block' : 'none',
           }}>
-            <div>
-              <div>
-                <h4>HTBLA Kaindorf</h4>
-                <p>Schule im Süden der Steiermark</p>
-              </div>
-              <i><FontAwesomeIcon icon={faArrowRight} /></i>
-            </div>
-            <div>
-              <div>
-                <h4>Volkshochschule Steiermark</h4>
-                <p>Institution in Graz</p>
-              </div>
-              <i><FontAwesomeIcon icon={faArrowRight} /></i>
-            </div>
+            {
+              res.map(r => <div onClick={() => onView(r._id)}>
+                <div>
+                  <h4>{r.name}</h4>
+                  <p>{r.desc}</p>
+                </div>
+                <i><FontAwesomeIcon icon={faArrowRight} /></i>
+              </div>)
+            }
           </div>
         </form>
         <style jsx global>{`

@@ -1,12 +1,18 @@
 import db from '../db';
 import mongoose from 'mongoose';
 
-interface Node {
+export interface Node {
   _type: string;
   x: number;
   y: number;
   edges: number[];
   body?: any;
+};
+
+export interface MapHead {
+  _id: string;
+  name: string;
+  desc: string;
 };
 
 const MapSchema = new mongoose.Schema({
@@ -61,6 +67,19 @@ export default class Map {
         if (!res) return resolve(null);
         resolve(new Map(id, res!.get('name'), res!.get('desc'), res!.get('width'), res!.get('height'), <string[]> res!.get('background'), <Node[]> res!.get('nodes')));
       });
+    });
+  }
+
+  public static find (qry: string): Promise<MapHead[]> {
+    return new Promise((resolve, reject) => {
+      MapModel.find(
+        { $text: { $search: qry, }, }, 
+        { _id: 1, name: 1, desc: 1, },
+        { limit: 10, },
+        (err, res) => {
+        if (err) return reject(err);
+        resolve(res.map(m => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
+      })
     });
   }
 };
