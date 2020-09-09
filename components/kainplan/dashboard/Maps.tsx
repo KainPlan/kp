@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 import fetch from 'isomorphic-unfetch';
 import { Link } from '../../../i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Popup from '../Popup';
 
 const Maps = ({}) => {
   const [maps, setMaps] = useState([]);
+
+  let createMapPopup: Popup;
 
   useEffect(() => {
     fetch('/api/maps')
@@ -20,6 +23,10 @@ const Maps = ({}) => {
         setMaps(res.body);
       });
   }, []);
+
+  const onCreateMap = ({}) => {
+    createMapPopup.show();
+  };
 
   return (
     <div className={style.root}>
@@ -50,9 +57,12 @@ const Maps = ({}) => {
                   : ''
               }
             </table>
-            <button>
+            <button onClick={onCreateMap}>
               <i><FontAwesomeIcon icon={faPlus} /></i> Add
             </button>
+            <Popup ref={e => createMapPopup = e} title="Create map" icon={faPlus}>
+              <h1>Hello World!</h1>
+            </Popup>
           </Tile>
         </div>
         <div>
