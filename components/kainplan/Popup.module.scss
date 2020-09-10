@@ -19,7 +19,7 @@
       width: 90%;
     }
 
-    & > div:first-child {
+    & > .headerDiv {
       background-color: #622DFF;
       color: #efefef;
       font-weight: lighter;
@@ -46,7 +46,7 @@
       }
     }
 
-    & > div:not(:first-child) {
+    & > .bodyDiv {
       padding: 25px 10px;
     }
   }

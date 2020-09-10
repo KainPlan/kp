@@ -102,7 +102,7 @@ class Popup extends React.Component<PopupProps, PopupState> {
               return true;
             }}
           >
-            <div>
+            <div className={style.headerDiv}>
               <label>
                 <i>
                   <FontAwesomeIcon icon={this.props.icon || faEyeDropper } />
@@ -117,7 +117,7 @@ class Popup extends React.Component<PopupProps, PopupState> {
                 : ''
               }
             </div>
-            <div>
+            <div className={style.bodyDiv}>
               {this.props.children}
             </div>
           </div>

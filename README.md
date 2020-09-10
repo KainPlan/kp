@@ -127,9 +127,10 @@ The following is a list of things that have to be done - it is only included her
 * [ ] API
   * [ ] Check MongoDB user permissions
   * [ ] Limit amount of maps per `/api/maps` request
+  * [ ] User session storage in `redis` - current express production warning
 
 ---
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.10    | 2020.09.07 | _Team only_ |
+| 0.11    | 2020.09.10 | _Team only_ |

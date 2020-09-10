@@ -1,0 +1,15 @@
+.root {
+  div {
+    margin: 5px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .buttonWrapper {
+    margin-top: 10px;
+    text-align: right;
+    margin-bottom: 0;
+  }
+}

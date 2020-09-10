@@ -1,0 +1,29 @@
+.root {
+  display: flex;
+  flex-direction: column;
+
+  & > label {
+    font-size: .85em;
+    color: #777;
+    margin-bottom: 2.5px;
+  }
+
+  & > textarea {
+    resize: none;
+  }
+
+  & > input, & > textarea {
+    width: 100%;
+    font-size: 1em;
+    box-sizing: border-box;
+    padding: 2.5px 5px;
+    border: 1.5px solid #ddd;
+    border-radius: 3px;
+    transition: .15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #aaa;
+    }
+  }
+}
