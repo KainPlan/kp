@@ -1,0 +1,14 @@
+{
+    "stats": "Statistiken",
+    "my_maps": "Meine Karten",
+    "m_name": "Name",
+    "m_desc": "Beschreibung",
+    "m_edit": "Bearbeiten",
+    "m_add": "Hinzufügen",
+    "create_map": "Karte erstellen",
+    "create_map_name": "Name",
+    "create_map_desc": "Beschreibung",
+    "create_map_details": "Details",
+    "create_map_base_map": "Grundriss",
+    "create_map_create": "Erstellen"
+}

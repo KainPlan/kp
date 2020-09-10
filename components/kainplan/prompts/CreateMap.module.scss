@@ -5,6 +5,10 @@
     &:first-child {
       margin-top: 0;
     }
+
+    textarea {
+      height: 8em;
+    }
   }
 
   .buttonWrapper {

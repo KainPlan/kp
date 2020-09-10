@@ -1,14 +1,18 @@
 import style from './Maps.module.scss';
 import Tile from './Tile';
-import { faGlobeEurope, faChartArea, faExternalLinkAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faGlobeEurope, faChartArea, faExternalLinkAlt, faPlus, faPencilAlt, faPencilRuler, faPen } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import fetch from 'isomorphic-unfetch';
-import { Link } from '../../../i18n';
+import { Link, withTranslation } from '../../../i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Popup from '../Popup';
 import CreateMap from '../prompts/CreateMap';
+import { WithTranslation } from 'next-i18next';
 
-const Maps = ({}) => {
+interface MapsProps extends WithTranslation {
+};
+
+const Maps = ({ t, }: MapsProps) => {
   const [maps, setMaps] = useState([]);
 
   let createMapPopup: Popup;
@@ -32,17 +36,17 @@ const Maps = ({}) => {
   return (
     <div className={style.root}>
       <div>
-        <Tile title="Stats" icon={faChartArea}>
+        <Tile title={t('dashboard_maps:stats')} icon={faChartArea}>
         </Tile>
       </div>
       <div>
         <div>
-          <Tile title="My maps" icon={faGlobeEurope}>
+          <Tile title={t('dashboard_maps:my_maps')} icon={faGlobeEurope}>
             <table>
               <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>View</th>
+                <th>{t('dashboard_maps:m_name')}</th>
+                <th>{t('dashboard_maps:m_desc')}</th>
+                <th>{t('dashboard_maps:m_edit')}</th>
               </tr>
               {
                 maps.length > 0
@@ -50,8 +54,8 @@ const Maps = ({}) => {
                       <td>{m.name}</td>
                       <td>{m.desc}</td>
                       <td>
-                        <Link href={`/view/${m._id}`}>
-                          <a><FontAwesomeIcon icon={faExternalLinkAlt} /></a>
+                        <Link href={`/edit/${m._id}`}>
+                          <a><FontAwesomeIcon icon={faPen} /></a>
                         </Link>
                       </td>
                     </tr>)
@@ -59,10 +63,10 @@ const Maps = ({}) => {
               }
             </table>
             <button onClick={onCreateMap}>
-              <i><FontAwesomeIcon icon={faPlus} /></i> Add
+              <i><FontAwesomeIcon icon={faPlus} /></i> {t('dashboard_maps:m_add')}
             </button>
             <div className={style.createPopup}>
-              <Popup ref={e => createMapPopup = e} title="Create map" icon={faPlus}>
+              <Popup ref={e => createMapPopup = e} title={t('dashboard_maps:create_map')} icon={faPlus}>
                 <CreateMap />
               </Popup>
             </div>
@@ -77,4 +81,4 @@ const Maps = ({}) => {
   );
 };
 
-export default Maps;
+export default withTranslation()(Maps);

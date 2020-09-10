@@ -1,3 +1,34 @@
 .root {
-  
+  width: 100%;
+
+  .progress {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    margin-bottom: 10px;
+    user-select: none;
+    transition: .15s ease;
+    
+    & > div {
+      flex-grow: 1;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: .85em;
+      font-weight: bold;
+      color: #bbb;
+      padding: 5px;
+      border-bottom: 2px solid #ccc;
+
+      &.active {
+        border-color: #906BFF;
+        color: #906BFF;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
 }

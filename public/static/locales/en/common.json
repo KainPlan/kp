@@ -7,5 +7,6 @@
   "search": "Search",
   "team": "Team",
   "dashboard": "Dashboard",
-  "server_error": "Oops! Something didn't quite work out. Please try again later!"
+  "server_error": "Oops! Something didn't quite work out. Please try again later!",
+  "next": "Next"
 }

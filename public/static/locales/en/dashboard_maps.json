@@ -1,0 +1,14 @@
+{
+    "stats": "Stats",
+    "my_maps": "My Maps",
+    "m_name": "Name",
+    "m_desc": "Description",
+    "m_edit": "Edit",
+    "m_add": "Add",
+    "create_map": "Create Map",
+    "create_map_name": "Name",
+    "create_map_desc": "Description",
+    "create_map_details": "Details",
+    "create_map_base_map": "Base Map",
+    "create_map_create": "Create"
+}

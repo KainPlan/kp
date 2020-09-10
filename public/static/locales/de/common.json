@@ -7,5 +7,6 @@
   "search": "Suche",
   "team": "Team",
   "dashboard": "Dashboard",
-  "server_error": "Hoppla! Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut!"
+  "server_error": "Hoppla! Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut!",
+  "next": "Weiter"
 }

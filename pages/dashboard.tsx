@@ -92,7 +92,7 @@ const Dashboard = ({ t, }: DashboardProps) => {
 };
 
 Dashboard.getInitialProps = async () => ({
-  namespacesRequired: ['common','dashboard',],
+  namespacesRequired: ['common','dashboard','dashboard_maps',],
 });
 
 export default withTranslation()(Dashboard);
