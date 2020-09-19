@@ -10,5 +10,6 @@
     "create_map_desc": "Beschreibung",
     "create_map_details": "Details",
     "create_map_base_map": "Grundriss",
+    "create_map_base_map_drop": "Datei hier ablegen!",
     "create_map_create": "Erstellen"
 }

@@ -23,3 +23,7 @@ export function search (req: express.Request, res: express.Response): void {
     .then(maps => utils.respond(res, maps))
     .catch(err => utils.respond(res, 500, 'other_error', err));
 }
+
+export function make (req: express.Request, res: express.Response): void {
+  
+}

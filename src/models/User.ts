@@ -1,4 +1,6 @@
 import db from '../db';
+import fs from 'fs';
+import path from 'path';
 import bcrypt from 'bcrypt';
 
 export class UserNotFoundError extends Error {
@@ -46,7 +48,12 @@ export default class User {
       bcrypt.hash(password, 12, (err: Error, hash: string) => {
         if (err) return reject(err);
         db.query('INSERT INTO users (email, username, password) VALUES ($1, $2, $3)', [email, username, hash,])
-          .then(res => resolve())
+          .then(res => {
+            fs.mkdir(path.join(process.env.RES_PATH, username), err => {
+              if (err) reject(err);
+              resolve();
+            });
+          })
           .catch(reject);
       });
     });

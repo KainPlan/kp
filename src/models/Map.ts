@@ -92,6 +92,12 @@ export default class Map {
     });
   }
 
+  public static make (name: string, desc: string, background: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      
+    });
+  }
+
   public static of (id: number): Promise<MapHead[]>;
   public static of (user: User): Promise<MapHead[]>;
 

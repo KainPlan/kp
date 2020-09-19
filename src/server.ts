@@ -16,6 +16,7 @@ declare global {
     interface ProcessEnv {
       HOST: string;
       PORT: string;
+      RES_PATH: string;
 
       MGUSER: string;
       MGHOST: string;
