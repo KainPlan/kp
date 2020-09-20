@@ -124,6 +124,8 @@ The following is a list of things that have to be done - it is only included her
 * [ ] Dashboard pages
   * [ ] Overview
   * [ ] Settings
+  * [ ] Maps
+    * [ ] maybe don't refresh page on edit map?
 * [ ] API
   * [ ] Check MongoDB user permissions
   * [ ] Limit amount of maps per `/api/maps` request
@@ -133,4 +135,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.11    | 2020.09.10 | _Team only_ |
+| 0.12    | 2020.09.20 | _Team only_ |

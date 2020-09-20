@@ -14,7 +14,7 @@ const UserContext = createContext<UserContextProps>({ authenticated: false, load
 export const UserProvider = ({ passport, children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const baseURL = 'http://localhost:3000/api/users';
+  const baseURL = '/api/users';
 
   useEffect(() => {
     if (!passport) return setLoading(false);

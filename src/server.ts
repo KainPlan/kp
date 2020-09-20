@@ -30,6 +30,7 @@ declare global {
 import users from './routes/users';
 import User from './models/User';
 import maps from './routes/maps';
+import utils from './utils';
 
 const dev = process.env.NODE_ENV !== 'production';
 const server: Server = next({ dev });
@@ -60,8 +61,11 @@ server.prepare().then(() => {
   const api: express.Router = express.Router();
   api.use('/users', users);
   api.use('/maps', maps);
+  api.use('/maps', express.static(process.env.RES_PATH));
   
   app.use('/api', api);
+  app.use('/api', (req, res) => utils.respond(res, 404, 'not_found'));
+  
   app.use('/*/dashboard', auth.authenticatedOrRedirect);
   app.get('*', (req, res) => handle(req, res));
 
