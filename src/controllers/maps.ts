@@ -25,5 +25,11 @@ export function search (req: express.Request, res: express.Response): void {
 }
 
 export function make (req: express.Request, res: express.Response): void {
-  
+  if (!req.body.name || !req.body.desc || !req.body.background) return utils.respond(res, 400, 'missing_parameters');
+  Map.make((req.user as User).id, req.body.name, req.body.desc, req.body.background)
+    .then(id => utils.respond(res, { id, }))
+    .catch(err => typeof err === 'string' 
+           ? utils.respond(res, 400, err) 
+           : utils.respond(res, 500, 'other_error', err)
+    );
 }

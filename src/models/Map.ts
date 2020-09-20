@@ -1,7 +1,10 @@
 import db from '../db';
 import mongoose from 'mongoose';
 import User from './User';
-import utils from '../utils';
+import fs from 'fs';
+import mime from 'mime';
+import probe from 'probe-image-size';
+import path from 'path';
 
 export interface Node {
   _type: string;
@@ -29,7 +32,7 @@ const MapSchema = new mongoose.Schema({
   width: Number,
   height: Number,
   background: Array,
-  node: Array,
+  nodes: Array,
 });
 const MapModel = mongoose.model('Map', MapSchema);
 
@@ -92,9 +95,35 @@ export default class Map {
     });
   }
 
-  public static make (name: string, desc: string, background: string): Promise<void> {
+  public static make (user: number, name: string, desc: string, background: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      
+      if (!background.startsWith('data:')) return reject('invalid_background');
+      const img: Buffer = Buffer.from(background.substr(background.indexOf(',')+1), 'base64');
+      const specs: probe.ProbeResult|null = probe.sync(img);
+      if (!specs) return reject('invalid_background');
+      const nmap = new MapModel({ 
+        name, desc, 
+        width: specs.width, 
+        height: specs.height, 
+        background: [
+          `0.${mime.getExtension(specs.mime)}`,
+        ], 
+        nodes: [], 
+      });
+      nmap.save(err => {
+        if (err) return reject(err);
+        db.query('INSERT INTO maps ("user", "map") VALUES ($1, $2)', [user, nmap._id.toString(),])
+          .then(res => {
+            fs.mkdirSync(path.join(process.env.RES_PATH, nmap._id.toString()));
+            fs.writeFile(path.join(process.env.RES_PATH, nmap._id.toString(), `0.${mime.getExtension(specs.mime)}`), 
+                         img,
+                         err => {
+              if (err) return reject(err);
+              resolve(nmap._id.toString());
+            });
+          })
+          .catch(reject);
+      });
     });
   }
 

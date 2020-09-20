@@ -49,10 +49,11 @@ export default class User {
         if (err) return reject(err);
         db.query('INSERT INTO users (email, username, password) VALUES ($1, $2, $3)', [email, username, hash,])
           .then(res => {
-            fs.mkdir(path.join(process.env.RES_PATH, username), err => {
-              if (err) reject(err);
-              resolve();
-            });
+            // fs.mkdir(path.join(process.env.RES_PATH, username), err => {
+            //   if (err) reject(err);
+            //   resolve();
+            // });
+            resolve();
           })
           .catch(reject);
       });
