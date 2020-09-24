@@ -71,11 +71,11 @@ CREATE TABLE users (
 );
 CREATE TABLE maps (
     id          BIGSERIAL PRIMARY KEY,
-    user        BIGINT NOT NULL,
+    "user"      BIGINT NOT NULL,
     map         VARCHAR(24) NOT NULL,
     CONSTRAINT fk_user
-        FOREIGN KEY(user)
-            REFERENCES users(id);
+        FOREIGN KEY("user")
+            REFERENCES users(id)
 );
 ```
 
