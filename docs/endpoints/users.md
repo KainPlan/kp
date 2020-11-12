@@ -1,0 +1,92 @@
+# _Users_ Endpoints
+
+The _users_-endpoints deal with, as the name itself suggests, all kinds of activities related to user accounts. This ranges from _creating_ and _editing_ accounts to _deleting_ them entirely.
+
+The general prefix for _user_-endpoints is: `/api/users/`
+
+## Index
+
+- [_Users_ Endpoints](#users-endpoints)
+  - [Index](#index)
+  - [`/auth`](#auth)
+  - [`/info`](#info)
+  - [`/register`](#register)
+  - [`/logout`](#logout)
+
+## `/auth`
+
+* Supported methods: `POST`
+* Request Content-Type: `application/json`
+* Required parameters:
+  * `username` ... the username
+  * `password` ... the password
+* Response Content-Type: `application/json`
+
+This endpoint is used for authenticating the user with the `passport` module. This is also the URL that should be used for any login request.
+
+On success, this page will display the same user information as a response from [`/info`](#info) would display.
+
+## `/info`
+
+* Supported methods: `GET`
+* Response Content-Type: `application/json`
+* User needs to be **authenticated**
+
+This endpoint is used to get some basic information about the current user account. It can **only** be accessed by signed-in users and will return _sanitized_ info about this user account (stripped of password hashes and other sensitive information).
+
+This is what a successful response looks like:
+
+```json
+{
+    "success": true,
+    "code": 200,
+    "body": {
+        "user": {
+            "id": 5,
+            "email": "asdf@asdf.com",
+            "username": "asdf"
+        }
+    }
+}
+```
+
+... this endpoint can be used for retrieving information about the user after they have already signed in (for example on an about page). However, consider storing / caching the info on the client side as well, just to reduce network traffic and server load.
+
+## `/register`
+
+* Supported methods: `POST`
+* Request Content-Type: `application/json`
+* Required parameters:
+  * `email` ... the user's email address
+  * `username` ... the username
+  * `password` ... the password
+* Response Content-Type: `application/json`
+
+You can probably guess what this endpoint has been designed to do: yes, it registers new user accounts after checking the validity of the given parameters (list is above).
+
+If a user account is valid, however, it will be created, **but** the user will not be signed in immediately - in the frontend, you'd need to redirect them to the login page still. (In the future, we might implement some sort of email verification mechanism, which is one of the reasons why logging the user in instantly after their account has been created is not the best idea).
+
+A successful response from this endpoint will be of the format:
+
+```json
+{
+    "success": true
+}
+```
+
+## `/logout`
+
+* Supported methods: `POST`
+* Response Content-Type: `application/json`
+* User needs to be **authenticated**
+
+Use this API endpoint to end user sessions. Whenever you make a request to this URL, all identifying tokens (session cookies, etc.) will be stripped from the client - it returns to its state before signing in at all.
+
+This is what a successful response looks like:
+
+```json
+{
+    "success": true,
+    "code": 200
+}
+```
