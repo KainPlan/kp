@@ -41,7 +41,7 @@
     "isomorphic-unfetch": "^3.0.0",
     "mime": "^2.4.6",
     "mongoose": "^5.10.3",
-    "next": "^9.5.2",
+    "next": "^9.5.5",
     "next-compose-plugins": "^2.2.0",
     "next-i18next": "^6.0.2",
     "next-optimized-images": "^2.6.2",
