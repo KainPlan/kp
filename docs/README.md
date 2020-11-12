@@ -5,3 +5,4 @@ This directory contains documentation of the backend and how it behaves so that 
 ## Index
 
 * [API endpoints](endpoints/README.md)
+* [Models](modesl)

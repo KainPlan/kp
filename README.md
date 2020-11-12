@@ -14,6 +14,8 @@
 
 Version 2.0 of our glorious project! The **hype** is real! Such _w0w_, such _4m4z1ng_ ... such _1337_! Much _c00l_!
 
+_@frontend-devs: If you're looking for the backend's documentation, you can find it [here](docs/README.md) - I hope it's thorough enough._
+
 ## Setup
 
 In case you want to clone this repository and get _KainPlan_ up and running on your machine, all you should have to do is follow these instructions:
