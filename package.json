@@ -7,7 +7,7 @@
     "build:srv": "rimraf dist/* && tsc --project tsconfig.srv.json",
     "build:nxt": "next build",
     "build": "npm run build:srv && npm run build:nxt",
-    "dev": "nodemon",
+    "dev": "cross-env HOST=localhost PORT=3000 nodemon",
     "dev:nxt": "next",
     "dev:nodemon": "ts-node --project tsconfig.srv.json src/server.ts",
     "start": "cross-env NODE_ENV=production node dist/server.js",
