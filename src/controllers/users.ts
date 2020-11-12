@@ -29,7 +29,7 @@ export function register(req: express.Request, res: express.Response): void {
         .then((taken) => {
           if (taken) return utils.respond(res, 400, "username_taken");
           User.make(email, username, password)
-            .then(() => res.send({ success: true }))
+            .then(() => utils.respond(res))
             .catch((err) => utils.respond(res, 500, "other_error", err));
         })
         .catch((err) => utils.respond(res, 500, "other_error", err));

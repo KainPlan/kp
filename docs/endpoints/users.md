@@ -70,7 +70,8 @@ A successful response from this endpoint will be of the format:
 
 ```json
 {
-    "success": true
+    "success": true,
+    "code": 200
 }
 ```
 
