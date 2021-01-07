@@ -26,6 +26,10 @@ This endpoint is used for authenticating the user with the `passport` module. Th
 
 On success, this page will display the same user information as a response from [`/info`](#info) would display.
 
+<p align="center">
+  <img src="../images/endpoints/users_auth.gif" />
+</p>
+
 ## `/info`
 
 * Supported methods: `GET`
@@ -52,6 +56,10 @@ This is what a successful response looks like:
 
 ... this endpoint can be used for retrieving information about the user after they have already signed in (for example on an about page). However, consider storing / caching the info on the client side as well, just to reduce network traffic and server load.
 
+<p align="center">
+  <img src="../images/endpoints/users_info.gif" />
+</p>
+
 ## `/register`
 
 * Supported methods: `POST`
@@ -75,6 +83,10 @@ A successful response from this endpoint will be of the format:
 }
 ```
 
+<p align="center">
+  <img src="../images/endpoints/users_register.gif" />
+</p>
+
 ## `/logout`
 
 * Supported methods: `POST`
@@ -91,3 +103,7 @@ This is what a successful response looks like:
     "code": 200
 }
 ```
+
+<p align="center">
+  <img src="../images/endpoints/users_logout.gif" />
+</p>
