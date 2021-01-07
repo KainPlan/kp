@@ -10,13 +10,15 @@ The general prefix for _map_-endpoints is: `/api/maps/`
   - [Index](#index)
   - [`/`](#)
   - [`/:id([0-9a-fA-F]{24})`](#id0-9a-fa-f24)
+  - [`/search/:qry`](#searchqry)
 
 ## `/`
 
 * Supported methods: `GET`
 * Response Content-Type: `application/json`
+* User needs to be **authenticated**
 
-This endpoint can be used to get a list of all available maps and their short descriptions.
+This endpoint can be used to get a list of all available maps of the logged in user and their short descriptions.
 
 A successful response has the following format:
 
@@ -32,6 +34,10 @@ A successful response has the following format:
     }
 }
 ```
+
+<p align="center">
+  <img src="../images/endpoints/maps_all.gif" />
+</p>
 
 ## `/:id([0-9a-fA-F]{24})`
 
@@ -58,4 +64,38 @@ This is what a successful response looks like:
 }
 ```
 
+<p align="center">
+  <img src="../images/endpoints/maps_info.gif" />
+</p>
 
+## `/search/:qry`
+
+* Supported methods: `GET`
+* Response Content-Type: `application/json`
+
+Make requests to this endpoint to search for maps according to the URL-parameter `qry`.
+
+A successful response looks something like (in this case, the `qry` was `test`):
+
+```json
+{
+    "success": true,
+    "code": 200,
+    "body": [
+        {
+            "_id": "5f55fe7ae09c2e2b14fa74c6",
+            "name": "Test Map",
+            "desc": "A semi-random map to properly test the KainPlan app."
+        },
+        {
+            "_id": "5f6714a931f45f2638f65887",
+            "name": "New Map",
+            "desc": "A new test map ... "
+        }
+    ]
+}
+```
+
+<p align="center">
+  <img src="../images/endpoints/maps_search.gif" />
+</p>
