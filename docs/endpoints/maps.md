@@ -27,11 +27,12 @@ A successful response has the following format:
     "success": true,
     "code": 200,
     "body": [
-    {
-        "_id": "5f55fe7ae09c2e2b14fa74c6",
-        "name": "Test Map",
-        "desc": "A semi-random map to properly test the KainPlan app."
-    }
+      {
+          "_id": "5f55fe7ae09c2e2b14fa74c6",
+          "name": "Test Map",
+          "desc": "A semi-random map to properly test the KainPlan app."
+      }
+    ]
 }
 ```
 
