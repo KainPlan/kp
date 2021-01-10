@@ -8,6 +8,7 @@ import 'dot-env';
 import session from 'express-session';
 import uid from 'uid-safe';
 import passport from 'passport';
+import GoogleOAuth2 from 'passport-google-oauth20';
 import { Strategy } from 'passport-local';
 import * as auth from './middleware/auth';
 
@@ -16,6 +17,7 @@ declare global {
     interface ProcessEnv {
       HOST: string;
       PORT: string;
+      DOMAIN: string;
       RES_PATH: string;
 
       MGUSER: string;
@@ -23,6 +25,9 @@ declare global {
       MGPASSWORD: string;
       MGDATABASE: string;
       MGPORT: number;
+
+      GOOGLE_OAUTH_CLIENTID: string;
+      GOOGLE_OAUTH_SECRET: string;
     }
   }
 }
