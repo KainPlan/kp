@@ -6,6 +6,10 @@ export function auth(req: express.Request, res: express.Response): void {
   info(req, res);
 }
 
+export function googleCallback(req: express.Request, res: express.Response): void {
+  // TO-DO: implement!
+}
+
 export function info(req: express.Request, res: express.Response): void {
   utils.respond(res, { user: (<User>req.user).sanitize() });
 }

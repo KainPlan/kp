@@ -60,6 +60,16 @@ server.prepare().then(() => {
   passport.serializeUser((user: User, cb) => cb(null, user.id));
   passport.deserializeUser((id: number, cb) => User.load(+id).then(user => cb(null, user)).catch(err => cb(err)));
 
+  passport.use(new GoogleOAuth2.Strategy({
+      clientID: process.env.GOOGLE_OAUTH_CLIENTID,
+      clientSecret: process.env.GOOGLE_OAUTH_SECRET,
+      callbackURL: `/auth/google/callback`,
+    },
+    (accessToken, refreshToken, profile, done) => {
+      console.log(accessToken, refreshToken, profile);
+    }
+  ));
+
   app.use(passport.initialize());
   app.use(passport.session());
 

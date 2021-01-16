@@ -11,6 +11,7 @@ interface UserRow {
   email: string;
   username: string;
   password: string;
+  googleId: string;
 };
 
 export default class User {
@@ -18,12 +19,14 @@ export default class User {
   public email: string;
   public username: string;
   public password: string;
+  public googleId: string;
 
-  constructor(id: number, email: string, username: string, password: string) {
+  constructor(id: number, email: string, username: string, password: string, googleId: string) {
     this.id = id;
     this.email = email;
     this.username = username;
     this.password = password;
+    this.googleId = googleId;
   }
 
   public checkPassword(password: string): Promise<boolean> {
@@ -80,7 +83,7 @@ export default class User {
         .then(res => {
           if (res.rowCount == 0) return reject(new UserNotFoundError());
           const row: UserRow = res.rows[0];
-          resolve(new User(row.id, row.email, row.username, row.password));
+          resolve(new User(row.id, row.email, row.username, row.password, row.googleId));
         })
         .catch(reject);
     });
