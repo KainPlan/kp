@@ -11,6 +11,7 @@ The general prefix for _map_-endpoints is: `/api/maps/`
   - [`/`](#)
   - [`/:id([0-9a-fA-F]{24})`](#id0-9a-fa-f24)
   - [`/search/:qry`](#searchqry)
+  - [`/make`](#make)
 
 ## `/`
 
@@ -99,4 +100,33 @@ A successful response looks something like (in this case, the `qry` was `test`):
 
 <p align="center">
   <img src="../images/endpoints/maps_search.gif" />
+</p>
+
+## `/make`
+
+* Supported methods: `POST`
+* Request Content-Type: `application/json`
+* Required parameters:
+  * `name` ... the map's name
+  * `desc` ... a short description
+  * `background` ... base64-encoded background image for ground floor
+* Response Content-Type: `application/json`
+* User needs to be **authenticated**
+
+This endpoint should be used to create new maps. If provided with all the required parameters above, it will respond with the id of the newly created map.
+
+A successful response should look something like this:
+
+```json
+{
+    "success": true,
+    "code": 200,
+    "body": {
+        "id": "60059bb745b24542348912f3"
+    }
+}
+```
+
+<p align="center">
+  <img src="../images/endpoints/maps_make.gif" />
 </p>

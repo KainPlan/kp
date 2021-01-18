@@ -9,6 +9,8 @@ The general prefix for _user_-endpoints is: `/api/users/`
 - [_Users_ Endpoints](#users-endpoints)
   - [Index](#index)
   - [`/auth`](#auth)
+  - [`/auth/google`](#authgoogle)
+  - [`/auth/google/callback`](#authgooglecallback)
   - [`/info`](#info)
   - [`/register`](#register)
   - [`/logout`](#logout)
@@ -29,6 +31,20 @@ On success, this page will display the same user information as a response from 
 <p align="center">
   <img src="../images/endpoints/users_auth.gif" />
 </p>
+
+## `/auth/google`
+
+* Supported methods: `GET`
+* **Google OAuth 2.0** Endpoint
+
+This is a special **Google** endpoint. This URL should be redirected to, once the user clicks on the _Sign-In with Google_ button. It will then redirect the user to Google's account selection, where more _magic_ happens ... ^^
+
+## `/auth/google/callback`
+
+* Supported methods: `GET`
+* **Google OAuth 2.0** Endpoint
+
+This endpoint **must** only be used by Google. Don't use it in any frontend pages. It's the page that Google returns to, once account selection and Google authentication has completed. It will then redirect the user to their _dashboard_ (`/dashboard`).
 
 ## `/info`
 
