@@ -138,4 +138,4 @@ The following is a list of things that have to be done - it is only included her
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.12    | 2020.09.20 | _Team only_ |
+| 0.13    | 2021.01.18 | _Team only_ |
