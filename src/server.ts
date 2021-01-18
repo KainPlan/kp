@@ -33,7 +33,7 @@ declare global {
 }
 
 import users from './routes/users';
-import User from './models/User';
+import User, { GoogleProfile } from './models/User';
 import maps from './routes/maps';
 import utils from './utils';
 
@@ -63,10 +63,12 @@ server.prepare().then(() => {
   passport.use(new GoogleOAuth2.Strategy({
       clientID: process.env.GOOGLE_OAUTH_CLIENTID,
       clientSecret: process.env.GOOGLE_OAUTH_SECRET,
-      callbackURL: `/auth/google/callback`,
+      callbackURL: `/api/users/auth/google/callback`,
     },
-    (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken, refreshToken, profile);
+    (accessToken, refreshToken, profile, cb) => {
+      User.loadOrMakeGoogle(<GoogleProfile> profile)
+        .then((user: User) => cb(undefined, user))
+        .catch((err: Error) => cb(err, undefined));
     }
   ));
 

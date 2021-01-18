@@ -69,7 +69,8 @@ CREATE TABLE users (
     id          BIGSERIAL PRIMARY KEY,
     email       VARCHAR(40) UNIQUE NOT NULL,
     username    VARCHAR(32) UNIQUE NOT NULL,
-    password    VARCHAR(60) NOT NULL
+    password    VARCHAR(60),
+    googleId    VARCHAR(22)
 );
 CREATE TABLE maps (
     id          BIGSERIAL PRIMARY KEY,

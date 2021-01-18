@@ -7,7 +7,7 @@ export function auth(req: express.Request, res: express.Response): void {
 }
 
 export function googleCallback(req: express.Request, res: express.Response): void {
-  // TO-DO: implement!
+  res.redirect('/dashboard');
 }
 
 export function info(req: express.Request, res: express.Response): void {
