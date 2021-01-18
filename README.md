@@ -14,7 +14,19 @@
 
 Version 2.0 of our glorious project! The **hype** is real! Such _w0w_, such _4m4z1ng_ ... such _1337_! Much _c00l_!
 
-_@frontend-devs: If you're looking for the backend's documentation, you can find it [here](docs/README.md) - I hope it's thorough enough._
+"Waren Sie in einem großen Gebäude schon einmal komplett lost - hatten Sie gar _keinen Plan_? Dann brauchen **Sie** KainPlan!" - with this _legendary_ slogan we kick-started this amazing project back in 2020 - look how far we've already gotten!
+
+## Table of Contents
+- [About](#about)
+- [Table of Contents](#table-of-contents)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [Node](#node)
+    - [Postgres](#postgres)
+    - [MongoDB](#mongodb)
+- [Documentation](#documentation)
+- [To-Do](#to-do)
 
 ## Setup
 
@@ -24,8 +36,8 @@ In case you want to clone this repository and get _KainPlan_ up and running on y
 
 The current requirements are ...
 
-* Node `v12.18.3`
-* NPM `6.14.6`
+* Node `>= v12.18.3`
+* NPM `>= 6.14.6`
 
 ... do also note, however, that the versions mentioned are simply the ones used on the original system and everything might just work fine with newer/older versions.
 
@@ -115,6 +127,12 @@ db.createUser({
 
 ... obviously you'll have to replace `[PWD]` with the real password.
 
+## Documentation
+
+@everyone who's looking for some docs, but especially @frontend-devs, you can find the _full_ documentation [here](docs/README.md). Here you should find everything - from an extensive documentation of the backend and the _models_ it uses, all API endpoints, ...
+
+_Tbh, it might not be **completely** complete... but the most important things for you (like API endpoints, etc.) will be there ... ^^_
+
 ## To-Do
 
 The following is a list of things that have to be done - it is only included here so one doesn't forget to do these things.
@@ -134,8 +152,10 @@ The following is a list of things that have to be done - it is only included her
   * [ ] Limit amount of maps per `/api/maps` request
   * [ ] User session storage in `redis` - current express production warning
 
+... the suggestions / _To-Dos_ from above are already a bit older (Summer 2020). The current project is better documented on [Trello](https://trello.com/b/IHdyDLFq/kainplan).
+
 ---
 
 | Version | Date       | Clearance   |
 | ------- | ---------- | ----------- |
-| 0.13    | 2021.01.18 | _Team only_ |
+| 0.14    | 2021.01.18 | _Team only_ |
