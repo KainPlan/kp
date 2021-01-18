@@ -57,7 +57,7 @@ server.prepare().then(() => {
   }));
 
   passport.use(new Strategy(User.verify));
-  passport.serializeUser((user: User, cb) => cb(null, user.id));
+  passport.serializeUser((user: any, cb) => cb(null, user.id!));
   passport.deserializeUser((id: number, cb) => User.load(+id).then(user => cb(null, user)).catch(err => cb(err)));
 
   passport.use(new GoogleOAuth2.Strategy({

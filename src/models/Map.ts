@@ -12,7 +12,7 @@ export interface Node {
   y: number;
   edges: number[];
   body?: any;
-};
+};mongoose
 
 interface MapRow {
   id: number;
@@ -73,7 +73,7 @@ export default class Map {
 
   public static load (id: string): Promise<Map|null> {
     return new Promise((resolve, reject) => {
-      MapModel.findById(mongoose.Types.ObjectId(id), (err, res) => {
+      MapModel.findById(mongoose.Types.ObjectId(id), (err: mongoose.Error, res: any) => {
         if (err) return reject(err);
         if (!res) return resolve(null);
         resolve(new Map(id, res!.get('name'), res!.get('desc'), res!.get('width'), res!.get('height'), <string[]> res!.get('background'), <Node[]> res!.get('nodes')));
@@ -139,9 +139,10 @@ export default class Map {
           MapModel.find(
             { _id: { $in: ids, }, },
             { _id: 1, name: 1, desc: 1, },
-            (err, res) => {
+            null,
+            (err: mongoose.Error, res: any) => {
               if (err) return reject(err);
-              resolve(res.map(m => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
+              resolve(res.map((m: any) => <MapHead>{ _id: m.get('_id'), name: m.get('name'), desc: m.get('desc'), }));
             }
           );
         })
