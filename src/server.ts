@@ -84,6 +84,7 @@ server.prepare().then(() => {
   app.use('/api', (req, res) => utils.respond(res, 404, 'not_found'));
   
   app.use('/*/dashboard', auth.authenticatedOrRedirect);
+  app.use('/*/edit/*', auth.isAllowedToEdit);
   app.get('*', (req, res) => handle(req, res));
 
   httpServer.listen(+process.env.PORT, process.env.HOST, () => console.log(`[APP]: Listening on http://${process.env.HOST}:${process.env.PORT}... `));

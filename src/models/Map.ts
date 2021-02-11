@@ -149,4 +149,18 @@ export default class Map {
         .catch(reject);
     });
   }
+
+  public static isOwner (mapId: string, userId: number): Promise<boolean>;
+  public static isOwner (mapId: string, user: User): Promise<boolean>;
+
+  public static isOwner (mapId: string, user: number|User): Promise<boolean> {
+    const id: number = typeof user === 'object' ? user.id : user;
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM maps WHERE "user" = $1 AND "map" = $2', [id, mapId, ])
+        .then(res => {
+          resolve(res.rowCount !== 0);
+        })
+        .catch(reject);
+    });
+  }
 };
