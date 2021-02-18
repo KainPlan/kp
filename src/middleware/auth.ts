@@ -16,6 +16,12 @@ export function authenticatedOrRedirect(req: express.Request, res: express.Respo
   next();
 }
 
+export function allowed(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  Map.isOwner(req.params.id, <User>req.user)
+     .then(owner => owner ? next() : res.send(JSON.stringify({ msg: 'Not allowed to edit!', })))
+     .catch(err => utils.respond(res, 500, err));
+}
+
 export function isAllowedToEdit(req: express.Request, res: express.Response, next: express.NextFunction): void {
   if (!req.isAuthenticated()) return res.redirect('/login');
   const mapId: string = req.originalUrl.split('/').slice(-1)[0];

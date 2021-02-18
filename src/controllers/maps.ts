@@ -1,5 +1,5 @@
 import express from 'express';
-import Map from '../models/Map';
+import Map, { MapUpdate } from '../models/Map';
 import utils from '../utils';
 import User from '../models/User';
 
@@ -32,4 +32,11 @@ export function make (req: express.Request, res: express.Response): void {
            ? utils.respond(res, 400, err) 
            : utils.respond(res, 500, 'other_error', err)
     );
+}
+
+export function update (req: express.Request, res: express.Response): void {
+  if (!req.body.updates) return utils.respond(res, 400, 'missing_parameters');
+  (<MapUpdate[]>req.body.updates).forEach(upd => {
+    Map.update(req.params.id, upd);
+  });
 }

@@ -12,7 +12,12 @@ export interface Node {
   y: number;
   edges: number[];
   body?: any;
-};mongoose
+};
+
+export interface MapUpdate {
+  action: string;
+  update: any;
+}
 
 interface MapRow {
   id: number;
@@ -161,6 +166,12 @@ export default class Map {
           resolve(res.rowCount !== 0);
         })
         .catch(reject);
+    });
+  }
+
+  public static update (mapId: string, update: MapUpdate): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      
     });
   }
 };
