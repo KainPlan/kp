@@ -5,12 +5,25 @@ import { useRouter } from 'next/router';
 import style from './[id].module.scss';
 import Map from '../../components/kainplan/Map';
 import Head from 'next/head';
+import Toolbar from '../../components/kainplan/edit/Toolbar';
+import Topbar from '../../components/kainplan/edit/Topbar';
+import { useEffect } from 'react';
 
 interface EditProps extends WithTranslation, WithUser {
 };
 
 const Edit = ({ t, }: EditProps) => {
   const router = useRouter();
+  var topbar: HTMLDivElement;
+  var map: Map;
+
+  const onresize = () => {
+    map.resize(window.innerWidth, window.innerHeight-topbar.getBoundingClientRect().height);
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', onresize);
+  });
 
   return (
     <>
@@ -19,13 +32,14 @@ const Edit = ({ t, }: EditProps) => {
           name='viewport'
           content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
         />
-        <title>asdf</title>
+        <title>KainPlan ; Editor</title>
       </Head>
       <div className={style.root}>
-        <Map 
-          id={router.query.id as string}
-          fullscreen
-        ></Map>
+        <Topbar ref={e => topbar = e} />
+        <Toolbar />
+        <div>
+          <Map ref={e => map = e} id={router.query.id as string}></Map>
+        </div>
         <style jsx global>{`
           html, body, #__next {
             width: 100%;

@@ -103,6 +103,12 @@ class Map extends React.Component<MapProps, MapState> {
       });
   }
 
+  // MAP EDITOR FUNCTIONS -------------------------------------------------------------- //
+
+  public addNode(floor: number, node: Node) {
+
+  }
+
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //
 
   public reset() {

@@ -1,3 +1,8 @@
 .root {
   overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
 }

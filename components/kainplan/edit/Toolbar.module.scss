@@ -1,0 +1,16 @@
+.toolbar {
+  background-color: black;
+  width: 50px;
+  height: 200px;
+  position: fixed;
+  top: 70px;
+  left: 20px;
+
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+
+  .toolbarItem {
+    color: white;
+  }
+}
