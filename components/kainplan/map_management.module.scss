@@ -1,0 +1,135 @@
+.searchbar{
+    //border: 2px solid black;
+    background-color: #73C7D2;
+    width: 80%;
+    margin-left: 10%;
+    height: 7%;
+    align-items: right;
+    text-align: right;
+    color: white;
+}
+
+.searchbarItems{
+    //padding: 2%;
+    top: 35%;
+    position: relative;
+}
+
+.dropdown:hover .searchbarItems{
+    color: gray;
+}
+
+.dropdown{
+    position: relative;
+    display: inline-block;
+    padding: 17px;
+}
+
+.dropdown_content{
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    min-width: 60px;
+    box-shadow: 3px 3px 5px gray;
+    margin-top: 10px;
+    padding: 12px 16px;
+    z-index: 1;
+    text-align: left;
+}
+
+.dropdown:hover .dropdown_content{
+    display: block;
+}
+
+.selectCredentials{
+    //border: 2px solid black;
+    width: 35%;
+    height: 25%;
+    margin-left: 10%;
+    //margin-top: 10%;
+    box-shadow: 3px 3px 5px gray;
+    position: relative;
+    align-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.credentialsTable{
+    width: 100%;
+}
+
+.tableHeader{
+    background-color: #73C7D2;
+    color: white;
+}
+
+.map{
+    border-left: 2px solid gray;
+    box-sizing: border-box;
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    position: relative;
+    align-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.location{
+    //border: 2px solid black;
+    background-color: white;
+    width: 50%;
+    height: 100%;
+    position: relative;
+    align-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;  
+}
+
+.location_item{
+    border: 1px dotted black;
+    //background-color: hotpink;
+    width: 100%;
+    height: 15%;
+
+    display: flex;
+    align-items: flex-start;
+}
+
+.add_item{
+    //background-color: indigo;
+    margin: 4px;
+    margin-right: 6px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.add_item:hover{
+    margin: 4px;
+    margin-right: 6px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: gray;
+}
+
+.show_map{
+    //border: 2px solid black;
+    background-color: white;
+    width: 30%;
+    height: 50%;
+    margin-left: 10%;
+    box-shadow: 3px 3px 5px gray;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    align-content: flex-start; 
+}
+
+.show_map_text{
+    top: 40%;   
+    position: relative;
+    margin: 2px auto;
+}

@@ -1,107 +1,14 @@
-.root {
+.wrapper {
   width: 100%;
   height: 100%;
+}
 
-  form {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255,255,255,.85);
-    mix-blend-mode: screen;
-    padding: 30px;
-    border: 2.5px solid #f2f2f2;
-    border-radius: 5px 5px 20% 5px;
-
-    & > h1 {
-      line-height: .5em;
-
-      & > span {
-        margin-left: 3.5px;
-        font-size: .5em;
-        
-        & > span {
-          display: inline-block;
-          position: relative;
-          transition: .15s ease;
-        
-          &::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2.5px;
-            background-size: 205% 100%;
-            background-image: linear-gradient(to right, #f2f2f2 0%, #f2f2f2 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%);
-            background-position: 100% 0;
-            transform: translateY(100%);
-            transition: .25s ease;
-          }
-        
-          &:hover {
-            cursor: pointer;
-            font-size: 1.05em;
-          
-            &::after {
-              background-position: 0 0;
-            }
-          }
-        }
-      }
-
-      @media only screen and (max-width: 600px) {
-        & > span {
-          display: block;
-          line-height: 2.5em;
-          margin: 0 !important;
-        }
-      }
-    }
-
-    input[type="submit"] {
-      border: none;
-      margin-top: 1.2em;
-      background-image: linear-gradient(to right, rgba(255,255,255,.2) 0%, rgba(255,255,255,.2) 50%, #622dff 50%, #622dff 100%);
-      background-size: 205% 100%;
-      background-position: 0 0;
-      border: 1.5px solid #622dff;
-      border-radius: 25px;
-      width: 100%;
-      font-size: 1em;
-      padding: 7.5px 0;
-      font-weight: lighter;
-      text-transform: uppercase;
-      color: #622dff;
-      transition: .25s ease;
-
-      &:hover, &:focus {
-        outline: none;
-        cursor: pointer;
-        background-position: 100% 0;
-        color: #fff;
-      }
-    }
-  }
-
-  footer {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    padding: 5px;
-    color: #fff;
-    box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
-    text-align: right;
-  }
-}  
-
-@media only screen and (max-width: 600px) {
-  .root {
-    footer {
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-    }
-  }
+.root {
+  margin: 0;
+  padding: 10px 0;
+  width: 100%;
+  background-color: #111;
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
 }
