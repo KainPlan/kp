@@ -38,7 +38,7 @@ const Edit = ({ t, }: EditProps) => {
         <Topbar ref={e => topbar = e} />
         <Toolbar />
         <div>
-          <Map ref={e => map = e} id={router.query.id as string}></Map>
+          <Map ref={e => map = e} id={router.query.id as string} mountCb={onresize}></Map>
         </div>
         <style jsx global>{`
           html, body, #__next {

@@ -7,6 +7,7 @@ interface MapProps {
   fullscreen?: boolean;
   width?: number;
   height?: number;
+  mountCb?: ()=>void;
 }
 
 export interface MapHead {
@@ -99,6 +100,7 @@ class Map extends React.Component<MapProps, MapState> {
             return im;
           });
           this.switchFloor(0);
+          if (this.props.mountCb) this.props.mountCb();
         });
       });
   }
