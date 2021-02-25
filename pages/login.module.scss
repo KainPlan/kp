@@ -12,3 +12,69 @@
   font-family: sans-serif;
   text-align: center;
 }
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px auto;
+  padding: 50px;
+  width: 20%;
+
+  p {
+    font-size: 50px;
+    color: #fff;
+  }
+
+  input {
+    margin: 10px;
+    border: none;
+    outline: none;
+
+    &[type="submit"] {
+      padding: 10px 60px;
+      background-color: #fff;
+      border-radius: 100px;
+      box-shadow: 0px 18px 50px -5px rgba(0, 0, 0, 0.2);
+      transition-duration: 0.2s;
+      font-weight: 700;
+      &:hover {
+        cursor: pointer;
+        box-shadow: 0px 18px 50px -5px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    &[type="text"],
+    &[type="password"] {
+      background-color: rgba(0, 0, 0, 0);
+      border-bottom: 1px solid #fff;
+      color: #fff;
+      &:focus + .floatlabel,
+      &:not([value=""]) + .floatlabel {
+        transform: translate(0, -50px) scale(0.75);
+      }
+    }
+  }
+  .floatlabel {
+    transform: translate(0, -33px);
+    color: #fff;
+    transition-duration: 0.2s;
+    white-space: nowrap;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &:hover {
+      cursor: text;
+    }
+  }
+}
+
+.switch {
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+}

@@ -32,7 +32,7 @@ interface MapState {
   mapWidth: number;
   mapHeight: number;
   background: string[];
-  nodes: Node[];
+  nodes: Node[][];
   currentFloor: number;
 }
 
@@ -107,8 +107,17 @@ class Map extends React.Component<MapProps, MapState> {
 
   // MAP EDITOR FUNCTIONS -------------------------------------------------------------- //
 
-  public addNode(floor: number, node: Node) {
+  public addFloor(background: string) {
+    
+  }
 
+  public isFloor(floor: number): boolean {
+    return this.state.nodes[floor] instanceof Array;
+  }
+
+  public addNode(floor: number, node: Node) {
+    if (!this.isFloor(floor))
+      return;
   }
 
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //
