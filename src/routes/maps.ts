@@ -9,6 +9,6 @@ router.get('/:id([0-9a-fA-F]{24})', maps.get);
 router.get('/search/:qry', maps.search);
 
 router.post('/make', authenticated, maps.make);
-router.put('/update/:id([0-9a-fA-F]{24})', authenticated, allowed, maps.update);
+router.put('/:id([0-9a-fA-F]{24})/update', authenticated, allowed, maps.update);
 
 export default router;

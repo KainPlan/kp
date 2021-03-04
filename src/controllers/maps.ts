@@ -35,8 +35,12 @@ export function make (req: express.Request, res: express.Response): void {
 }
 
 export function update (req: express.Request, res: express.Response): void {
-  if (!req.body.updates) return utils.respond(res, 400, 'missing_parameters');
-  (<MapUpdate[]>req.body.updates).forEach(upd => {
-    Map.update(req.params.id, upd);
-  });
+  if (!req.body.action || !req.body.stamp || !req.body.update) return utils.respond(res, 400, 'missing_parameters');
+  // unsensible code - simply for testing purposes ... 
+  const ret: any = {
+    success: Math.random() >= .5,
+    code: 420,
+  };
+  if (ret.success!) console.log(<MapUpdate>(req.body));
+  res.send(JSON.stringify(ret));
 }

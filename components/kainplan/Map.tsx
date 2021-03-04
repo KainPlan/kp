@@ -1,4 +1,5 @@
 import React from 'react';
+import { runInThisContext } from 'vm';
 import style from './Map.module.scss';
 
 interface MapProps {
@@ -16,11 +17,24 @@ export interface MapHead {
   desc: string;
 }
 
+export interface MapUpdate {
+  action: string;
+  stamp: number;
+  update: object;
+}
+
+export interface MapAPIResponse {
+  success?: boolean;
+  code: number;
+  body: object;
+}
+
 export interface Node {
   _type: string;
+  id: number;
   x: number;
   y: number;
-  edges: number[];
+  edges: Node[];
   body?: any;
 }
 
@@ -56,6 +70,10 @@ class Map extends React.Component<MapProps, MapState> {
   private maxMagnify: number = 10;
   private offsetX: number = 0;
   private offsetY: number = 0;
+
+  private updateQueue: MapUpdate[] = [];
+  private updating: boolean = false;
+  private stopUpdating: boolean = false;
 
   public constructor (props) {
     super(props);
@@ -108,16 +126,162 @@ class Map extends React.Component<MapProps, MapState> {
   // MAP EDITOR FUNCTIONS -------------------------------------------------------------- //
 
   public addFloor(background: string) {
-    
+    this.setState({
+      background: [...this.state.background, background, ],
+    }, () => {
+      const im: HTMLImageElement = new Image();
+      im.src = background;
+      this.switchFloor(this.state.background.length-1);
+      this.ensureUpdate('addFloor', { background, });
+    });
   }
+
+  public addNode(node: Node, floor?: number) {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    const nodes: Node[][] = this.state.nodes;
+    nodes[floor].push(node);
+    this.setState({
+      nodes,
+    }, () => this.queueUpdate('addNode', { floor, node, }));
+  }
+
+  public moveNode(node: Node, x: number, y: number, floor?: number) {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    node.x = x;
+    node.y = y;
+    const nodes: Node[][] = this.state.nodes;
+    nodes[floor] = [...nodes[floor].filter(n => n.id !== node.id), node,];
+    this.setState({
+      nodes,
+    }, () => this.queueUpdate('moveNode', { floor, node: node.id, x, y, }))
+  }
+
+  public deleteNode(node: Node, floor?: number) {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    const nodes: Node[][] = this.state.nodes;
+    node.edges.forEach(n => this.disconnectNodes(node, n, floor));
+    nodes[floor] = nodes[floor].filter(n => n.id !== node.id);
+    this.setState({
+      nodes,
+    }, () => this.queueUpdate('deleteNode', { floor, node: node.id, }));
+  }
+
+  public connectNodes(a: Node, b: Node, floor?: number) {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    const nodes: Node[][] = this.state.nodes;
+    const aIndex: number = nodes[floor].findIndex(n => n.id === a.id);
+    const bIndex: number = nodes[floor].findIndex(n => n.id === b.id);
+    // check if connection already exists ... 
+    if (nodes[floor][aIndex].edges.filter(n => n.id === b.id).length && nodes[floor][bIndex].edges.filter(n => n.id === a.id).length)
+      return;
+    // establish a connection in the way that could also fixing
+    // a broken connection ...
+    if (!nodes[floor][aIndex].edges.filter(n => n.id === b.id).length)
+      nodes[floor][aIndex].edges.push(b);
+    if (!nodes[floor][bIndex].edges.filter(n => n.id === a.id).length)
+      nodes[floor][bIndex].edges.push(a);
+    this.setState({
+      nodes,
+    }, () => this.queueUpdate('connectNodes', { floor, a: a.id, b: b.id, }))
+  }
+
+  public disconnectNodes(a: Node, b: Node, floor?: number) {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    const nodes: Node[][] = this.state.nodes;
+    const aIndex: number = nodes[floor].findIndex(n => n.id === a.id);
+    const bIndex: number = nodes[floor].findIndex(n => n.id === b.id);
+    nodes[floor][aIndex].edges = nodes[floor][aIndex].edges.filter(n => n.id !== b.id);
+    nodes[floor][bIndex].edges = nodes[floor][bIndex].edges.filter(n => n.id !== a.id);
+    this.setState({
+      nodes,
+    }, () => this.queueUpdate('disconnectNodes', { floor, a: a.id, b: b.id, }));
+  }
+
+  // MAP EDITOR HELPER FUNCTIONS -------------------------------------------------------------- //
 
   public isFloor(floor: number): boolean {
     return this.state.nodes[floor] instanceof Array;
   }
 
-  public addNode(floor: number, node: Node) {
-    if (!this.isFloor(floor))
-      return;
+  public nodeAt(x: number, y: number, floor?: number): Node {
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return null;
+    return this.state.nodes[floor].filter(n => n.x === x && n.y === y)[0];
+  }
+
+  public nodeAround(x: number, y: number, radius?: number, floor?: number): Node {
+    radius = radius || 5;
+    floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return null;
+    let min: number = Infinity;
+    let node: Node = null;
+    this.state.nodes[floor].forEach(n => {
+      if (n.x >= x-radius && n.x <= x+radius && n.y >= y-radius && n.y <= y+radius && (Math.pow(n.x-x, 2) + Math.pow(n.y-y, 2)) < min) {
+        min = Math.pow(n.x-x, 2) + Math.pow(n.y-y, 2); // full euclidean distance not required ... 
+        node = n;
+      }
+    });
+    return node;
+  }
+
+  private queueUpdate(action: string, update: object): MapUpdate {
+    const tmp: MapUpdate = { action, stamp: Date.now(), update, };
+    this.updateQueue.push(tmp);
+    this.syncUpdates();
+    return tmp;
+  }
+
+  private sendUpdate(update: MapUpdate): Promise<MapAPIResponse> {
+    return new Promise((resolve, reject) => 
+      fetch(`/api/maps/${this.props.id}/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:  JSON.stringify(update),
+      }).then(res => res.json())
+        .then(res => resolve(res))
+        .catch(reject)
+    );
+  }
+
+  private async syncUpdates() {
+    if (this.updating) return;
+    this.updating = true;
+    while (this.updateQueue.length) {
+      for (let i = 0; i < 5; i++) {
+        const res: MapAPIResponse = await this.sendUpdate(this.updateQueue[0]);
+        if (res.success) break;
+      }
+      this.updateQueue.shift();
+      if (this.stopUpdating) break;
+    }
+    this.updating = false;
+  }
+
+  private async ensureUpdate(action: string, update: object) {
+    const tmp: MapUpdate = { action, stamp: Date.now(), update, };
+    this.stopUpdating = true;
+    while (this.updating) await new Promise((resolve, reject) => setTimeout(resolve, 10));
+    this.updating = true;
+    this.stopUpdating = false;
+    this.updateQueue.push(tmp);
+    let res: MapAPIResponse = null;
+    while (this.updateQueue.length) {
+      for (let i = 0; i < 5; i++) {
+        res = await this.sendUpdate(this.updateQueue[0]);
+        if (res.success) break;
+      }
+      const dropped: MapUpdate = this.updateQueue.shift();
+      if (dropped.stamp === tmp.stamp) break;
+    }
+    this.updating = false;
+    return res.success;
   }
 
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //

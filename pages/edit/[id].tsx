@@ -12,6 +12,12 @@ import { useEffect } from 'react';
 interface EditProps extends WithTranslation, WithUser {
 };
 
+declare global {
+  interface Window {
+    map: Map;
+  }
+}
+
 const Edit = ({ t, }: EditProps) => {
   const router = useRouter();
   var topbar: HTMLDivElement;
@@ -23,6 +29,7 @@ const Edit = ({ t, }: EditProps) => {
 
   useEffect(() => {
     window.addEventListener('resize', onresize);
+    window.map = map;
   });
 
   return (

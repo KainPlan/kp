@@ -16,7 +16,8 @@ export interface Node {
 
 export interface MapUpdate {
   action: string;
-  update: any;
+  stamp: number;
+  update: object;
 }
 
 interface MapRow {
@@ -113,7 +114,9 @@ export default class Map {
         background: [
           `0.${mime.getExtension(specs.mime)}`,
         ], 
-        nodes: [], 
+        nodes: [
+          [],
+        ],
       });
       nmap.save(err => {
         if (err) return reject(err);
