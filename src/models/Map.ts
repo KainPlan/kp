@@ -8,9 +8,10 @@ import path from 'path';
 
 export interface Node {
   _type: string;
+  id: number;
   x: number;
   y: number;
-  edges: number[];
+  edges: Node[];
   body?: any;
 };
 
@@ -18,6 +19,11 @@ export interface MapUpdate {
   action: string;
   stamp: number;
   update: object;
+}
+
+interface AddNodeUpdate {
+  floor: number;
+  node: Node;
 }
 
 interface MapRow {
@@ -172,9 +178,31 @@ export default class Map {
     });
   }
 
-  public static update (mapId: string, update: MapUpdate): Promise<boolean> {
+  private static addNode (mapId: string, node: Node, floor: number): Promise<void> {
     return new Promise((resolve, reject) => {
-      
+      const update: any = { $push: {} };
+      update['$push'][`nodes.${floor}`] = node;
+      MapModel.updateOne(
+        { _id: mongoose.Types.ObjectId(mapId), }, 
+        update,
+        null,
+        (err: mongoose.Error, res: any) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
+  public static update (mapId: string, update: MapUpdate): Promise<void> {
+    return new Promise((resolve, reject) => {
+      switch(update.action) {
+        case 'addNode':
+          this.addNode(mapId, (<AddNodeUpdate>update.update).node, (<AddNodeUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+      }
     });
   }
 };
