@@ -143,7 +143,10 @@ class Map extends React.Component<MapProps, MapState> {
     nodes[floor].push(node);
     this.setState({
       nodes,
-    }, () => this.queueUpdate('addNode', { floor, node, }));
+    }, () => {
+      this.refresh();
+      this.queueUpdate('addNode', { floor, node, })
+    });
   }
 
   public moveNode(node: Node, x: number, y: number, floor?: number) {
@@ -155,7 +158,10 @@ class Map extends React.Component<MapProps, MapState> {
     nodes[floor] = [...nodes[floor].filter(n => n.id !== node.id), node,];
     this.setState({
       nodes,
-    }, () => this.queueUpdate('moveNode', { floor, node: node.id, x, y, }))
+    }, () => {
+      this.refresh();
+      this.queueUpdate('moveNode', { floor, node: node.id, x, y, })
+    });
   }
 
   public deleteNode(node: Node, floor?: number) {
@@ -166,7 +172,10 @@ class Map extends React.Component<MapProps, MapState> {
     nodes[floor] = nodes[floor].filter(n => n.id !== node.id);
     this.setState({
       nodes,
-    }, () => this.queueUpdate('deleteNode', { floor, node: node.id, }));
+    }, () => {
+      this.refresh();
+      this.queueUpdate('deleteNode', { floor, node: node.id, })
+    });
   }
 
   public connectNodes(a: Node, b: Node, floor?: number) {
@@ -186,7 +195,10 @@ class Map extends React.Component<MapProps, MapState> {
       nodes[floor][bIndex].edges.push(a);
     this.setState({
       nodes,
-    }, () => this.queueUpdate('connectNodes', { floor, a: a.id, b: b.id, }))
+    }, () => {
+      this.refresh();
+      this.queueUpdate('connectNodes', { floor, a: a.id, b: b.id, })
+    });
   }
 
   public disconnectNodes(a: Node, b: Node, floor?: number) {
@@ -199,7 +211,10 @@ class Map extends React.Component<MapProps, MapState> {
     nodes[floor][bIndex].edges = nodes[floor][bIndex].edges.filter(n => n.id !== a.id);
     this.setState({
       nodes,
-    }, () => this.queueUpdate('disconnectNodes', { floor, a: a.id, b: b.id, }));
+    }, () => {
+      this.refresh();
+      this.queueUpdate('disconnectNodes', { floor, a: a.id, b: b.id, })
+    });
   }
 
   // MAP EDITOR HELPER FUNCTIONS -------------------------------------------------------------- //
@@ -278,7 +293,10 @@ class Map extends React.Component<MapProps, MapState> {
         if (res.success) break;
       }
       const dropped: MapUpdate = this.updateQueue.shift();
-      if (dropped.stamp === tmp.stamp) break;
+      if (dropped.stamp === tmp.stamp) {
+        this.refresh();
+        break;
+      }
     }
     this.updating = false;
     return res.success;
@@ -409,12 +427,54 @@ class Map extends React.Component<MapProps, MapState> {
     }, 1);
   }
 
+  private drawNodes() {
+    const prevStrokeStyle: string|CanvasGradient|CanvasPattern = this.ctx.strokeStyle;
+    const prevFillStyle: string|CanvasGradient|CanvasPattern = this.ctx.fillStyle;
+    const prevLineWidth: number = this.ctx.lineWidth;
+    this.ctx.strokeStyle = '#00FFC5';
+    this.ctx.fillStyle = 'rgba(0,255,197,.5)';
+    this.ctx.lineWidth = 3;
+    this.state.nodes[this.state.currentFloor].forEach(n => {
+      this.ctx.beginPath();
+      this.ctx.ellipse(this.m2px(n.x), this.m2px(n.y),
+                     this.m2px(1.5), this.m2px(1.5), 
+                     0, 0, 2 * Math.PI);
+      this.ctx.stroke();
+      this.ctx.fill();
+    });
+    this.ctx.lineWidth = prevLineWidth;
+    this.ctx.fillStyle = prevFillStyle;
+    this.ctx.strokeStyle = prevStrokeStyle;
+  }
+
+  private drawConnections() {
+    const prevStrokeStyle: string|CanvasGradient|CanvasPattern = this.ctx.strokeStyle;
+    const prevLineWidth: number = this.ctx.lineWidth;
+    this.ctx.strokeStyle = '#00FFC5';
+    this.ctx.lineWidth = 3;
+    const drawn: number[] = [];
+    this.state.nodes[this.state.currentFloor].forEach(n => {
+      drawn.push(n.id);
+      n.edges.forEach(e => {
+        if (drawn.includes(e.id)) return;
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.m2px(n.x), this.m2px(n.y));
+        this.ctx.lineTo(this.m2px(e.x), this.m2px(e.y));
+        this.ctx.stroke();
+      });
+    });
+    this.ctx.lineWidth = prevLineWidth;
+    this.ctx.strokeStyle = prevStrokeStyle;
+  }
+
   private refresh() {
     this.ctx.clearRect(0, 0, 
       this.state.width + this.m2px(this.state.mapWidth), 
       this.state.height + this.m2px(this.state.mapHeight));
     this.ctx.drawImage(this.cache[this.state.currentFloor], 
       0, 0, this.m2px(this.state.mapWidth), this.m2px(this.state.mapHeight));
+    this.drawConnections();
+    this.drawNodes();
   }
 
   
