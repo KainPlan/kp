@@ -29,6 +29,15 @@ export interface MapAPIResponse {
   body: object;
 }
 
+interface RawNode {
+  _type: string;
+  id: number;
+  x: number;
+  y: number;
+  edges: number[];
+  body?: any;
+}
+
 export interface Node {
   _type: string;
   id: number;
@@ -104,7 +113,6 @@ class Map extends React.Component<MapProps, MapState> {
           mapWidth: res.body.width,
           mapHeight: res.body.height,
           background: res.body.background,
-          nodes: res.body.nodes,
           currentFloor: 0,
         }, () => {
           this.ctx = this.canvas.getContext('2d');
@@ -118,7 +126,10 @@ class Map extends React.Component<MapProps, MapState> {
             return im;
           });
           this.switchFloor(0);
-          if (this.props.mountCb) this.props.mountCb();
+          this.entangleNodes(res.body.nodes as RawNode[][])
+              .then(() => {
+                if (this.props.mountCb) this.props.mountCb();
+              });
         });
       });
   }
@@ -303,6 +314,27 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //
+
+  private entangleNodes(rawNodes: RawNode[][]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const nodes: Node[][] = [];
+      rawNodes.forEach((f, fi) => {
+        nodes.push([]);
+        f.forEach(n => nodes[fi].push({ ...n, edges: [], }));
+      });
+      nodes.forEach((f, fi) => 
+        f.forEach((n, ni) => {
+          rawNodes[fi][ni].edges.forEach(e => {
+            // for  now, only same floor ... 
+            const other: Node = f.filter(x => x.id === e)[0];
+            if (other) n.edges.push(other);
+          });
+        }));
+      this.setState({
+        nodes,
+      }, resolve);
+    });
+  }
 
   public reset() {
     this.ctx.translate(-this.offsetX, -this.offsetY);

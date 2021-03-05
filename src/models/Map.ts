@@ -6,6 +6,15 @@ import mime from 'mime';
 import probe from 'probe-image-size';
 import path from 'path';
 
+interface RawNode {
+  _type: string;
+  id: number;
+  x: number;
+  y: number;
+  edges: number[];
+  body?: any;
+}
+
 export interface Node {
   _type: string;
   id: number;
@@ -36,6 +45,12 @@ interface MoveNodeUpdate {
 interface DeleteNodeUpdate {
   floor: number;
   node: number;
+}
+
+interface ConnectNodesUpdate {
+  floor: number;
+  a: number;
+  b: number;
 }
 
 interface MapRow {
@@ -241,6 +256,24 @@ export default class Map {
     });
   }
 
+  private static connectNodes (mapId: string, a: number, b: number, floor: number): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const select: any = { _id: mongoose.Types.ObjectId(mapId), };
+      select[`nodes.${floor}`] = { $elemMatch: { id: a, }, };
+      const update: any = { $push: {} };
+      update['$push'][`nodes.${floor}.$.edges`] = b;
+      const session: mongoose.ClientSession = await mongoose.startSession();
+      await session.withTransaction(async () => {
+        await MapModel.updateOne(select, update);
+        select[`nodes.${floor}`]['$elemMatch']['id'] = b;
+        update['$push'][`nodes.${floor}.$.edges`] = a;
+        await MapModel.updateOne(select, update);
+      });
+      session.endSession();
+      resolve();
+    });
+  }
+
   public static update (mapId: string, update: MapUpdate): Promise<void> {
     return new Promise((resolve, reject) => {
       switch(update.action) {
@@ -259,6 +292,12 @@ export default class Map {
         case 'deleteNode':
           console.log(`[DEBUG;${mapId}]: Request to delete node ${(<DeleteNodeUpdate>update.update).node} ... `);          
           this.deleteNode(mapId, (<DeleteNodeUpdate>update.update).node, (<DeleteNodeUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+        case 'connectNodes':
+          console.log(`[DEBUG;${mapId}]: Request to connect nodes ${(<ConnectNodesUpdate>update.update).a} & ${(<ConnectNodesUpdate>update.update).b} ... `);
+          this.connectNodes(mapId, (<ConnectNodesUpdate>update.update).a, (<ConnectNodesUpdate>update.update).b, (<ConnectNodesUpdate>update.update).floor)
               .then(resolve)
               .catch(reject);
           break;
