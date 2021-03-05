@@ -280,10 +280,14 @@ export default class Map {
       update['$push'][`nodes.${floor}.$.edges`] = b;
       const session: mongoose.ClientSession = await mongoose.startSession();
       await session.withTransaction(async () => {
-        await MapModel.updateOne(select, update);
-        select[`nodes.${floor}`]['$elemMatch']['id'] = b;
-        update['$push'][`nodes.${floor}.$.edges`] = a;
-        await MapModel.updateOne(select, update);
+        try {
+          await MapModel.updateOne(select, update);
+          select[`nodes.${floor}`]['$elemMatch']['id'] = b;
+          update['$push'][`nodes.${floor}.$.edges`] = a;
+          await MapModel.updateOne(select, update);
+        } catch (e: any) {
+          reject(e);
+        }
       });
       session.endSession();
       resolve();
@@ -296,12 +300,16 @@ export default class Map {
       const update: any = { $pull: {} };
       const session: mongoose.ClientSession = await mongoose.startSession();
       await session.withTransaction(async () => {
-        select[`nodes.${floor}`] = { $elemMatch: { id: a, }, };
-        update['$pull'][`nodes.${floor}.$.edges`] = b;
-        await MapModel.updateOne(select, update);
-        select[`nodes.${floor}`] = { $elemMatch: { id: b, }, };
-        update['$pull'][`nodes.${floor}.$.edges`] = a;
-        await MapModel.updateOne(select, update);
+        try {
+          select[`nodes.${floor}`] = { $elemMatch: { id: a, }, };
+          update['$pull'][`nodes.${floor}.$.edges`] = b;
+          await MapModel.updateOne(select, update);
+          select[`nodes.${floor}`] = { $elemMatch: { id: b, }, };
+          update['$pull'][`nodes.${floor}.$.edges`] = a;
+          await MapModel.updateOne(select, update);
+        } catch (e: any) {
+          reject(e);
+        }
       });
       session.endSession();
       resolve();
