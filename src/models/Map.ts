@@ -26,6 +26,18 @@ interface AddNodeUpdate {
   node: Node;
 }
 
+interface MoveNodeUpdate {
+  floor: number;
+  node: number;
+  x: number;
+  y: number;
+}
+
+interface DeleteNodeUpdate {
+  floor: number;
+  node: number;
+}
+
 interface MapRow {
   id: number;
   user: number;
@@ -194,11 +206,59 @@ export default class Map {
     });
   }
 
+  private static moveNode (mapId: string, nodeId: number, x: number, y: number, floor: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const select: any = { _id: mongoose.Types.ObjectId(mapId), };
+      select[`nodes.${floor}`] = { $elemMatch: { id: nodeId, }, };
+      const update: any = { $set: { }, };
+      update['$set'][`nodes.${floor}.$.x`] = x;
+      update['$set'][`nodes.${floor}.$.y`] = y;
+      MapModel.updateOne(
+        select,
+        update,
+        null,
+        (err: mongoose.Error, res: any) => {
+          if (err) reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
+  private static deleteNode (mapId: string, nodeId: number, floor: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const update: any = { $pull: {} };
+      update['$pull'][`nodes.${floor}`] = { id: nodeId, };
+      MapModel.updateOne(
+        { _id: mongoose.Types.ObjectId(mapId), },
+        update,
+        null,
+        (err: mongoose.Error, res: any) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
   public static update (mapId: string, update: MapUpdate): Promise<void> {
     return new Promise((resolve, reject) => {
       switch(update.action) {
         case 'addNode':
+          console.log(`[DEBUG;${mapId}]: Request to add node @ (${(<AddNodeUpdate>update.update).node.x}, ${(<AddNodeUpdate>update.update).node.y}) ... `);
           this.addNode(mapId, (<AddNodeUpdate>update.update).node, (<AddNodeUpdate>update.update).floor)
+          .then(resolve)
+          .catch(reject);
+          break;
+        case 'moveNode':
+          console.log(`[DEBUG;${mapId}]: Request to move node to (${(<MoveNodeUpdate>update.update).x}, ${(<MoveNodeUpdate>update.update).y}) ... `);
+          this.moveNode(mapId, (<MoveNodeUpdate>update.update).node, (<MoveNodeUpdate>update.update).x, (<MoveNodeUpdate>update.update).y, (<MoveNodeUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+        case 'deleteNode':
+          console.log(`[DEBUG;${mapId}]: Request to delete node ${(<DeleteNodeUpdate>update.update).node} ... `);          
+          this.deleteNode(mapId, (<DeleteNodeUpdate>update.update).node, (<DeleteNodeUpdate>update.update).floor)
               .then(resolve)
               .catch(reject);
           break;
