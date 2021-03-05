@@ -53,6 +53,12 @@ interface ConnectNodesUpdate {
   b: number;
 }
 
+interface DisconnectNodesUpdate {
+  floor: number;
+  a: number;
+  b: number;
+}
+
 interface MapRow {
   id: number;
   user: number;
@@ -241,18 +247,28 @@ export default class Map {
   }
 
   private static deleteNode (mapId: string, nodeId: number, floor: number): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const update: any = { $pull: {} };
-      update['$pull'][`nodes.${floor}`] = { id: nodeId, };
-      MapModel.updateOne(
-        { _id: mongoose.Types.ObjectId(mapId), },
-        update,
-        null,
-        (err: mongoose.Error, res: any) => {
-          if (err) return reject(err);
-          resolve();
+      const session: mongoose.ClientSession = await mongoose.startSession();
+      await session.withTransaction(async () => {
+        try {
+          update['$pull'][`nodes.${floor}.$[].edges`] = nodeId;
+          await MapModel.updateOne(
+            { _id: mongoose.Types.ObjectId(mapId), },
+            update
+          );
+          delete update['$pull'][`nodes.${floor}.$[].edges`];
+          update['$pull'][`nodes.${floor}`] = { id: nodeId, };
+          await MapModel.updateOne(
+            { _id: mongoose.Types.ObjectId(mapId), }, 
+            update
+          );
+        } catch (e: any) {
+          reject(e);
         }
-      );
+      });
+      session.endSession();
+      resolve();
     });
   }
 
@@ -267,6 +283,24 @@ export default class Map {
         await MapModel.updateOne(select, update);
         select[`nodes.${floor}`]['$elemMatch']['id'] = b;
         update['$push'][`nodes.${floor}.$.edges`] = a;
+        await MapModel.updateOne(select, update);
+      });
+      session.endSession();
+      resolve();
+    });
+  }
+
+  private static disconnectNodes (mapId: string, a: number, b: number, floor: number): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      const select: any = { _id: mongoose.Types.ObjectId(mapId), };
+      const update: any = { $pull: {} };
+      const session: mongoose.ClientSession = await mongoose.startSession();
+      await session.withTransaction(async () => {
+        select[`nodes.${floor}`] = { $elemMatch: { id: a, }, };
+        update['$pull'][`nodes.${floor}.$.edges`] = b;
+        await MapModel.updateOne(select, update);
+        select[`nodes.${floor}`] = { $elemMatch: { id: b, }, };
+        update['$pull'][`nodes.${floor}.$.edges`] = a;
         await MapModel.updateOne(select, update);
       });
       session.endSession();
@@ -300,6 +334,15 @@ export default class Map {
           this.connectNodes(mapId, (<ConnectNodesUpdate>update.update).a, (<ConnectNodesUpdate>update.update).b, (<ConnectNodesUpdate>update.update).floor)
               .then(resolve)
               .catch(reject);
+          break;
+        case 'disconnectNodes':
+          console.log(`[DEBUG;${mapId}]: Request to disconnect nodes ${(<DisconnectNodesUpdate>update.update).a} & ${(<DisconnectNodesUpdate>update.update).b} ... `);
+          this.disconnectNodes(mapId, (<DisconnectNodesUpdate>update.update).a, (<DisconnectNodesUpdate>update.update).b, (<DisconnectNodesUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+        default:
+          reject(`Unknown action (${update})`);
           break;
       }
     });
