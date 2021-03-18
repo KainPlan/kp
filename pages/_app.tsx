@@ -45,7 +45,7 @@ KPApp.getInitialProps = async function({ Component, ctx }) {
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx);
   }
-  if (ctx.req && ctx.req.session.passport) {
+  if (ctx.req && ctx.req.session && ctx.req.session.passport) {
     pageProps = {...pageProps, passport: ctx.req.session.passport, };
   }
   return { pageProps };
