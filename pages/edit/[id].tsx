@@ -3,7 +3,7 @@ import { WithTranslation } from 'next-i18next';
 import { WithUser } from '../../models/User';
 import { useRouter } from 'next/router';
 import style from './[id].module.scss';
-import Map from '../../components/kainplan/Map';
+import Map, { MapMode } from '../../components/kainplan/Map';
 import Head from 'next/head';
 import Toolbar from '../../components/kainplan/edit/Toolbar';
 import Topbar from '../../components/kainplan/edit/Topbar';
@@ -43,7 +43,12 @@ const Edit = ({ t, }: EditProps) => {
       </Head>
       <div className={style.root}>
         <Topbar ref={e => topbar = e} />
-        <Toolbar />
+        <Toolbar 
+          doMove={() => map.changeMode(MapMode.MOVE)} 
+          placeNode={() => map.changeMode(MapMode.NODE)} 
+          doErase={() => map.changeMode(MapMode.ERASE)}
+          doConnect={() => map.changeMode(MapMode.CONNECT)}
+        />
         <div>
           <Map ref={e => map = e} id={router.query.id as string} mountCb={onresize}></Map>
         </div>

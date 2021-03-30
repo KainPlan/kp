@@ -47,6 +47,13 @@ export interface Node {
   body?: any;
 }
 
+export enum MapMode {
+  MOVE,
+  NODE,
+  ERASE,
+  CONNECT,
+}
+
 interface MapState {
   width: number;
   height: number;
@@ -57,6 +64,8 @@ interface MapState {
   background: string[];
   nodes: Node[][];
   currentFloor: number;
+  mode: MapMode;
+  connectFrom: Node;
 }
 
 class Map extends React.Component<MapProps, MapState> {
@@ -71,6 +80,10 @@ class Map extends React.Component<MapProps, MapState> {
   private clockRate: number = 10;
   private animTime: number = 100;
   private animIntval: number;
+
+  private mouseX: number = 0;
+  private mouseY: number = 0;
+  private lastConnection: number = new Date().getTime();
 
   private panScale: number = 0.3;
   private panTime: number = 150;
@@ -96,6 +109,8 @@ class Map extends React.Component<MapProps, MapState> {
       background: [],
       nodes: [],
       currentFloor: 0,
+      mode: MapMode.MOVE,
+      connectFrom: null,
     };
   }
 
@@ -336,13 +351,26 @@ class Map extends React.Component<MapProps, MapState> {
     });
   }
 
+  public changeMode(mode: MapMode) {
+    if (mode === MapMode.CONNECT) this.setState({ connectFrom: null, });
+    this.setState({ mode, });
+  }
+
   public reset() {
     this.ctx.translate(-this.offsetX, -this.offsetY);
   }
 
+  public winX2map(winX: number): number {
+    return this.px2m(winX - this.canvas.getBoundingClientRect().left - this.offsetX);
+  }
+
+  public winY2map(winY: number): number {
+    return this.px2m(winY - this.canvas.getBoundingClientRect().top - this.offsetY);
+  }
+
   private px2m(px: number): number {
     // return px * this.scale * this.magnify;
-    return px * this.magnify;
+    return px / this.magnify;
   }
   
   private m2px(m: number): number {
@@ -495,6 +523,13 @@ class Map extends React.Component<MapProps, MapState> {
         this.ctx.stroke();
       });
     });
+    if (this.state.connectFrom) {
+      this.ctx.strokeStyle = '#FF009D';
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.m2px(this.state.connectFrom.x), this.m2px(this.state.connectFrom.y));
+      this.ctx.lineTo(this.m2px(this.mouseX), this.m2px(this.mouseY));
+      this.ctx.stroke();
+    }
     this.ctx.lineWidth = prevLineWidth;
     this.ctx.strokeStyle = prevStrokeStyle;
   }
@@ -586,18 +621,57 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onDown(e: React.PointerEvent) {
     e.preventDefault();
-    switch(e.pointerType) {
-      case 'mouse':
-        this.onMouseDown(e);
+    console.log(`[DEBUG]: mode = ${this.state.mode} ... `)
+    switch (this.state.mode) {
+      case MapMode.MOVE: {
+          switch(e.pointerType) {
+            case 'mouse':
+              this.onMouseDown(e);
+              break;
+            default:
+              this.onTouchDown(e);
+              break;
+          }
+        }
         break;
-      default:
-        this.onTouchDown(e);
+      case MapMode.NODE: {
+          this.addNode({
+            _type: 'node',
+            id: Date.now(),
+            x: this.winX2map(e.clientX),
+            y: this.winY2map(e.clientY),
+            edges: [],
+          }, this.state.currentFloor);
+        }
+        break;
+      case MapMode.ERASE: {
+          const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
+          if (!node) return;
+          this.deleteNode(node, this.state.currentFloor);
+        }
+        break;
+      case MapMode.CONNECT: {
+          const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
+          if (!node) return;
+          if (!this.state.connectFrom) {
+            this.setState({ connectFrom: node, });
+          } else {
+            this.connectNodes(this.state.connectFrom, node);
+            this.setState({ connectFrom: null, });
+          } 
+        }
         break;
     }
   }
 
   private onMove(e: React.PointerEvent) {
     e.preventDefault();
+    this.mouseX = this.winX2map(e.clientX);
+    this.mouseY = this.winY2map(e.clientY);
+    if (this.state.mode === MapMode.CONNECT && Date.now()-this.lastConnection > this.minTimeDiff) {
+      this.lastConnection = Date.now();
+      this.refresh();
+    }
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseMove(e);
@@ -625,6 +699,7 @@ class Map extends React.Component<MapProps, MapState> {
       <div className={style.root} style={{
         width: this.state.width+'px',
         height: this.state.height+'px',
+        cursor: this.state.mode === MapMode.CONNECT && this.state.connectFrom ? 'none' : 'default',
       }}>
         <canvas
           ref={e => this.canvas = e}

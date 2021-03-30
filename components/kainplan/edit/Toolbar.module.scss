@@ -16,11 +16,19 @@
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
+  font-size: 2em;
 
   .toolbarItem {
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+    margin: 7.5px 0;
+    transition: .15s ease;
+
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+    }
   }
 }
