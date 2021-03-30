@@ -17,6 +17,7 @@ declare global {
     interface ProcessEnv {
       HOST: string;
       PORT: string;
+      KAIN_ENV: string;
       DOMAIN: string;
       RES_PATH: string;
 
