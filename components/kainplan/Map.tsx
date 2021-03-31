@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import React from 'react';
 import { runInThisContext } from 'vm';
 import style from './Map.module.scss';
@@ -66,6 +67,9 @@ interface MapState {
   currentFloor: number;
   mode: MapMode;
   connectFrom: Node;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
 }
 
 class Map extends React.Component<MapProps, MapState> {
@@ -97,6 +101,13 @@ class Map extends React.Component<MapProps, MapState> {
   private updating: boolean = false;
   private stopUpdating: boolean = false;
 
+  private static cursors: { [mode: number]: string; } = {
+    [MapMode.MOVE]: 'move',
+    [MapMode.NODE]: 'crosshair',
+    [MapMode.ERASE]: 'crosshair',
+    [MapMode.CONNECT]: 'crosshair',
+  };
+
   public constructor (props) {
     super(props);
     this.state = {
@@ -111,6 +122,9 @@ class Map extends React.Component<MapProps, MapState> {
       currentFloor: 0,
       mode: MapMode.MOVE,
       connectFrom: null,
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
     };
   }
 
@@ -135,6 +149,8 @@ class Map extends React.Component<MapProps, MapState> {
             window.addEventListener('resize', this.onResize.bind(this));
             this.onResize();
           }
+          window.addEventListener('keydown', this.observeSpecialKeys.bind(this));
+          window.addEventListener('keyup', this.observeSpecialKeys.bind(this));
           this.cache = this.state.background.map(b => {
             const im: HTMLImageElement = new Image();
             im.src = `/api/maps/${this.props.id}/${b}`;
@@ -523,7 +539,7 @@ class Map extends React.Component<MapProps, MapState> {
         this.ctx.stroke();
       });
     });
-    if (this.state.connectFrom) {
+    if (this.state.mode === MapMode.CONNECT && this.state.connectFrom) {
       this.ctx.strokeStyle = '#FF009D';
       this.ctx.beginPath();
       this.ctx.moveTo(this.m2px(this.state.connectFrom.x), this.m2px(this.state.connectFrom.y));
@@ -621,47 +637,47 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onDown(e: React.PointerEvent) {
     e.preventDefault();
-    console.log(`[DEBUG]: mode = ${this.state.mode} ... `)
-    switch (this.state.mode) {
-      case MapMode.MOVE: {
-          switch(e.pointerType) {
-            case 'mouse':
-              this.onMouseDown(e);
-              break;
-            default:
-              this.onTouchDown(e);
-              break;
-          }
+    console.log(`[DEBUG]: mode = ${this.state.mode} ... `);
+
+    const cbs: {[mode in MapMode]: (e: React.PointerEvent)=>void;} = {
+      [MapMode.MOVE]: e => {
+        switch(e.pointerType) {
+          case 'mouse':
+            this.onMouseDown(e);
+            break;
+          default:
+            this.onTouchDown(e);
+            break;
         }
-        break;
-      case MapMode.NODE: {
-          this.addNode({
-            _type: 'node',
-            id: Date.now(),
-            x: this.winX2map(e.clientX),
-            y: this.winY2map(e.clientY),
-            edges: [],
-          }, this.state.currentFloor);
+      },
+      [MapMode.NODE]: e => {
+        this.addNode({
+          _type: 'node',
+          id: Date.now(),
+          x: this.winX2map(e.clientX),
+          y: this.winY2map(e.clientY),
+          edges: [],
+        }, this.state.currentFloor);
+      },
+      [MapMode.ERASE]: e => {
+        const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
+        if (!node) return;
+        this.deleteNode(node, this.state.currentFloor);
+      },
+      [MapMode.CONNECT]: e => {
+        const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
+        if (!node) return;
+        if (!this.state.connectFrom) {
+          this.setState({ connectFrom: node, });
+        } else {
+          this.connectNodes(this.state.connectFrom, node);
+          this.setState({ connectFrom: null, });
         }
-        break;
-      case MapMode.ERASE: {
-          const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
-          if (!node) return;
-          this.deleteNode(node, this.state.currentFloor);
-        }
-        break;
-      case MapMode.CONNECT: {
-          const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
-          if (!node) return;
-          if (!this.state.connectFrom) {
-            this.setState({ connectFrom: node, });
-          } else {
-            this.connectNodes(this.state.connectFrom, node);
-            this.setState({ connectFrom: null, });
-          } 
-        }
-        break;
-    }
+      },
+    };
+
+    if (this.state.ctrlKey) cbs[MapMode.MOVE](e);
+    else cbs[this.state.mode](e);
   }
 
   private onMove(e: React.PointerEvent) {
@@ -694,32 +710,50 @@ class Map extends React.Component<MapProps, MapState> {
     }
   }
 
+  private observeSpecialKeys(e: React.KeyboardEvent) {
+    e.preventDefault();
+    this.setState({
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+      shiftKey: e.shiftKey,
+    });
+  }
+
   public render() {
     return (
-      <div className={style.root} style={{
-        width: this.state.width+'px',
-        height: this.state.height+'px',
-        cursor: this.state.mode === MapMode.CONNECT && this.state.connectFrom ? 'none' : 'default',
-      }}>
-        <canvas
-          ref={e => this.canvas = e}
-          width={this.state.width}
-          height={this.state.height}
-          onWheel={this.onMouseZoom.bind(this)}
-          onPointerDown={this.onDown.bind(this)}
-          onPointerMove={this.onMove.bind(this)}
-          onPointerUp={this.onUp.bind(this)}
-          onPointerCancel={this.onUp.bind(this)}
-          onPointerOut={this.onUp.bind(this)}
-          onPointerLeave={this.onUp.bind(this)}
-        ></canvas>
-        <div>
-          { this.props.children }
-        </div>
-        <div>
+      <>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+        </Head>
+        <div className={style.root} style={{
+          width: this.state.width+'px',
+          height: this.state.height+'px',
+          cursor: this.state.ctrlKey 
+                  ? Map.cursors[MapMode.MOVE]
+                  : this.state.mode === MapMode.CONNECT && this.state.connectFrom
+                    ? 'none'
+                    : Map.cursors[this.state.mode],
+        }}>
+          <canvas
+            ref={e => this.canvas = e}
+            width={this.state.width}
+            height={this.state.height}
+            onWheel={this.onMouseZoom.bind(this)}
+            onPointerDown={this.onDown.bind(this)}
+            onPointerMove={this.onMove.bind(this)}
+            onPointerUp={this.onUp.bind(this)}
+            onPointerCancel={this.onUp.bind(this)}
+            onPointerOut={this.onUp.bind(this)}
+            onPointerLeave={this.onUp.bind(this)}
+          ></canvas>
+          <div>
+            { this.props.children }
+          </div>
+          <div>
 
+          </div>
         </div>
-      </div>
+      </>
     );
   };
 }

@@ -1,4 +1,5 @@
 {
+  "move": "Pan",
   "endpoint": "Endpoint",
   "node": "Node",
   "connection": "Connection",
