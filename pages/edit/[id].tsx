@@ -8,6 +8,12 @@ import Head from 'next/head';
 import Toolbar from '../../components/kainplan/edit/Toolbar';
 import Topbar from '../../components/kainplan/edit/Topbar';
 import { useEffect } from 'react';
+import PanTool from '../../components/kainplan/tools/PanTool';
+import AddNodeTool from '../../components/kainplan/tools/AddNodeTool';
+import AddEndpointTool from '../../components/kainplan/tools/AddEndpointTool';
+import EraseNodeTool from '../../components/kainplan/tools/EraseNodeTool';
+import ConnectNodesTool from '../../components/kainplan/tools/ConnectNodesTool';
+import MoveNodeTool from '../../components/kainplan/tools/MoveNodeTool';
 
 interface EditProps extends WithTranslation, WithUser {
 };
@@ -44,16 +50,29 @@ const Edit = ({ t, }: EditProps) => {
       <div className={style.root}>
         <Topbar ref={e => topbar = e} />
         <Toolbar 
-          doPan={() => map.changeMode(MapMode.PAN)} 
-          placeNode={() => map.changeMode(MapMode.NODE)} 
-          placeEndpoint={() => map.changeMode(MapMode.ENDPOINT)}
+          doPan={() => map.changeTool(PanTool)} 
+          placeNode={() => map.changeTool(AddNodeTool)} 
+          placeEndpoint={() => map.changeTool(AddEndpointTool)}
           doEdit={() => null}
-          doErase={() => map.changeMode(MapMode.ERASE)}
-          doConnect={() => map.changeMode(MapMode.CONNECT)}
-          doMove={() => map.changeMode(MapMode.MOVE)}
+          doMove={() => map.changeTool(MoveNodeTool)}
+          doErase={() => map.changeTool(EraseNodeTool)}
+          doConnect={() => map.changeTool(ConnectNodesTool)}
         />
         <div>
-          <Map ref={e => map = e} id={router.query.id as string} mountCb={onresize}></Map>
+          <Map 
+            ref={e => map = e} 
+            id={router.query.id as string} 
+            mountCb={onresize}
+            tools={[
+              PanTool,
+              AddNodeTool,
+              AddEndpointTool,
+              MoveNodeTool,
+              EraseNodeTool,
+              ConnectNodesTool,
+            ]}
+            ctrlTool={PanTool}
+          ></Map>
         </div>
         <style jsx global>{`
           html, body, #__next {

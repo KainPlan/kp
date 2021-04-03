@@ -1,9 +1,9 @@
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import Head from 'next/head';
 import React from 'react';
-import { runInThisContext } from 'vm';
 import style from './Map.module.scss';
-import Popup from './Popup';
+import MapTool from './tools/MapTool';
+import PanTool from './tools/PanTool';
 
 interface MapProps {
   id: string;
@@ -11,6 +11,11 @@ interface MapProps {
   fullscreen?: boolean;
   width?: number;
   height?: number;
+  tools?: (typeof MapTool)[];
+  defaultTool?: typeof MapTool;
+  ctrlTool?: typeof MapTool;
+  shiftTool?: typeof MapTool;
+  altTool?: typeof MapTool;
   mountCb?: ()=>void;
 }
 
@@ -69,9 +74,7 @@ interface MapState {
   background: string[];
   nodes: Node[][];
   currentFloor: number;
-  mode: MapMode;
-  connectFrom: Node;
-  moveNode: Node;
+  tool: MapTool<any, any>;
   ctrlKey: boolean;
   shiftKey: boolean;
   altKey: boolean;
@@ -79,7 +82,7 @@ interface MapState {
 
 class Map extends React.Component<MapProps, MapState> {
   private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
+  public ctx: CanvasRenderingContext2D;
   private clicks: any[] = [];
   private lastTime: number = Date.now();
   private minTimeDiff: number = 10;
@@ -90,12 +93,9 @@ class Map extends React.Component<MapProps, MapState> {
   private animTime: number = 100;
   private animIntval: number;
 
-  private minUpdateTimeDiff: number = 1000;
-  private mouseX: number = 0;
-  private mouseY: number = 0;
-  private lastConnectionRefresh: number = Date.now();
-  private lastMoveUpdate: number = Date.now();
-  private endpointPopup: Popup = null;
+  public mouseX: number = 0;
+  public mouseY: number = 0;
+  private tools: { [key: string]: MapTool<any, any>, } = {};
 
   private panScale: number = 0.3;
   private panTime: number = 150;
@@ -109,15 +109,6 @@ class Map extends React.Component<MapProps, MapState> {
   private updating: boolean = false;
   private stopUpdating: boolean = false;
 
-  private static cursors: { [mode: number]: string; } = {
-    [MapMode.PAN]: 'move',
-    [MapMode.NODE]: 'crosshair',
-    [MapMode.ENDPOINT]: 'crosshair',
-    [MapMode.MOVE]: 'crosshair',
-    [MapMode.ERASE]: 'crosshair',
-    [MapMode.CONNECT]: 'crosshair',
-  };
-
   public constructor (props) {
     super(props);
     this.state = {
@@ -130,9 +121,7 @@ class Map extends React.Component<MapProps, MapState> {
       background: [],
       nodes: [],
       currentFloor: 0,
-      mode: MapMode.PAN,
-      connectFrom: null,
-      moveNode: null,
+      tool: null,
       ctrlKey: false,
       altKey: false,
       shiftKey: false,
@@ -140,6 +129,8 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   public componentDidMount () {
+    const defaultTool: any = this.props.defaultTool ? this.tools[this.props.defaultTool.name] : this.tools[PanTool.name];
+    this.setState({ tool: defaultTool, });
     fetch(`/api/maps/${this.props.id}`)
       .then(res => {
         if (!res.ok) return window.alert('error!');
@@ -369,19 +360,6 @@ class Map extends React.Component<MapProps, MapState> {
     return res.success;
   }
 
-  private moveNodeWrapper(moveNode: Node, x: number, y: number, floor: number) {
-    if (!moveNode) return;
-    const issueUpdate: boolean = Date.now() - this.lastMoveUpdate > this.minUpdateTimeDiff;
-    if (issueUpdate) this.lastMoveUpdate = Date.now();
-    this.moveNode(
-      this.state.moveNode, 
-      this.winX2map(this.clicks[0].clientX), 
-      this.winY2map(this.clicks[0].clientY), 
-      this.state.currentFloor,
-      issueUpdate
-    );
-  }
-
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //
 
   private entangleNodes(rawNodes: RawNode[][]): Promise<void> {
@@ -405,9 +383,8 @@ class Map extends React.Component<MapProps, MapState> {
     });
   }
 
-  public changeMode(mode: MapMode) {
-    if (mode === MapMode.CONNECT) this.setState({ connectFrom: null, });
-    this.setState({ mode, });
+  public changeTool(tool: typeof MapTool) {
+    this.setState({ tool: this.tools[tool.name], })
   }
 
   public reset() {
@@ -422,12 +399,12 @@ class Map extends React.Component<MapProps, MapState> {
     return this.px2m(winY - this.canvas.getBoundingClientRect().top - this.offsetY);
   }
 
-  private px2m(px: number): number {
+  public px2m(px: number): number {
     // return px * this.scale * this.magnify;
     return px / this.magnify;
   }
   
-  private m2px(m: number): number {
+  public m2px(m: number): number {
     // return m * (1/this.map.scale) * this.magnifiy;
     return m * this.magnify;
   }
@@ -556,6 +533,7 @@ class Map extends React.Component<MapProps, MapState> {
       this.ctx.stroke();
       this.ctx.fill();
     });
+    this.state.tool.onDrawNodes(this);
     this.ctx.lineWidth = prevLineWidth;
     this.ctx.fillStyle = prevFillStyle;
     this.ctx.strokeStyle = prevStrokeStyle;
@@ -577,18 +555,12 @@ class Map extends React.Component<MapProps, MapState> {
         this.ctx.stroke();
       });
     });
-    if (this.state.mode === MapMode.CONNECT && this.state.connectFrom) {
-      this.ctx.strokeStyle = '#FF009D';
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.m2px(this.state.connectFrom.x), this.m2px(this.state.connectFrom.y));
-      this.ctx.lineTo(this.m2px(this.mouseX), this.m2px(this.mouseY));
-      this.ctx.stroke();
-    }
+    this.state.tool.onDrawConnections(this);
     this.ctx.lineWidth = prevLineWidth;
     this.ctx.strokeStyle = prevStrokeStyle;
   }
 
-  private refresh() {
+  public refresh() {
     this.ctx.clearRect(0, 0, 
       this.state.width + this.m2px(this.state.mapWidth), 
       this.state.height + this.m2px(this.state.mapHeight));
@@ -597,9 +569,15 @@ class Map extends React.Component<MapProps, MapState> {
     this.drawConnections();
     this.drawNodes();
   }
-
   
   // EVENT LISTENERS -------------------------------------------------------------- //
+
+  private triggerEvent (listener: string, args: any[]): void {
+    if (this.state.ctrlKey && this.props.ctrlTool) this.tools[this.props.ctrlTool.name][listener](...args);
+    else if (this.state.shiftKey && this.props.shiftTool) this.tools[this.props.shiftTool.name][listener](...args);
+    else if (this.state.altKey && this.props.altTool) this.tools[this.props.altTool.name][listener](...args);
+    else this.state.tool[listener](...args);
+  }
 
   private onMouseZoom (e: React.WheelEvent): void {
     let cab: DOMRect = this.canvas.getBoundingClientRect();
@@ -608,66 +586,35 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private onMouseDown(e: React.PointerEvent) {
+    this.triggerEvent(this.state.tool.onMouseDown.name, [this, e,]);
     this.clicks.push({...e});
     this.lastTime = Date.now();
   }
 
   private onMouseMove(e: React.PointerEvent) {
     if (this.clicks.length === 1 && Date.now() - this.lastTime > this.minTimeDiff) {
-      if (this.state.mode === MapMode.PAN || this.state.ctrlKey) {
-        this.pan(
-          this.clicks[0].clientX - e.clientX,
-          this.clicks[0].clientY - e.clientY,
-          this.clicks,
-        );
-      } else if (this.state.mode === MapMode.MOVE) {
-        this.moveNodeWrapper(
-          this.state.moveNode,
-          this.winX2map(this.clicks[0].clientX),
-          this.winY2map(this.clicks[0].clientY),
-          this.state.currentFloor,
-        );
-      }
+      this.triggerEvent(this.state.tool.onMouseMove.name, [this, e, this.clicks,]);
       this.clicks[0] = {...e};
       this.lastTime = Date.now();
     }
   }
 
   private onMouseUp(e: React.PointerEvent) {
-    if (this.state.mode === MapMode.MOVE && this.state.moveNode) {
-      this.moveNode(
-        this.state.moveNode, 
-        this.winX2map(this.clicks[0].clientX), 
-        this.winY2map(this.clicks[0].clientY), 
-        this.state.currentFloor
-      );
-      this.setState({ moveNode: null, });
-    }
+    this.triggerEvent(this.state.tool.onMouseUp.name, [this, e,]);
     this.clicks.pop();
   }
 
   private onTouchDown(e: React.PointerEvent) {
+    this.triggerEvent(this.state.tool.onTouchDown.name, [this, e,]);
     this.clicks.push({...e});
     this.lastTime = Date.now();
   }
 
   private onTouchMove(e: React.PointerEvent) {
     if (Date.now() - this.lastTime > this.minTimeDiff) {
+      this.triggerEvent(this.state.tool.onTouchMove.name, [this, e, this.clicks,]);
       if (this.clicks.length === 1) {
-        if (this.state.mode === MapMode.PAN || this.state.ctrlKey) {
-          this.pan(
-            (this.clicks[0].clientX - e.clientX),
-            (this.clicks[0].clientY - e.clientY),
-            this.clicks,
-          );
-        } else if (this.state.mode === MapMode.MOVE) {
-          this.moveNodeWrapper(
-            this.state.moveNode,
-            this.winX2map(this.clicks[0].clientX),
-            this.winY2map(this.clicks[0].clientY),
-            this.state.currentFloor,
-          );
-        }
+        this.triggerEvent(this.state.tool.onSingleTouchMove.name, [this, e, this.clicks,]);
         this.clicks[0] = {...e};
         this.lastTime = Date.now();
       } else if (this.clicks.length === 2) {
@@ -685,6 +632,7 @@ class Map extends React.Component<MapProps, MapState> {
           Math.min(e.clientX, this.clicks[otherIndex].clientX) - cab.left + dX / 2,
           Math.min(e.clientY, this.clicks[otherIndex].clientY) - cab.top + dY / 2);
 
+        this.triggerEvent(this.state.tool.onDoubleTouchMove.name, [this, e, this.clicks,]);
         this.clicks[1-otherIndex] = {...e};
         this.lastTime = Date.now();
       }
@@ -692,15 +640,9 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private onTouchUp(e: React.PointerEvent) {
-    if (this.clicks.length === 1 && this.state.mode === MapMode.MOVE && this.state.moveNode) {
-      this.moveNode(
-        this.state.moveNode, 
-        this.winX2map(this.clicks[0].clientX), 
-        this.winY2map(this.clicks[0].clientY), 
-        this.state.currentFloor
-      );
-      this.setState({ moveNode: null, });
-    }
+    this.triggerEvent(this.state.tool.onTouchUp.name, [this, e, this.clicks,]);
+    if (this.clicks.length === 1) this.triggerEvent(this.state.tool.onSingleTouchUp.name, [this, e, this.clicks,]);
+    else if (this.clicks.length === 2) this.triggerEvent(this.state.tool.onDoubleTouchUp.name, [this, e, this.clicks,]);
     for (let i = 0; i < this.clicks.length; i++) {
       if ((this.clicks[i] as PointerEvent).pointerId === e.pointerId) {
         this.clicks.splice(i,1);
@@ -711,75 +653,24 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onDown(e: React.PointerEvent) {
     e.preventDefault();
-    console.log(`[DEBUG]: mode = ${this.state.mode} ... `);
-
-    const cbs: {[mode in MapMode]: (e: React.PointerEvent)=>void;} = {
-      [MapMode.PAN]: e => {
-        switch(e.pointerType) {
-          case 'mouse':
-            this.onMouseDown(e);
-            break;
-          default:
-            this.onTouchDown(e);
-            break;
-        }
-      },
-      [MapMode.NODE]: e => {
-        this.addNode({
-          _type: 'node',
-          id: Date.now(),
-          x: this.winX2map(e.clientX),
-          y: this.winY2map(e.clientY),
-          edges: [],
-        }, this.state.currentFloor);
-      },
-      [MapMode.ENDPOINT]: e => {
-        this.endpointPopup.show();
-        // this.addNode({
-        //   _type: 'endpoint',
-        //   id: Date.now(),
-        //   x: this.winX2map(e.clientX),
-        //   y: this.winY2map(e.clientY),
-        //   edges: [],
-        //   body: {
-        //     title: '',
-        //     description: '',
-        //   },
-        // }, this.state.currentFloor);
-      },
-      [MapMode.MOVE]: e => {
-        this.setState({ moveNode: this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor), });
-        cbs[MapMode.PAN](e);
-      },
-      [MapMode.ERASE]: e => {
-        const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
-        if (!node) return;
-        this.deleteNode(node, this.state.currentFloor);
-      },
-      [MapMode.CONNECT]: e => {
-        const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
-        if (!node) return;
-        if (!this.state.connectFrom) {
-          this.setState({ connectFrom: node, });
-        } else {
-          this.connectNodes(this.state.connectFrom, node);
-          this.setState({ connectFrom: null, });
-        }
-      },
-    };
-
-    if (this.state.ctrlKey) cbs[MapMode.PAN](e);
-    else cbs[this.state.mode](e);
+    console.log('[DEBUG]: tool: ');
+    console.log(this.state.tool);
+    this.triggerEvent(this.state.tool.onDown.name, [this, e,]);
+    switch(e.pointerType) {
+      case 'mouse':
+        this.onMouseDown(e);
+        break;
+      default:
+        this.onTouchDown(e);
+        break;
+    }
   }
 
   private onMove(e: React.PointerEvent) {
     e.preventDefault();
     this.mouseX = this.winX2map(e.clientX);
     this.mouseY = this.winY2map(e.clientY);
-    if (this.state.mode === MapMode.CONNECT && Date.now()-this.lastConnectionRefresh > this.minTimeDiff) {
-      this.lastConnectionRefresh = Date.now();
-      this.refresh();
-    }
+    this.triggerEvent(this.state.tool.onMove.name, [this, e, this.clicks,]);
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseMove(e);
@@ -792,6 +683,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onUp(e: React.PointerEvent) {
     e.preventDefault();
+    this.triggerEvent(this.state.tool.onUp.name, [this, e,]);
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseUp(e);
@@ -804,6 +696,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   private observeSpecialKeys(e: React.KeyboardEvent) {
     e.preventDefault();
+    if (e.key === 'Escape') this.state.tool.cancel(this);
     this.setState({
       ctrlKey: e.ctrlKey,
       altKey: e.altKey,
@@ -820,15 +713,21 @@ class Map extends React.Component<MapProps, MapState> {
         <div className={style.root} style={{
           width: this.state.width+'px',
           height: this.state.height+'px',
-          cursor: this.state.ctrlKey 
-                  ? Map.cursors[MapMode.PAN]
-                  : this.state.mode === MapMode.CONNECT && this.state.connectFrom
-                    ? 'none'
-                    : Map.cursors[this.state.mode],
+          cursor: this.state.ctrlKey && this.props.ctrlTool
+                  ? this.tools[this.props.ctrlTool.name].state.cursor
+                  : this.state.shiftKey && this.props.shiftTool
+                    ? this.tools[this.props.shiftTool.name].state.cursor
+                    : this.state.altKey && this.props.altTool
+                      ? this.tools[this.props.altTool.name].state.cursor
+                      : this.state.tool
+                        ? this.state.tool.state.cursor
+                        : 'wait',
         }}>
-          <Popup title="Endpoint" ref={e => this.endpointPopup = e} icon={faMapMarkerAlt}>
-            <h1>Hello World!</h1>
-          </Popup>
+          {
+            this.props.tools
+            ? this.props.tools.map(t => React.createElement(t, { key: t.name, ref: e => this.tools[t.name] = e, }))
+            : <PanTool ref={e => this.tools[PanTool.name] = e} />
+          }
           <canvas
             ref={e => this.canvas = e}
             width={this.state.width}
