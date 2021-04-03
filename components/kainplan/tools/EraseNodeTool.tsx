@@ -11,10 +11,10 @@ class EraseNodeTool extends MapTool<any, any> {
     };
   }
 
-  public onDown (map: Map, e: React.PointerEvent): void {
-    const node: Node = map.nodeAround(map.winX2map(e.clientX), map.winY2map(e.clientY));
+  public onDown (e: React.PointerEvent): void {
+    const node: Node = this.props.map.nodeAround(this.props.map.winX2map(e.clientX), this.props.map.winY2map(e.clientY));
     if (!node) return;
-    map.deleteNode(node, map.state.currentFloor);
+    this.props.map.deleteNode(node, this.props.map.state.currentFloor);
   }
 }
 

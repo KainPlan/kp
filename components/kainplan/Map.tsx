@@ -533,7 +533,7 @@ class Map extends React.Component<MapProps, MapState> {
       this.ctx.stroke();
       this.ctx.fill();
     });
-    this.state.tool.onDrawNodes(this);
+    this.state.tool.onDrawNodes();
     this.ctx.lineWidth = prevLineWidth;
     this.ctx.fillStyle = prevFillStyle;
     this.ctx.strokeStyle = prevStrokeStyle;
@@ -555,7 +555,7 @@ class Map extends React.Component<MapProps, MapState> {
         this.ctx.stroke();
       });
     });
-    this.state.tool.onDrawConnections(this);
+    this.state.tool.onDrawConnections();
     this.ctx.lineWidth = prevLineWidth;
     this.ctx.strokeStyle = prevStrokeStyle;
   }
@@ -586,35 +586,35 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private onMouseDown(e: React.PointerEvent) {
-    this.triggerEvent(this.state.tool.onMouseDown.name, [this, e,]);
+    this.triggerEvent(this.state.tool.onMouseDown.name, [e,]);
     this.clicks.push({...e});
     this.lastTime = Date.now();
   }
 
   private onMouseMove(e: React.PointerEvent) {
     if (this.clicks.length === 1 && Date.now() - this.lastTime > this.minTimeDiff) {
-      this.triggerEvent(this.state.tool.onMouseMove.name, [this, e, this.clicks,]);
+      this.triggerEvent(this.state.tool.onMouseMove.name, [e, this.clicks,]);
       this.clicks[0] = {...e};
       this.lastTime = Date.now();
     }
   }
 
   private onMouseUp(e: React.PointerEvent) {
-    this.triggerEvent(this.state.tool.onMouseUp.name, [this, e,]);
+    this.triggerEvent(this.state.tool.onMouseUp.name, [e,]);
     this.clicks.pop();
   }
 
   private onTouchDown(e: React.PointerEvent) {
-    this.triggerEvent(this.state.tool.onTouchDown.name, [this, e,]);
+    this.triggerEvent(this.state.tool.onTouchDown.name, [e,]);
     this.clicks.push({...e});
     this.lastTime = Date.now();
   }
 
   private onTouchMove(e: React.PointerEvent) {
     if (Date.now() - this.lastTime > this.minTimeDiff) {
-      this.triggerEvent(this.state.tool.onTouchMove.name, [this, e, this.clicks,]);
+      this.triggerEvent(this.state.tool.onTouchMove.name, [e, this.clicks,]);
       if (this.clicks.length === 1) {
-        this.triggerEvent(this.state.tool.onSingleTouchMove.name, [this, e, this.clicks,]);
+        this.triggerEvent(this.state.tool.onSingleTouchMove.name, [e, this.clicks,]);
         this.clicks[0] = {...e};
         this.lastTime = Date.now();
       } else if (this.clicks.length === 2) {
@@ -632,7 +632,7 @@ class Map extends React.Component<MapProps, MapState> {
           Math.min(e.clientX, this.clicks[otherIndex].clientX) - cab.left + dX / 2,
           Math.min(e.clientY, this.clicks[otherIndex].clientY) - cab.top + dY / 2);
 
-        this.triggerEvent(this.state.tool.onDoubleTouchMove.name, [this, e, this.clicks,]);
+        this.triggerEvent(this.state.tool.onDoubleTouchMove.name, [e, this.clicks,]);
         this.clicks[1-otherIndex] = {...e};
         this.lastTime = Date.now();
       }
@@ -640,9 +640,9 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private onTouchUp(e: React.PointerEvent) {
-    this.triggerEvent(this.state.tool.onTouchUp.name, [this, e, this.clicks,]);
-    if (this.clicks.length === 1) this.triggerEvent(this.state.tool.onSingleTouchUp.name, [this, e, this.clicks,]);
-    else if (this.clicks.length === 2) this.triggerEvent(this.state.tool.onDoubleTouchUp.name, [this, e, this.clicks,]);
+    this.triggerEvent(this.state.tool.onTouchUp.name, [e, this.clicks,]);
+    if (this.clicks.length === 1) this.triggerEvent(this.state.tool.onSingleTouchUp.name, [e, this.clicks,]);
+    else if (this.clicks.length === 2) this.triggerEvent(this.state.tool.onDoubleTouchUp.name, [e, this.clicks,]);
     for (let i = 0; i < this.clicks.length; i++) {
       if ((this.clicks[i] as PointerEvent).pointerId === e.pointerId) {
         this.clicks.splice(i,1);
@@ -655,7 +655,7 @@ class Map extends React.Component<MapProps, MapState> {
     e.preventDefault();
     console.log('[DEBUG]: tool: ');
     console.log(this.state.tool);
-    this.triggerEvent(this.state.tool.onDown.name, [this, e,]);
+    this.triggerEvent(this.state.tool.onDown.name, [e,]);
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseDown(e);
@@ -670,7 +670,7 @@ class Map extends React.Component<MapProps, MapState> {
     e.preventDefault();
     this.mouseX = this.winX2map(e.clientX);
     this.mouseY = this.winY2map(e.clientY);
-    this.triggerEvent(this.state.tool.onMove.name, [this, e, this.clicks,]);
+    this.triggerEvent(this.state.tool.onMove.name, [e, this.clicks,]);
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseMove(e);
@@ -683,7 +683,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onUp(e: React.PointerEvent) {
     e.preventDefault();
-    this.triggerEvent(this.state.tool.onUp.name, [this, e,]);
+    this.triggerEvent(this.state.tool.onUp.name, [e,]);
     switch(e.pointerType) {
       case 'mouse':
         this.onMouseUp(e);

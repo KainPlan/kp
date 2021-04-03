@@ -1,7 +1,7 @@
 import Map from "../Map";
-import MapTool from "./MapTool";
+import MapTool, { MapToolProps } from "./MapTool";
 
-class AddNodeTool extends MapTool<any, any> {
+class AddNodeTool extends MapTool<MapToolProps, any> {
 
   public constructor(props) {
     super(props);
@@ -10,14 +10,14 @@ class AddNodeTool extends MapTool<any, any> {
     };
   }
 
-  public onDown (map: Map, e: React.PointerEvent): void {
-    map.addNode({
+  public onDown (e: React.PointerEvent): void {
+    this.props.map.addNode({
       _type: 'node',
       id: Date.now(),
-      x: map.winX2map(e.clientX),
-      y: map.winY2map(e.clientY),
+      x: this.props.map.winX2map(e.clientX),
+      y: this.props.map.winY2map(e.clientY),
       edges: [],
-    }, map.state.currentFloor);
+    }, this.props.map.state.currentFloor);
   }
 }
 

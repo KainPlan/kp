@@ -27,39 +27,39 @@ class ConnectNodesTool extends MapTool<ConnectNodesToolProps, ConnectNodesToolSt
     this.setState({ from: null, cursor: 'crosshair', });
   }
 
-  public activate (map: Map): void {
+  public activate (): void {
     this.reset();
   }
 
-  public cancel (map: Map): void {
+  public cancel (): void {
     this.reset();
   }
 
-  public onDown (map: Map, e: React.PointerEvent): void {
-    const node: Node = map.nodeAround(map.winX2map(e.clientX), map.winY2map(e.clientY));
+  public onDown (e: React.PointerEvent): void {
+    const node: Node = this.props.map.nodeAround(this.props.map.winX2map(e.clientX), this.props.map.winY2map(e.clientY));
     if (!node) return;
     if (!this.state.from) {
       this.setState({ from: node }); 
     } else {
-      map.connectNodes(this.state.from, node, map.state.currentFloor);
+      this.props.map.connectNodes(this.state.from, node, this.props.map.state.currentFloor);
       this.reset();
     }
   }
 
-  public onMove (map: Map, e: React.PointerEvent): void {
+  public onMove (e: React.PointerEvent): void {
     if (Date.now() - this.lastConnection > this.minRefreshTimeout) {
       this.lastConnection = Date.now();
-      map.refresh();
+      this.props.map.refresh();
     }
   }
 
-  public onDrawConnections (map: Map): void {
+  public onDrawConnections (): void {
     if (this.state.from) {
-      map.ctx.strokeStyle = '#FF009D';
-      map.ctx.beginPath();
-      map.ctx.moveTo(map.m2px(this.state.from.x), map.m2px(this.state.from.y));
-      map.ctx.lineTo(map.m2px(map.mouseX), map.m2px(map.mouseY));
-      map.ctx.stroke();
+      this.props.map.ctx.strokeStyle = '#FF009D';
+      this.props.map.ctx.beginPath();
+      this.props.map.ctx.moveTo(this.props.map.m2px(this.state.from.x), this.props.map.m2px(this.state.from.y));
+      this.props.map.ctx.lineTo(this.props.map.m2px(this.props.map.mouseX), this.props.map.m2px(this.props.map.mouseY));
+      this.props.map.ctx.stroke();
     }
   }
 }

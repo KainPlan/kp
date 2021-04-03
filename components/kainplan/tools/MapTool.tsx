@@ -11,55 +11,55 @@ export interface MapToolState {
 
 class MapTool<P extends MapToolProps, S extends MapToolState> extends React.Component<P, S> {
 
-  public activate (map: Map): void {
+  public activate (): void {
   }
 
-  public cancel (map: Map): void {
+  public cancel (): void {
   }
 
-  public onMouseDown (map: Map, e: React.MouseEvent): void {
+  public onMouseDown (e: React.MouseEvent): void {
   }
 
-  public onMouseMove (map: Map, e: React.MouseEvent, clicks: any[]): void {
+  public onMouseMove (e: React.MouseEvent, clicks: any[]): void {
   }
 
-  public onMouseUp (map: Map, e: React.MouseEvent): void {
+  public onMouseUp (e: React.MouseEvent): void {
   }
 
-  public onTouchDown (map: Map, e: React.PointerEvent): void {
+  public onTouchDown (e: React.PointerEvent): void {
   }
 
-  public onTouchMove (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onTouchMove (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onSingleTouchMove (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onSingleTouchMove (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onDoubleTouchMove (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onDoubleTouchMove (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onTouchUp (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onTouchUp (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onSingleTouchUp (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onSingleTouchUp (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onDoubleTouchUp (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onDoubleTouchUp (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onDown (map: Map, e: React.PointerEvent): void {
+  public onDown (e: React.PointerEvent): void {
   }
 
-  public onMove (map: Map, e: React.PointerEvent, clicks: any[]): void {
+  public onMove (e: React.PointerEvent, clicks: any[]): void {
   }
 
-  public onUp (map: Map, e: React.PointerEvent): void {
+  public onUp (e: React.PointerEvent): void {
   }
 
-  public onDrawNodes (map: Map): void {
+  public onDrawNodes (): void {
   }
 
-  public onDrawConnections (map: Map): void {
+  public onDrawConnections (): void {
   }
 
   public render () {

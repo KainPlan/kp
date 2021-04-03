@@ -7,10 +7,7 @@ import Popup from "../Popup";
 import ResponsiveInputBox from "../ResponsiveInputBox";
 import MapTool, { MapToolProps } from "./MapTool";
 
-interface AddEndpointToolProps extends MapToolProps {
-};
-
-class AddEndpointTool extends MapTool<AddEndpointToolProps, any> {
+class AddEndpointTool extends MapTool<MapToolProps, any> {
 
   private popup: Popup;
   private posX: number;
@@ -30,7 +27,7 @@ class AddEndpointTool extends MapTool<AddEndpointToolProps, any> {
     this.posY = null;
   }
 
-  public onDown (map: Map, e: React.PointerEvent): void {
+  public onDown (e: React.PointerEvent): void {
     this.posX = e.clientX;
     this.posY = e.clientY;
     this.popup.show();

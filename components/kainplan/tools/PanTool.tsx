@@ -10,16 +10,16 @@ class PanTool extends MapTool<any, any> {
     };
   }
 
-  public onMouseMove (map: Map, e: React.MouseEvent, clicks: any[]): void {
-    map.pan(
+  public onMouseMove (e: React.MouseEvent, clicks: any[]): void {
+    this.props.map.pan(
       clicks[0].clientX - e.clientX,
       clicks[0].clientY - e.clientY,
       clicks,
     );
   }
 
-  public onSingleTouchMove (map: Map, e: React.PointerEvent, clicks: any[]): void {
-    map.pan(
+  public onSingleTouchMove (e: React.PointerEvent, clicks: any[]): void {
+    this.props.map.pan(
       clicks[0].clientX - e.clientX,
       clicks[0].clientY - e.clientY,
       clicks,
