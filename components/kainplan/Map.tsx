@@ -522,10 +522,10 @@ class Map extends React.Component<MapProps, MapState> {
     const prevStrokeStyle: string|CanvasGradient|CanvasPattern = this.ctx.strokeStyle;
     const prevFillStyle: string|CanvasGradient|CanvasPattern = this.ctx.fillStyle;
     const prevLineWidth: number = this.ctx.lineWidth;
-    this.ctx.strokeStyle = '#00FFC5';
     this.ctx.fillStyle = 'rgba(0,255,197,.5)';
     this.ctx.lineWidth = 3;
     this.state.nodes[this.state.currentFloor].forEach(n => {
+      this.ctx.strokeStyle = n._type === 'node' ? '#00FFC5' : '#00FF2C';
       this.ctx.beginPath();
       this.ctx.ellipse(this.m2px(n.x), this.m2px(n.y),
                      this.m2px(1.5), this.m2px(1.5), 
@@ -695,7 +695,6 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private observeSpecialKeys(e: React.KeyboardEvent) {
-    e.preventDefault();
     if (e.key === 'Escape') this.state.tool.cancel(this);
     this.setState({
       ctrlKey: e.ctrlKey,
@@ -725,8 +724,8 @@ class Map extends React.Component<MapProps, MapState> {
         }}>
           {
             this.props.tools
-            ? this.props.tools.map(t => React.createElement(t, { key: t.name, ref: e => this.tools[t.name] = e, }))
-            : <PanTool ref={e => this.tools[PanTool.name] = e} />
+            ? this.props.tools.map(t => React.createElement(t, { map: this, key: t.name, ref: e => this.tools[t.name] = e, }))
+            : <PanTool map={this} ref={e => this.tools[PanTool.name] = e} />
           }
           <canvas
             ref={e => this.canvas = e}

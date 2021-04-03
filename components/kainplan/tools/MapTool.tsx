@@ -1,7 +1,8 @@
 import React from "react";
 import Map from "../Map";
 
-export interface MapToolProps {
+export interface MapToolProps extends React.ComponentPropsWithRef<any> {
+  map?: Map;
 };
 
 export interface MapToolState {
