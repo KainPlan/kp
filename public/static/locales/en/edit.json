@@ -1,7 +1,9 @@
 {
-  "move": "Pan",
+  "pan": "Pan",
   "endpoint": "Endpoint",
+  "edit": "Edit",
   "node": "Node",
   "connection": "Connection",
-  "erase": "Erase"
+  "erase": "Erase",
+  "move": "Move"
 }

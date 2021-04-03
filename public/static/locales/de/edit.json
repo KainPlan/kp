@@ -1,7 +1,9 @@
 {
-  "move": "Schwenken",
+  "pan": "Schwenken",
   "endpoint": "Endpunkt",
+  "edit": "Bearbeiten",
   "node": "Knoten",
   "connection": "Verbindung",
-  "erase": "Löschen"
+  "erase": "Löschen",
+  "move": "Verschieben"
 }

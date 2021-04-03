@@ -44,10 +44,13 @@ const Edit = ({ t, }: EditProps) => {
       <div className={style.root}>
         <Topbar ref={e => topbar = e} />
         <Toolbar 
-          doMove={() => map.changeMode(MapMode.MOVE)} 
+          doPan={() => map.changeMode(MapMode.PAN)} 
           placeNode={() => map.changeMode(MapMode.NODE)} 
+          placeEndpoint={() => map.changeMode(MapMode.ENDPOINT)}
+          doEdit={() => null}
           doErase={() => map.changeMode(MapMode.ERASE)}
           doConnect={() => map.changeMode(MapMode.CONNECT)}
+          doMove={() => map.changeMode(MapMode.MOVE)}
         />
         <div>
           <Map ref={e => map = e} id={router.query.id as string} mountCb={onresize}></Map>

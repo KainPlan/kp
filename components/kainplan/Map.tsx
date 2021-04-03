@@ -1,7 +1,9 @@
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import Head from 'next/head';
 import React from 'react';
 import { runInThisContext } from 'vm';
 import style from './Map.module.scss';
+import Popup from './Popup';
 
 interface MapProps {
   id: string;
@@ -49,10 +51,12 @@ export interface Node {
 }
 
 export enum MapMode {
-  MOVE,
+  PAN,
   NODE,
+  ENDPOINT,
   ERASE,
   CONNECT,
+  MOVE,
 }
 
 interface MapState {
@@ -67,6 +71,7 @@ interface MapState {
   currentFloor: number;
   mode: MapMode;
   connectFrom: Node;
+  moveNode: Node;
   ctrlKey: boolean;
   shiftKey: boolean;
   altKey: boolean;
@@ -76,7 +81,7 @@ class Map extends React.Component<MapProps, MapState> {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private clicks: any[] = [];
-  private lastTime: number = new Date().getTime();
+  private lastTime: number = Date.now();
   private minTimeDiff: number = 10;
   private scrollMultiplier: number = 0.005;
 
@@ -85,9 +90,12 @@ class Map extends React.Component<MapProps, MapState> {
   private animTime: number = 100;
   private animIntval: number;
 
+  private minUpdateTimeDiff: number = 1000;
   private mouseX: number = 0;
   private mouseY: number = 0;
-  private lastConnection: number = new Date().getTime();
+  private lastConnectionRefresh: number = Date.now();
+  private lastMoveUpdate: number = Date.now();
+  private endpointPopup: Popup = null;
 
   private panScale: number = 0.3;
   private panTime: number = 150;
@@ -102,8 +110,10 @@ class Map extends React.Component<MapProps, MapState> {
   private stopUpdating: boolean = false;
 
   private static cursors: { [mode: number]: string; } = {
-    [MapMode.MOVE]: 'move',
+    [MapMode.PAN]: 'move',
     [MapMode.NODE]: 'crosshair',
+    [MapMode.ENDPOINT]: 'crosshair',
+    [MapMode.MOVE]: 'crosshair',
     [MapMode.ERASE]: 'crosshair',
     [MapMode.CONNECT]: 'crosshair',
   };
@@ -120,8 +130,9 @@ class Map extends React.Component<MapProps, MapState> {
       background: [],
       nodes: [],
       currentFloor: 0,
-      mode: MapMode.MOVE,
+      mode: MapMode.PAN,
       connectFrom: null,
+      moveNode: null,
       ctrlKey: false,
       altKey: false,
       shiftKey: false,
@@ -191,8 +202,22 @@ class Map extends React.Component<MapProps, MapState> {
     });
   }
 
-  public moveNode(node: Node, x: number, y: number, floor?: number) {
+  public updateNodeBody(node: Node, body: object, floor?: number) {
     floor = floor || this.state.currentFloor;
+    if (!this.isFloor(floor)) return;
+    node.body = body;
+    const nodes: Node[][] = this.state.nodes;
+    nodes[floor] = [...nodes[floor].filter(n => n.id !== node.id), node,];
+    this.setState({
+      nodes,
+    }, () => {
+      this.queueUpdate('updateNodeBody', { floor, node: node.id, body, });
+    });
+  }
+
+  public moveNode(node: Node, x: number, y: number, floor?: number, issueUpdate?: boolean) {
+    floor = floor || this.state.currentFloor;
+    issueUpdate = issueUpdate === undefined ? true : issueUpdate;
     if (!this.isFloor(floor)) return;
     node.x = x;
     node.y = y;
@@ -202,7 +227,7 @@ class Map extends React.Component<MapProps, MapState> {
       nodes,
     }, () => {
       this.refresh();
-      this.queueUpdate('moveNode', { floor, node: node.id, x, y, })
+      if (issueUpdate) this.queueUpdate('moveNode', { floor, node: node.id, x, y, })
     });
   }
 
@@ -342,6 +367,19 @@ class Map extends React.Component<MapProps, MapState> {
     }
     this.updating = false;
     return res.success;
+  }
+
+  private moveNodeWrapper(moveNode: Node, x: number, y: number, floor: number) {
+    if (!moveNode) return;
+    const issueUpdate: boolean = Date.now() - this.lastMoveUpdate > this.minUpdateTimeDiff;
+    if (issueUpdate) this.lastMoveUpdate = Date.now();
+    this.moveNode(
+      this.state.moveNode, 
+      this.winX2map(this.clicks[0].clientX), 
+      this.winY2map(this.clicks[0].clientY), 
+      this.state.currentFloor,
+      issueUpdate
+    );
   }
 
   // MAP CONTROLLER FUNCTIONS -------------------------------------------------------------- //
@@ -571,40 +609,67 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onMouseDown(e: React.PointerEvent) {
     this.clicks.push({...e});
-    this.lastTime = new Date().getTime();
+    this.lastTime = Date.now();
   }
 
   private onMouseMove(e: React.PointerEvent) {
-    if (this.clicks.length === 1 && new Date().getTime() - this.lastTime > this.minTimeDiff) {
-      this.pan(
-        this.clicks[0].clientX - e.clientX,
-        this.clicks[0].clientY - e.clientY,
-        this.clicks,
-      );
+    if (this.clicks.length === 1 && Date.now() - this.lastTime > this.minTimeDiff) {
+      if (this.state.mode === MapMode.PAN || this.state.ctrlKey) {
+        this.pan(
+          this.clicks[0].clientX - e.clientX,
+          this.clicks[0].clientY - e.clientY,
+          this.clicks,
+        );
+      } else if (this.state.mode === MapMode.MOVE) {
+        this.moveNodeWrapper(
+          this.state.moveNode,
+          this.winX2map(this.clicks[0].clientX),
+          this.winY2map(this.clicks[0].clientY),
+          this.state.currentFloor,
+        );
+      }
       this.clicks[0] = {...e};
-      this.lastTime = new Date().getTime();
+      this.lastTime = Date.now();
     }
   }
 
   private onMouseUp(e: React.PointerEvent) {
+    if (this.state.mode === MapMode.MOVE && this.state.moveNode) {
+      this.moveNode(
+        this.state.moveNode, 
+        this.winX2map(this.clicks[0].clientX), 
+        this.winY2map(this.clicks[0].clientY), 
+        this.state.currentFloor
+      );
+      this.setState({ moveNode: null, });
+    }
     this.clicks.pop();
   }
 
   private onTouchDown(e: React.PointerEvent) {
     this.clicks.push({...e});
-    this.lastTime = new Date().getTime();
+    this.lastTime = Date.now();
   }
 
   private onTouchMove(e: React.PointerEvent) {
-    if (new Date().getTime() - this.lastTime > this.minTimeDiff) {
+    if (Date.now() - this.lastTime > this.minTimeDiff) {
       if (this.clicks.length === 1) {
-        this.pan(
-          (this.clicks[0].clientX - e.clientX),
-          (this.clicks[0].clientY - e.clientY),
-          this.clicks,
-        );
+        if (this.state.mode === MapMode.PAN || this.state.ctrlKey) {
+          this.pan(
+            (this.clicks[0].clientX - e.clientX),
+            (this.clicks[0].clientY - e.clientY),
+            this.clicks,
+          );
+        } else if (this.state.mode === MapMode.MOVE) {
+          this.moveNodeWrapper(
+            this.state.moveNode,
+            this.winX2map(this.clicks[0].clientX),
+            this.winY2map(this.clicks[0].clientY),
+            this.state.currentFloor,
+          );
+        }
         this.clicks[0] = {...e};
-        this.lastTime = new Date().getTime();
+        this.lastTime = Date.now();
       } else if (this.clicks.length === 2) {
         let otherIndex: number = this.clicks[0].pointerId===e.pointerId ? 1 : 0;
         let dX: number = Math.abs(e.clientX-this.clicks[otherIndex].clientX);
@@ -621,12 +686,21 @@ class Map extends React.Component<MapProps, MapState> {
           Math.min(e.clientY, this.clicks[otherIndex].clientY) - cab.top + dY / 2);
 
         this.clicks[1-otherIndex] = {...e};
-        this.lastTime = new Date().getTime();
+        this.lastTime = Date.now();
       }
     }
   }
 
   private onTouchUp(e: React.PointerEvent) {
+    if (this.clicks.length === 1 && this.state.mode === MapMode.MOVE && this.state.moveNode) {
+      this.moveNode(
+        this.state.moveNode, 
+        this.winX2map(this.clicks[0].clientX), 
+        this.winY2map(this.clicks[0].clientY), 
+        this.state.currentFloor
+      );
+      this.setState({ moveNode: null, });
+    }
     for (let i = 0; i < this.clicks.length; i++) {
       if ((this.clicks[i] as PointerEvent).pointerId === e.pointerId) {
         this.clicks.splice(i,1);
@@ -640,7 +714,7 @@ class Map extends React.Component<MapProps, MapState> {
     console.log(`[DEBUG]: mode = ${this.state.mode} ... `);
 
     const cbs: {[mode in MapMode]: (e: React.PointerEvent)=>void;} = {
-      [MapMode.MOVE]: e => {
+      [MapMode.PAN]: e => {
         switch(e.pointerType) {
           case 'mouse':
             this.onMouseDown(e);
@@ -659,6 +733,24 @@ class Map extends React.Component<MapProps, MapState> {
           edges: [],
         }, this.state.currentFloor);
       },
+      [MapMode.ENDPOINT]: e => {
+        this.endpointPopup.show();
+        // this.addNode({
+        //   _type: 'endpoint',
+        //   id: Date.now(),
+        //   x: this.winX2map(e.clientX),
+        //   y: this.winY2map(e.clientY),
+        //   edges: [],
+        //   body: {
+        //     title: '',
+        //     description: '',
+        //   },
+        // }, this.state.currentFloor);
+      },
+      [MapMode.MOVE]: e => {
+        this.setState({ moveNode: this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor), });
+        cbs[MapMode.PAN](e);
+      },
       [MapMode.ERASE]: e => {
         const node: Node = this.nodeAround(this.winX2map(e.clientX), this.winY2map(e.clientY), this.state.currentFloor);
         if (!node) return;
@@ -676,7 +768,7 @@ class Map extends React.Component<MapProps, MapState> {
       },
     };
 
-    if (this.state.ctrlKey) cbs[MapMode.MOVE](e);
+    if (this.state.ctrlKey) cbs[MapMode.PAN](e);
     else cbs[this.state.mode](e);
   }
 
@@ -684,8 +776,8 @@ class Map extends React.Component<MapProps, MapState> {
     e.preventDefault();
     this.mouseX = this.winX2map(e.clientX);
     this.mouseY = this.winY2map(e.clientY);
-    if (this.state.mode === MapMode.CONNECT && Date.now()-this.lastConnection > this.minTimeDiff) {
-      this.lastConnection = Date.now();
+    if (this.state.mode === MapMode.CONNECT && Date.now()-this.lastConnectionRefresh > this.minTimeDiff) {
+      this.lastConnectionRefresh = Date.now();
       this.refresh();
     }
     switch(e.pointerType) {
@@ -729,11 +821,14 @@ class Map extends React.Component<MapProps, MapState> {
           width: this.state.width+'px',
           height: this.state.height+'px',
           cursor: this.state.ctrlKey 
-                  ? Map.cursors[MapMode.MOVE]
+                  ? Map.cursors[MapMode.PAN]
                   : this.state.mode === MapMode.CONNECT && this.state.connectFrom
                     ? 'none'
                     : Map.cursors[this.state.mode],
         }}>
+          <Popup title="Endpoint" ref={e => this.endpointPopup = e} icon={faMapMarkerAlt}>
+            <h1>Hello World!</h1>
+          </Popup>
           <canvas
             ref={e => this.canvas = e}
             width={this.state.width}
