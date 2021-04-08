@@ -62,11 +62,9 @@ const Maps = ({ t, }: MapsProps) => {
                   : ''
               }
             </table>
-            <Link href="/create">
-              <button>
-                <i><FontAwesomeIcon icon={faPlus} /></i> {t('dashboard_maps:m_add')}
-              </button>
-            </Link>
+            <button onClick={onCreateMap}>
+              <i><FontAwesomeIcon icon={faPlus} /></i> {t('dashboard_maps:m_add')}
+            </button>
             <div className={style.createPopup}>
               <Popup ref={e => createMapPopup = e} title={t('dashboard_maps:create_map')} icon={faPlus}>
                 <CreateMap />
