@@ -14,6 +14,7 @@ import AddEndpointTool from '../../components/kainplan/tools/AddEndpointTool';
 import EraseNodeTool from '../../components/kainplan/tools/EraseNodeTool';
 import ConnectNodesTool from '../../components/kainplan/tools/ConnectNodesTool';
 import MoveNodeTool from '../../components/kainplan/tools/MoveNodeTool';
+import EditEndpointTool from '../../components/kainplan/tools/EditEndpointTool';
 
 interface EditProps extends WithTranslation, WithUser {
 };
@@ -53,7 +54,7 @@ const Edit = ({ t, }: EditProps) => {
           doPan={() => map.changeTool(PanTool)} 
           placeNode={() => map.changeTool(AddNodeTool)} 
           placeEndpoint={() => map.changeTool(AddEndpointTool)}
-          doEdit={() => null}
+          doEdit={() => map.changeTool(EditEndpointTool)}
           doMove={() => map.changeTool(MoveNodeTool)}
           doErase={() => map.changeTool(EraseNodeTool)}
           doConnect={() => map.changeTool(ConnectNodesTool)}
@@ -68,6 +69,7 @@ const Edit = ({ t, }: EditProps) => {
               AddNodeTool,
               AddEndpointTool,
               MoveNodeTool,
+              EditEndpointTool,
               EraseNodeTool,
               ConnectNodesTool,
             ]}

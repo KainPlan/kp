@@ -59,6 +59,12 @@ interface DisconnectNodesUpdate {
   b: number;
 }
 
+interface UpdateNodeBodyUpdate {
+  floor: number;
+  node: number;
+  body: any;
+}
+
 interface MapRow {
   id: number;
   user: number;
@@ -246,6 +252,24 @@ export default class Map {
     });
   }
 
+  private static updateNodeBody (mapId: string, nodeId: number, body: any, floor: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const select: any = { _id: mongoose.Types.ObjectId(mapId), };
+      select[`nodes.${floor}`] = { $elemMatch: { id: nodeId, }, };
+      const update: any = { $set: { }, };
+      update['$set'][`nodes.${floor}.$.body`] = body;
+      MapModel.updateOne(
+        select,
+        update,
+        null,
+        (err: mongoose.Error, res: any) => {
+          if (err) reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
   private static deleteNode (mapId: string, nodeId: number, floor: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const update: any = { $pull: {} };
@@ -346,6 +370,12 @@ export default class Map {
         case 'disconnectNodes':
           console.log(`[DEBUG;${mapId}]: Request to disconnect nodes ${(<DisconnectNodesUpdate>update.update).a} & ${(<DisconnectNodesUpdate>update.update).b} ... `);
           this.disconnectNodes(mapId, (<DisconnectNodesUpdate>update.update).a, (<DisconnectNodesUpdate>update.update).b, (<DisconnectNodesUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+        case 'updateNodeBody':
+          console.log(`[DEBUG;${mapId}]: Request to update body of node ${(<UpdateNodeBodyUpdate>update.update).node} ... `);
+          this.updateNodeBody(mapId, (<UpdateNodeBodyUpdate>update.update).node, (<UpdateNodeBodyUpdate>update.update).body, (<UpdateNodeBodyUpdate>update.update).floor)
               .then(resolve)
               .catch(reject);
           break;
