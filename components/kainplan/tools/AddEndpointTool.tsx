@@ -25,6 +25,8 @@ class AddEndpointTool extends MapTool<MapToolProps, any> {
   public activate (): void {
     this.posX = null;
     this.posY = null;
+    this.titleIn.value = '';
+    this.descIn.value = '';
   }
 
   public onDown (e: React.PointerEvent): void {
@@ -52,6 +54,8 @@ class AddEndpointTool extends MapTool<MapToolProps, any> {
     }, this.props.map.state.currentFloor);
     this.posX = null;
     this.posY = null;
+    this.titleIn.value = '';
+    this.descIn.value = '';
     this.popup.hide();
   }
 

@@ -36,7 +36,7 @@ const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, 
     { key: 'move', icon: faExpandArrowsAlt, title: t('edit:move'), callback: doMove, },
     { key: 'erase', icon: faEraser, title: t('edit:erase'), callback: doErase, },
     { key: 'connect', icon: faWrench, title: t('edit:connection'), callback: doConnect, },
-    { key: 'idk', icon: faPlus, },
+    // { key: 'idk', icon: faPlus, },
   ];
 
   return (
