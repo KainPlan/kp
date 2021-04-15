@@ -41,34 +41,38 @@ const Register = () => {
                 alert("Server error");
                 return;
             }
-            alert("Success");
-            // refresh().then(() => Router.push('/dashboard'));
+            refresh().then(() => Router.push('/dashboard'));
         });
     };
 
     return (
-        <div className={style.wrapper}>
-            <Link href="/">
-                <h1 className={style.root}>Kainplan</h1>
-            </Link>
-            <form onSubmit={onSubmit} className={style.login}>
-                <p>Registrieren</p>
-                <input id="email" type="text" ref={e => emailIn = e} />
-                <label htmlFor="email" className={style.floatlabel}>Email</label>
-                <input id="username" type="text" ref={e => usernameIn = e} />
-                <label htmlFor="username" className={style.floatlabel}>Username</label>
-                <input id="password" type="password" ref={e => passwordIn = e} />
-                <label htmlFor="password" className={style.floatlabel}>Passwort</label>
-                <input type="submit" value="Registrieren" />
-            </form>
-            <Link href="/login">
-                <span className={style.switch}>Anmelden</span>
-            </Link>
-            <style jsx global>{`
+        <div className={style.body}>
+            <div className={style.help}>
+                <img src={require('../images/login/background.jpeg')} className={style.image} />
+                <Link href="/">
+                    <h1 className={style.link}>Kainplan</h1>
+                </Link>
+            </div>
+            <div className={style.wrapper}>
+                <form onSubmit={onSubmit} className={style.login}>
+                    <p>Registrieren</p>
+                    <input id="email" type="text" ref={e => emailIn = e} />
+                    <label htmlFor="email" className={style.floatlabel}>Email</label>
+                    <input id="username" type="text" ref={e => usernameIn = e} />
+                    <label htmlFor="username" className={style.floatlabel}>Username</label>
+                    <input id="password" type="password" ref={e => passwordIn = e} />
+                    <label htmlFor="password" className={style.floatlabel}>Passwort</label>
+                    <input type="submit" value="Registrieren" />
+                </form>
+                <Link href="/login">
+                    <span className={style.switch}>Anmelden</span>
+                </Link>
+                <style jsx global>{`
                 body {
                     background-color: #121419;
                 }
             `}</style>
+            </div>
         </div>
     );
 };

@@ -37,28 +37,28 @@ const Index = ({ t, }: IndexProps) => {
         <main>
           <div className={style.infoElement}>
             <div className={style.quoteDiv}>
-              <q>Unsere Schule - kartografiert</q>
-              <p>Moderne Navigationssoftware die Ihnen hilft, immer den richtigen Pfad durch unser Schulgebäude zu finden.</p>
+              <q>Ihr Unternehmen - kartografiert</q>
+              <p>Moderne Navigationssoftware die Ihnen hilft, immer den richtigen Pfad durch ein Gebäude zu finden.</p>
             </div>
           </div>
           <div className={style.infoElement}>
             <div className={style.quoteDiv}>
-              <q>Neue Aspekte der Schule entdecken - mit KainPlan</q>
+              <q>Neue Aspekte Ihr Unternehmen zu entdecken - mit KainPlan</q>
             </div>
             <div className={style.imgContainer}>
               <img src={require('../images/index/img1.png')} />
               <div>
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                Kain Plan? Kain Problem - KainPlan!
               </div>
             </div>
           </div>
           <div className={style.infoElement}>
             <div className={style.quoteDiv}>
-              <q>Seitdem wir KainPlan verwenden, haben wir uns nie wieder verlaufen!</q><span>Hänsel und Gretel, 2019</span>
+              <q>Seitdem wir KainPlan verwenden, haben wir uns nie wieder verlaufen!</q><span>Hänsel und Gretel, 2021</span>
             </div>
             <div className={style.imgContainer}>
               <div>
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                Wir führen Sie sicher an Ihr Ziel. Ob in Schule, Museen oder Shopping-Citys.  
               </div>
               <img src={require('../images/index/img2.png')} />
             </div>

@@ -38,29 +38,35 @@ const Login = () => {
                 alert("Server error");
                 return;
             }
-            alert("Welcome user: " + res.json);
-            // refresh().then(() => Router.push('/dashboard'));
+            refresh().then(() => Router.push('/dashboard'));
         });
     };
 
     return (
-        <div className={style.wrapper}>
-            <Link href="/">
-                <h1 className={style.root}>Kainplan</h1>
-            </Link>
-            <form onSubmit={onSubmit} className={style.login}>
-                <p>Anmelden</p>
-                <input id="username" type="text" ref={e => usernameIn = e} />
-                <label htmlFor="username" className={style.floatlabel}>Username</label>
-                <input id="password" type="password" ref={e => passwordIn = e} />
-                <label htmlFor="password" className={style.floatlabel}>Passwort</label>
-                <input type="submit" value="Anmelden" />
-            </form>
-            <Link href="/register">
-                <span className={style.switch}>Registrieren</span>
-            </Link>
+        <div className={style.body}>
+            <div className={style.help}>
+                <img src={require('../images/login/background.jpeg')} className={style.image} />
+                <Link href="/">
+                    <h1 className={style.link}>Kainplan</h1>
+                </Link>
+            </div>
+            <div className={style.wrapper}>
+                <form onSubmit={onSubmit} className={style.login}>
+                    <p>Anmelden</p>
+                    <input id="username" type="text" ref={e => usernameIn = e} />
+                    <label htmlFor="username" className={style.floatlabel}>Username</label>
+                    <input id="password" type="password" ref={e => passwordIn = e} />
+                    <label htmlFor="password" className={style.floatlabel}>Passwort</label>
+                    <input type="submit" value="Anmelden" />
+                </form>
+                <Link href="/register">
+                    <span className={style.switch}>Registrieren</span>
+                </Link>
+            </div>
             <style jsx global>{`
-                body {
+                html, body, #__next {
+                    width: 100%;
+                    height: 100%;
                     background-color: #121419;
                 }
             `}</style>
