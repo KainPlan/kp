@@ -28,6 +28,15 @@ const CreateMap = ({ t, }: CreateMapProps) => {
   const onCreateMap = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(baseIn.img.src);
+    fetch('/api/maps/make', {
+      method: 'post',
+      headers: {'Content-Type' : 'application/json'},
+      body: {
+        name: nameIn.value,
+        desc : descIn.value,
+        background : baseIn.img.src
+      }
+    })
   };
 
   return (
