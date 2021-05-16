@@ -2,7 +2,7 @@ import ClassicalInput from "../ClassicalInput";
 import BeautifulButton from "../BeautifulButton";
 import style from './CreateMap.module.scss';
 import MultiStepForm from "../MultiStepForm";
-import { withTranslation } from "../../../i18n";
+import { withTranslation, Router } from "../../../i18n";
 import { WithTranslation } from "next-i18next";
 import ImageUpload from "../ImageUpload";
 
@@ -27,16 +27,19 @@ const CreateMap = ({ t, }: CreateMapProps) => {
 
   const onCreateMap = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(baseIn.img.src);
+    // console.log(baseIn.img.src);
     fetch('/api/maps/make', {
       method: 'post',
       headers: {'Content-Type' : 'application/json'},
-      body: {
+      body: JSON.stringify({
         name: nameIn.value,
         desc : descIn.value,
         background : baseIn.img.src
-      }
-    })
+      }),
+    }).then(res => res.json())
+      .then(res => {
+        if (res.success) Router.push(`/edit/${res.body.id}`);
+      })
   };
 
   return (
