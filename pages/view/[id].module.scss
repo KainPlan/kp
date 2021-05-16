@@ -1,0 +1,40 @@
+.root {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+
+  .nav {
+    position: fixed;
+    left: 25px;
+    top: 25px;
+    z-index: 2;
+    background-color: #fff;
+    border: 1.5px solid #f2f2f2;
+    border-radius: 3px;
+    box-shadow: 0 0 3px #cecece;
+
+    .searchSugg {
+      padding: 5px 7.5px;
+      transition: .2s ease;
+
+      h4 {
+        margin: 0;
+        font-size: 1em;
+      }
+
+      p {
+        margin: 0;
+        font-size: .8em;
+        opacity: .5;
+      }
+
+      &:hover {
+        cursor: pointer;
+        color: #622dff;
+      }
+    }
+  }
+}

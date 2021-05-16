@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  & > i {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: #dadada;
+    transition: .2s ease;
+    min-width: 16px;
+    text-align: center;
+
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+      color: #622dff;
+    }
+  }
+
+  & > div {
+    flex-grow: 1;
+    border-left: 1px solid #f2f2f2;
+    border-right: 1px solid #f2f2f2;
+  }
+} 

@@ -9,6 +9,7 @@ interface MapProps {
   id: string;
   children?: React.ReactNode|React.ReactNode[];
   fullscreen?: boolean;
+  viewMode?: boolean;
   width?: number;
   height?: number;
   tools?: (typeof MapTool)[];
@@ -54,6 +55,11 @@ export interface Node {
   edges: Node[];
   body?: any;
 }
+
+export interface FloorNode {
+  floor: number;
+  node: Node;
+};
 
 export enum MapMode {
   PAN,
@@ -108,6 +114,9 @@ class Map extends React.Component<MapProps, MapState> {
   private updateQueue: MapUpdate[] = [];
   private updating: boolean = false;
   private stopUpdating: boolean = false;
+
+  private highlighted: FloorNode[];
+  private highlightedPath: Node[];
 
   public constructor (props) {
     super(props);
@@ -166,6 +175,25 @@ class Map extends React.Component<MapProps, MapState> {
         });
       });
   }
+
+  // MAP VIEWER FUNCTIONS -------------------------------------------------------------- //
+
+  public findEndpoints(qry: string): FloorNode[] {
+    const res: FloorNode[] = [];
+    const srch: RegExp = new RegExp(qry.trim().toLowerCase().replace(' ', '|'));
+    this.state.nodes.forEach((f: Node[], i: number) => f.forEach((n: Node) => {
+      if (n._type === 'endpoint' && (n.body.title.toLowerCase().search(srch) >= 0 || n.body.desc.toLowerCase().search(srch) >= 0)) res.push({ floor: i, node: n, });
+    }));
+    return res;
+  }
+
+  public hightlightNode(floor: number, n: Node) {
+    this.highlighted.push({ floor, node: n, });
+  }
+
+  // public shortestPath(a: Node, b: Node): Node[] {
+
+  // }
 
   // MAP EDITOR FUNCTIONS -------------------------------------------------------------- //
 
@@ -566,8 +594,10 @@ class Map extends React.Component<MapProps, MapState> {
       this.state.height + this.m2px(this.state.mapHeight));
     this.ctx.drawImage(this.cache[this.state.currentFloor], 
       0, 0, this.m2px(this.state.mapWidth), this.m2px(this.state.mapHeight));
-    this.drawConnections();
-    this.drawNodes();
+    if (!this.props.viewMode) {
+      this.drawConnections();
+      this.drawNodes();
+    }
   }
   
   // EVENT LISTENERS -------------------------------------------------------------- //
@@ -653,8 +683,8 @@ class Map extends React.Component<MapProps, MapState> {
 
   private onDown(e: React.PointerEvent) {
     e.preventDefault();
-    console.log('[DEBUG]: tool: ');
-    console.log(this.state.tool);
+    // console.log('[DEBUG]: tool: ');
+    // console.log(this.state.tool);
     this.triggerEvent(this.state.tool.onDown.name, [e,]);
     switch(e.pointerType) {
       case 'mouse':

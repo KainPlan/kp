@@ -1,7 +1,7 @@
 import { withTranslation, Link } from '../../i18n';
 import { WithTranslation } from 'next-i18next';
 import { WithUser } from '../../models/User';
-import { useRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import style from './[id].module.scss';
 import Map, { MapMode } from '../../components/kainplan/Map';
 import Head from 'next/head';
@@ -26,7 +26,7 @@ declare global {
 }
 
 const Edit = ({ t, }: EditProps) => {
-  const router = useRouter();
+  const router: NextRouter = useRouter();
   var topbar: HTMLDivElement;
   var map: Map;
 

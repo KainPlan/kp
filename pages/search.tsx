@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowRight, faUser, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TenFingers from '../components/tenfingers/TenFingers';
 import Particles from 'react-particles-js';
-import { withTranslation, Link } from '../i18n';
+import { withTranslation, Link, Router } from '../i18n';
 import { WithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { WithUser } from '../models/User';
@@ -74,7 +74,8 @@ const Search = ({ t, }: SearchProps) => {
   };
 
   const onView = (id: string) => {
-    console.log(`Opening map ${id} ... `);
+    // console.log(`Opening map ${id} ... `);
+    Router.push(`/view/${id}`);
   };
 
   return (

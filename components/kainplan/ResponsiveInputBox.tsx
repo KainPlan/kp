@@ -82,6 +82,7 @@ class ResponsiveInputBox extends React.Component<ResponsiveInputBoxProps, Respon
         this.input.value = this.input.value.substr(0, this.input.value.length-1);
         await this.sleep(25*f(this.input.value.length));
       }
+      this.state.onContentChange(this.state.content);
       this.setState({
         block: false,
       });
