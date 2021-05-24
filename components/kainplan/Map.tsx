@@ -820,7 +820,7 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   private observeSpecialKeys(e: React.KeyboardEvent) {
-    if (e.key === 'Escape') this.state.tool.cancel(this);
+    if (e.key === 'Escape') this.state.tool.cancel();
     this.setState({
       ctrlKey: e.ctrlKey,
       altKey: e.altKey,

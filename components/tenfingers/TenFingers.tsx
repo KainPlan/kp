@@ -39,8 +39,8 @@ class TenFingers extends React.Component<TenFingersProps, TenFingersState> {
 
   setStateAsync(state) {
     return new Promise(resolve => {
-      this.setState(state, resolve);
-    })
+      this.setState(state, resolve as ()=>void);
+    });
   }
 
   sleep(timeout: number) {
