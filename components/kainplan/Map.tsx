@@ -61,6 +61,19 @@ export interface FloorNode {
   node: Node;
 };
 
+interface AStarNode {
+  _type: string;
+  id: number;
+  x: number;
+  y: number;
+  edges: Node[];
+  body?: any;
+  f: number;
+  g: number;
+  h: number;
+  pre: AStarNode;
+};
+
 export enum MapMode {
   PAN,
   NODE,
@@ -115,8 +128,9 @@ class Map extends React.Component<MapProps, MapState> {
   private updating: boolean = false;
   private stopUpdating: boolean = false;
 
-  private highlighted: FloorNode[];
-  private highlightedPath: Node[];
+  public startNode: FloorNode;
+  public endNode: FloorNode;
+  private highlightedPath: Node[] = [];
 
   public constructor (props) {
     super(props);
@@ -178,22 +192,99 @@ class Map extends React.Component<MapProps, MapState> {
 
   // MAP VIEWER FUNCTIONS -------------------------------------------------------------- //
 
-  public findEndpoints(qry: string): FloorNode[] {
+  public findEndpoints(qry: string, excl?: FloorNode[]): FloorNode[] {
     const res: FloorNode[] = [];
+    const _ids: number[] = excl ? excl.map(x => x.node.id) : [];
     const srch: RegExp = new RegExp(qry.trim().toLowerCase().replace(' ', '|'));
     this.state.nodes.forEach((f: Node[], i: number) => f.forEach((n: Node) => {
-      if (n._type === 'endpoint' && (n.body.title.toLowerCase().search(srch) >= 0 || n.body.desc.toLowerCase().search(srch) >= 0)) res.push({ floor: i, node: n, });
+      if (n._type === 'endpoint' && (n.body.title.toLowerCase().search(srch) >= 0 || n.body.desc.toLowerCase().search(srch) >= 0) && !_ids.includes(n.id)) res.push({ floor: i, node: n, });
     }));
     return res;
   }
 
-  public hightlightNode(floor: number, n: Node) {
-    this.highlighted.push({ floor, node: n, });
+  public setStart(floor: number, n: Node) {
+    this.startNode = { floor, node: n, };
+    this.highlightedPath = this.endNode ? this.shortestPath(this.startNode.node, this.endNode.node) : [];
+    this.refresh();
+    this.panIntoView(n, floor);
   }
 
-  // public shortestPath(a: Node, b: Node): Node[] {
+  public unsetStart() {
+    this.startNode = null;
+    this.highlightedPath = [];
+    this.refresh();
+  }
 
-  // }
+  public setEnd(floor: number, n: Node) {
+    this.endNode = { floor, node: n, };
+    this.highlightedPath = this.startNode ? this.shortestPath(this.startNode.node, this.endNode.node) : [];
+    if (this.startNode) this.refresh();
+    this.panIntoView(n, floor);
+  }
+
+  public unsetEnd() {
+    this.endNode = null;
+    this.highlightedPath = [];
+    this.refresh();
+  }
+
+  public shortestPath(a: Node, b: Node): Node[] {
+    const open: AStarNode[] = [this.node2star(a),];
+    const closed: AStarNode[] = [];
+    let q: AStarNode;
+
+    while (open.length) {
+      let minI: number = 0;
+      for (let i = 1; i < open.length; i++) {
+        if (open[i].f < open[minI].f) minI = i;
+      }
+      q = open.splice(minI, 1)[0];
+
+      for (let e of q.edges) {
+        const n: AStarNode = this.node2star(e);
+        n.pre = q;
+
+        if (n.id === b.id) return this.reconstructPath(n);
+
+        n.g = q.g + Math.sqrt(Math.abs(q.x - n.x) + Math.abs(q.y - n.y));
+        n.h = Math.sqrt(Math.abs(b.x - n.x) + Math.abs(b.y - n.y));
+        n.f = n.g + n.h;
+
+        const openI: number = open.map(x => x.id).indexOf(n.id);
+        const closedI: number = closed.map(x => x.id).indexOf(n.id);
+
+        if (openI === -1 && closedI === -1) {
+          open.push(n);
+        } else if (openI >= 0 && open[openI].f > n.f) {
+          open[openI] = n;
+        } else if (closedI >= 0 && closed[closedI].f > n.f) {
+          open.push(n);
+          closed.splice(closedI, 1);
+        }
+      }
+
+      closed.push(q);
+    }
+  }
+
+  // MAP VIEWER HELPER FUNCTIONS -------------------------------------------------------- //
+
+  private node2star(n: Node): AStarNode {
+    return { ...n, f: 0, g: 0, h: 0, pre: null, };
+  }
+
+  private star2node(n: AStarNode): Node {
+    return n as Node;
+  }
+
+  private _reconstructPath(n: AStarNode): Node[] {
+    if (n.pre) return [...this._reconstructPath(n.pre), this.star2node(n.pre),];
+    return [];
+  }
+
+  private reconstructPath(n: AStarNode): Node[] {
+    return [...this._reconstructPath(n), this.star2node(n),];
+  }
 
   // MAP EDITOR FUNCTIONS -------------------------------------------------------------- //
 
@@ -546,14 +637,17 @@ class Map extends React.Component<MapProps, MapState> {
     }, 1);
   }
 
-  private drawNodes() {
+  private drawNodes(viewOnly?: boolean) {
     const prevStrokeStyle: string|CanvasGradient|CanvasPattern = this.ctx.strokeStyle;
     const prevFillStyle: string|CanvasGradient|CanvasPattern = this.ctx.fillStyle;
     const prevLineWidth: number = this.ctx.lineWidth;
-    this.ctx.fillStyle = 'rgba(0,255,197,.5)';
+    const _ids: number[] = this.highlightedPath.map(x => x.id);
     this.ctx.lineWidth = 3;
     this.state.nodes[this.state.currentFloor].forEach(n => {
-      this.ctx.strokeStyle = n._type === 'node' ? '#00FFC5' : '#00FF2C';
+      const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id) || _ids.includes(n.id);
+      if (!highlight && viewOnly) return;
+      this.ctx.fillStyle = highlight ? 'rgba(255,0,86,.5)' : 'rgba(0,255,197,.5)';
+      this.ctx.strokeStyle = highlight ? n._type === 'node' ? '#FF0056' : '#FF00A8' : n._type === 'node' ? '#00FFC5' : '#00FF2C';
       this.ctx.beginPath();
       this.ctx.ellipse(this.m2px(n.x), this.m2px(n.y),
                      this.m2px(1.5), this.m2px(1.5), 
@@ -567,15 +661,18 @@ class Map extends React.Component<MapProps, MapState> {
     this.ctx.strokeStyle = prevStrokeStyle;
   }
 
-  private drawConnections() {
+  private drawConnections(viewOnly?: boolean) {
     const prevStrokeStyle: string|CanvasGradient|CanvasPattern = this.ctx.strokeStyle;
     const prevLineWidth: number = this.ctx.lineWidth;
-    this.ctx.strokeStyle = '#00FFC5';
-    this.ctx.lineWidth = 3;
     const drawn: number[] = [];
+    const _ids: number[] = this.highlightedPath.map(x => x.id);
+    this.ctx.lineWidth = 3;
     this.state.nodes[this.state.currentFloor].forEach(n => {
       drawn.push(n.id);
       n.edges.forEach(e => {
+        const highlight: boolean = _ids.includes(n.id) && _ids.includes(e.id);
+        if (!highlight && viewOnly) return;
+        this.ctx.strokeStyle = highlight ? '#FF0056' : '#00FFC5';
         if (drawn.includes(e.id)) return;
         this.ctx.beginPath();
         this.ctx.moveTo(this.m2px(n.x), this.m2px(n.y));
@@ -594,10 +691,8 @@ class Map extends React.Component<MapProps, MapState> {
       this.state.height + this.m2px(this.state.mapHeight));
     this.ctx.drawImage(this.cache[this.state.currentFloor], 
       0, 0, this.m2px(this.state.mapWidth), this.m2px(this.state.mapHeight));
-    if (!this.props.viewMode) {
-      this.drawConnections();
-      this.drawNodes();
-    }
+    this.drawConnections(this.props.viewMode);
+    this.drawNodes(this.props.viewMode);
   }
   
   // EVENT LISTENERS -------------------------------------------------------------- //
