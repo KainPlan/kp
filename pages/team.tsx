@@ -33,7 +33,7 @@ const Team = ({ t, }: TeamProps) => {
       </Header>
       <article className={style.root}>
         <ArticleHeader 
-          background={require('../images/team/header.jpg')} 
+          background={require('../images/team/header.png')} 
           backgroundType={ArticleHeaderBackgroundType.IMAGE} 
           foreground={require('../images/lgtd.png')} />
         <main>
@@ -64,7 +64,7 @@ const Team = ({ t, }: TeamProps) => {
             <h5>{t('team:moritz_title')}</h5>
             <div>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla in lacinia urna. Nunc luctus diam mi. Nunc quis quam bibendum, laoreet diam et, gravida elit. Suspendisse et neque sit amet nisi imperdiet ullamcorper. Aliquam erat volutpat. In sit amet ante non neque aliquam vehicula sit amet iaculis felis. Suspendisse potenti. In hac habitasse platea dictumst. Vestibulum quis dui laoreet augue consequat blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi ornare imperdiet ante sit amet cursus. Duis id massa purus. Sed nulla urna, rutrum id fermentum semper, placerat in sem. Sed faucibus aliquet est in efficitur.</p>
-              <img src={require('../images/team/moritz.jpg')} />
+              <img src={require('../images/team/moritz.png')} />
             </div>
           </div>
           <div id="person-1" className={style.person}>
@@ -72,7 +72,7 @@ const Team = ({ t, }: TeamProps) => {
             <h5>{t('team:nico_title')}</h5>
             <div>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla in lacinia urna. Nunc luctus diam mi. Nunc quis quam bibendum, laoreet diam et, gravida elit. Suspendisse et neque sit amet nisi imperdiet ullamcorper. Aliquam erat volutpat. In sit amet ante non neque aliquam vehicula sit amet iaculis felis. Suspendisse potenti. In hac habitasse platea dictumst. Vestibulum quis dui laoreet augue consequat blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi ornare imperdiet ante sit amet cursus. Duis id massa purus. Sed nulla urna, rutrum id fermentum semper, placerat in sem. Sed faucibus aliquet est in efficitur.</p>
-              <img src={require('../images/team/nico.jpg')} />
+              <img src={require('../images/team/nico.png')} />
             </div>
           </div>
           <div id="person-2" className={style.person}>
@@ -80,7 +80,7 @@ const Team = ({ t, }: TeamProps) => {
             <h5>{t('team:david_title')}</h5>
             <div>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla in lacinia urna. Nunc luctus diam mi. Nunc quis quam bibendum, laoreet diam et, gravida elit. Suspendisse et neque sit amet nisi imperdiet ullamcorper. Aliquam erat volutpat. In sit amet ante non neque aliquam vehicula sit amet iaculis felis. Suspendisse potenti. In hac habitasse platea dictumst. Vestibulum quis dui laoreet augue consequat blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi ornare imperdiet ante sit amet cursus. Duis id massa purus. Sed nulla urna, rutrum id fermentum semper, placerat in sem. Sed faucibus aliquet est in efficitur.</p>
-              <img src={require('../images/team/david.jpg')} />
+              <img src={require('../images/team/david.png')} />
             </div>
           </div>
           <div id="person-3" className={style.person}>
@@ -88,7 +88,7 @@ const Team = ({ t, }: TeamProps) => {
             <h5>{t('team:matthias_title')}</h5>
             <div>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla in lacinia urna. Nunc luctus diam mi. Nunc quis quam bibendum, laoreet diam et, gravida elit. Suspendisse et neque sit amet nisi imperdiet ullamcorper. Aliquam erat volutpat. In sit amet ante non neque aliquam vehicula sit amet iaculis felis. Suspendisse potenti. In hac habitasse platea dictumst. Vestibulum quis dui laoreet augue consequat blandit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi ornare imperdiet ante sit amet cursus. Duis id massa purus. Sed nulla urna, rutrum id fermentum semper, placerat in sem. Sed faucibus aliquet est in efficitur.</p>
-              <img src={require('../images/team/matthias.jpg')} />
+              <img src={require('../images/team/matthias.png')} />
             </div>
           </div>
         </main>

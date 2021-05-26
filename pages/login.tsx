@@ -45,7 +45,7 @@ const Login = () => {
     return (
         <div className={style.body}>
             <div className={style.help}>
-                <img src={require('../images/login/background.jpeg')} className={style.image} />
+                <img src={require('../images/login/background.png')} className={style.image} />
                 <Link href="/">
                     <h1 className={style.link}>Kainplan</h1>
                 </Link>
