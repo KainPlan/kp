@@ -644,10 +644,14 @@ class Map extends React.Component<MapProps, MapState> {
     const _ids: number[] = this.highlightedPath.map(x => x.id);
     this.ctx.lineWidth = 3;
     this.state.nodes[this.state.currentFloor].forEach(n => {
-      const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id) || _ids.includes(n.id);
-      if (!highlight && viewOnly) return;
-      this.ctx.fillStyle = highlight ? 'rgba(255,0,86,.5)' : 'rgba(0,255,197,.5)';
-      this.ctx.strokeStyle = highlight ? n._type === 'node' ? '#FF0056' : '#FF00A8' : n._type === 'node' ? '#00FFC5' : '#00FF2C';
+      // const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id) || _ids.includes(n.id);
+      // const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id);
+      // if (!highlight && viewOnly) return;
+      const isStart: boolean = (this.startNode && this.startNode.node.id === n.id);
+      const isEnd: boolean = (this.endNode && this.endNode.node.id === n.id);
+      if (!isStart && !isEnd && viewOnly) return;
+      this.ctx.fillStyle = isStart ? 'rgba(0,2,255,.5)' : isEnd ? 'rgba(0,255,233,.5)' : 'rgba(0,255,197,.5)';
+      this.ctx.strokeStyle = isStart ? '#0002FF' : isEnd ? '#00FFDF' : n._type === 'node' ? '#00FFC5' : '#00FF2C';
       this.ctx.beginPath();
       this.ctx.ellipse(this.m2px(n.x), this.m2px(n.y),
                      this.m2px(1.5), this.m2px(1.5), 
