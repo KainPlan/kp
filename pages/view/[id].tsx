@@ -6,7 +6,7 @@ import Map, { FloorNode, Node } from '../../components/kainplan/Map';
 import { NextRouter, useRouter } from 'next/router';
 import ResponsiveInputBox from '../../components/kainplan/ResponsiveInputBox';
 import SearchBox from '../../components/kainplan/SearchBox';
-import { faBars, faMapMarked, faMapMarkedAlt, faMapMarker, faMapMarkerAlt, faSearch, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faBars, faMapMarked, faMapMarkedAlt, faMapMarker, faMapMarkerAlt, faSearch, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { faSearchengin } from '@fortawesome/free-brands-svg-icons';
 
@@ -25,6 +25,7 @@ const View = ({ t, }: ViewProps) => {
   const onEndSearchType = (content: string) => {
     setEndSuggestions([]);
     map.current.unsetEnd();
+    startSearch.current.hide();
     if (content.length >= 3) setEndSuggestions(map.current.findEndpoints(content, map.current.startNode ? [map.current.startNode,] : undefined));
   };
 
@@ -33,6 +34,7 @@ const View = ({ t, }: ViewProps) => {
     console.log(`[DEBUG]: Set end = ${n.id} ... `);
     endSearch.current.input.input.value = n.body!.title;
     setEndSuggestions([]);
+    startSearch.current.show();
   };
 
   const onStartSearchType = (content: string) => {
@@ -48,6 +50,10 @@ const View = ({ t, }: ViewProps) => {
     setStartSuggestions([]);
   };
 
+  const goBack = () => {
+    router.push('/search');
+  };
+
   return (
     <>
       <Head>
@@ -61,15 +67,16 @@ const View = ({ t, }: ViewProps) => {
         <div className={style.nav}>
           <SearchBox 
             ref={e => endSearch.current = e}
-            westIcon={faMapMarkerAlt}
+            westIcon={faArrowLeft}
             eastIcon={faSearch} 
             label={[ 'Direktion', '4DHIF', ]}
+            onWestClick={goBack}
             onContentChange={onEndSearchType}
           />
           <div>
             { endSuggestions instanceof Array
               ? (endSuggestions as FloorNode[]).map((n: FloorNode) => 
-                <div className={style.searchSugg} onClick={() => onSelectEnd(n.floor, n.node)}>
+                <div key={n.node.body.title} className={style.searchSugg} onClick={() => onSelectEnd(n.floor, n.node)}>
                   <h4>{n.node.body.title}</h4>
                   <p>{n.node.body.desc}</p>
                 </div>)
@@ -78,15 +85,16 @@ const View = ({ t, }: ViewProps) => {
           </div>
           <SearchBox
             ref={e => startSearch.current = e}
-            westIcon={faMapMarkedAlt}
+            westIcon={faMapMarkerAlt}
             eastIcon={faSearch}
             label='Where are you?'
             onContentChange={onStartSearchType}
+            hidden
           />
           <div>
             { startSuggestions instanceof Array
               ? (startSuggestions as FloorNode[]).map((n: FloorNode) => 
-                <div className={style.searchSugg} onClick={() => onSelectStart(n.floor, n.node)}>
+                <div key={n.node.body.title} className={style.searchSugg} onClick={() => onSelectStart(n.floor, n.node)}>
                   <h4>{n.node.body.title}</h4>
                   <p>{n.node.body.desc}</p>
                 </div>)

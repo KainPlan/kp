@@ -8,6 +8,7 @@ interface SearchBoxProps {
   label: string|string[];
   westIcon: IconDefinition;
   eastIcon: IconDefinition;
+  hidden?: boolean;
   onWestClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onEastClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onFocus?: (e: FocusEvent) => void;
@@ -16,6 +17,7 @@ interface SearchBoxProps {
 }
 
 interface SearchBoxState extends SearchBoxProps {
+  hidden: boolean;
 }
 
 class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
@@ -30,6 +32,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
       onFocus: props.onFocus || (() => undefined),
       onBlur: props.onBlur || (() => undefined),
       onContentChange: props.onContentChange || (() => undefined),
+      hidden: Boolean(this.props.hidden),
     };
   }
 
@@ -38,11 +41,25 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   focus() {
     this.input.focus();
   }
+
+  hide() {
+    this.setState({
+      hidden: true,
+    });
+  }
+
+  show() {
+    this.setState({
+      hidden: false,
+    });
+  }
   
   render() {
     return (
       <>
-        <div className={style.root}>
+        <div className={style.root} style={{
+          'display': this.state.hidden ? 'none' : 'flex',
+        }}>
           <i onClick={this.state.onWestClick}>
             <FontAwesomeIcon icon={this.state.westIcon} />
           </i>
