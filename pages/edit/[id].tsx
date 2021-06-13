@@ -7,7 +7,7 @@ import Map, { MapMode } from '../../components/kainplan/Map';
 import Head from 'next/head';
 import Toolbar from '../../components/kainplan/edit/Toolbar';
 import Topbar from '../../components/kainplan/edit/Topbar';
-import { useEffect } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
 import PanTool from '../../components/kainplan/tools/PanTool';
 import AddNodeTool from '../../components/kainplan/tools/AddNodeTool';
 import AddEndpointTool from '../../components/kainplan/tools/AddEndpointTool';
@@ -15,6 +15,9 @@ import EraseNodeTool from '../../components/kainplan/tools/EraseNodeTool';
 import ConnectNodesTool from '../../components/kainplan/tools/ConnectNodesTool';
 import MoveNodeTool from '../../components/kainplan/tools/MoveNodeTool';
 import EditEndpointTool from '../../components/kainplan/tools/EditEndpointTool';
+import AddFloor from '../../components/kainplan/prompts/AddFloor';
+import Popup from '../../components/kainplan/Popup';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 interface EditProps extends WithTranslation, WithUser {
 };
@@ -28,15 +31,20 @@ declare global {
 const Edit = ({ t, }: EditProps) => {
   const router: NextRouter = useRouter();
   var topbar: HTMLDivElement;
-  var map: Map;
+  let map: MutableRefObject<Map> = useRef<Map>(null);
+  let addFloorPopup: MutableRefObject<Popup> = useRef<Popup>(null);
 
   const onresize = () => {
-    map.resize(window.innerWidth, window.innerHeight-topbar.getBoundingClientRect().height);
+    map.current.resize(window.innerWidth, window.innerHeight-topbar.getBoundingClientRect().height);
+  };
+  
+  const addFloor = () => {
+    addFloorPopup.current.show();
   };
 
   useEffect(() => {
     window.addEventListener('resize', onresize);
-    window.map = map;
+    window.map = map.current;
   });
 
   return (
@@ -50,18 +58,22 @@ const Edit = ({ t, }: EditProps) => {
       </Head>
       <div className={style.root}>
         <Topbar ref={e => topbar = e} />
+        <Popup ref={e => addFloorPopup.current = e} title={t('dashboard_maps:create_map')} icon={faPlus}>
+          <AddFloor map={map} popup={addFloorPopup} />
+        </Popup>
         <Toolbar 
-          doPan={() => map.changeTool(PanTool)} 
-          placeNode={() => map.changeTool(AddNodeTool)} 
-          placeEndpoint={() => map.changeTool(AddEndpointTool)}
-          doEdit={() => map.changeTool(EditEndpointTool)}
-          doMove={() => map.changeTool(MoveNodeTool)}
-          doErase={() => map.changeTool(EraseNodeTool)}
-          doConnect={() => map.changeTool(ConnectNodesTool)}
+          doPan={() => map.current.changeTool(PanTool)} 
+          placeNode={() => map.current.changeTool(AddNodeTool)} 
+          placeEndpoint={() => map.current.changeTool(AddEndpointTool)}
+          doEdit={() => map.current.changeTool(EditEndpointTool)}
+          doMove={() => map.current.changeTool(MoveNodeTool)}
+          doErase={() => map.current.changeTool(EraseNodeTool)}
+          doConnect={() => map.current.changeTool(ConnectNodesTool)}
+          onAddFloor={addFloor}
         />
         <div>
           <Map 
-            ref={e => map = e} 
+            ref={e => map.current = e} 
             id={router.query.id as string} 
             mountCb={onresize}
             tools={[

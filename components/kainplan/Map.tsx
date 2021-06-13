@@ -1,9 +1,10 @@
-import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import Head from 'next/head';
 import React from 'react';
 import style from './Map.module.scss';
 import MapTool from './tools/MapTool';
 import PanTool from './tools/PanTool';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface MapProps {
   id: string;
@@ -291,11 +292,13 @@ class Map extends React.Component<MapProps, MapState> {
   public addFloor(background: string) {
     this.setState({
       background: [...this.state.background, background, ],
+      nodes: [ ...this.state.nodes, [], ],
     }, () => {
       const im: HTMLImageElement = new Image();
       im.src = background;
-      this.switchFloor(this.state.background.length-1);
-      this.ensureUpdate('addFloor', { background, });
+      this.cache.push(im);
+      this.ensureUpdate('addFloor', { background, })
+          .then(() => this.switchFloor(this.state.background.length-1));
     });
   }
 
@@ -546,6 +549,8 @@ class Map extends React.Component<MapProps, MapState> {
   }
 
   public switchFloor(fid: number) {
+    console.log(fid, this.state.nodes.length);
+    if (fid >= this.state.nodes.length || fid < 0) return;
     this.setState({
       currentFloor: fid,
     }, () => {
@@ -856,6 +861,25 @@ class Map extends React.Component<MapProps, MapState> {
             ? this.props.tools.map(t => React.createElement(t, { map: this, key: t.name, ref: e => this.tools[t.name] = e, }))
             : <PanTool map={this} ref={e => this.tools[PanTool.name] = e} />
           }
+          <div className={style.floorTools}>
+            <i 
+              onClick={() => this.switchFloor(this.state.currentFloor+1)}
+              style={{
+                opacity: this.state.currentFloor == this.state.nodes.length-1 ? .4 : 1,
+              }}
+            >
+              <FontAwesomeIcon icon={faChevronUp} />
+            </i>
+            <p>{this.state.currentFloor}</p>
+            <i 
+              onClick={() => this.switchFloor(this.state.currentFloor-1)}
+              style={{
+                opacity: this.state.currentFloor == 0 ? .4 : 1,
+              }}
+            >
+              <FontAwesomeIcon icon={faChevronDown} />
+            </i>
+          </div>
           <canvas
             ref={e => this.canvas = e}
             width={this.state.width}

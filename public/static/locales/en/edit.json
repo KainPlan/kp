@@ -5,5 +5,6 @@
   "node": "Node",
   "connection": "Connection",
   "erase": "Erase",
-  "move": "Move"
+  "move": "Move",
+  "add_floor": "New floor"
 }

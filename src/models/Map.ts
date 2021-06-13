@@ -65,6 +65,10 @@ interface UpdateNodeBodyUpdate {
   body: any;
 }
 
+interface AddFloorUpdate {
+  background: string;
+}
+
 interface MapRow {
   id: number;
   user: number;
@@ -340,6 +344,34 @@ export default class Map {
     });
   }
 
+  private static addFloor (mapId: string, background: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!background.startsWith('data:')) return reject('invalid_background');
+      const img: Buffer = Buffer.from(background.substr(background.indexOf(',')+1), 'base64');
+      const specs: probe.ProbeResult|null = probe.sync(img);
+      if (!specs) return reject('invalid_background');
+      Map.load(mapId).then(map => {
+        const imgId: number = map!.floors;
+        fs.writeFile(path.join(process.env.RES_PATH, mapId, `${imgId}.${mime.getExtension(specs.mime)}`), 
+                      img,
+                      async err => {
+          if (err) return reject(err);
+          const update: any = { $push: { background: `${imgId}.${mime.getExtension(specs.mime)}`, nodes: [ [ ], ], } };
+          const session: mongoose.ClientSession = await mongoose.startSession();
+          await session.withTransaction(async () => {
+            try {
+              await MapModel.updateOne({ _id: mongoose.Types.ObjectId(mapId), }, update);
+            } catch (e: any) {
+              reject(e);
+            }
+          });
+          session.endSession();
+          resolve();
+        });
+      });
+    });
+  }
+
   public static update (mapId: string, update: MapUpdate): Promise<void> {
     return new Promise((resolve, reject) => {
       switch(update.action) {
@@ -376,6 +408,12 @@ export default class Map {
         case 'updateNodeBody':
           console.log(`[DEBUG;${mapId}]: Request to update body of node ${(<UpdateNodeBodyUpdate>update.update).node} ... `);
           this.updateNodeBody(mapId, (<UpdateNodeBodyUpdate>update.update).node, (<UpdateNodeBodyUpdate>update.update).body, (<UpdateNodeBodyUpdate>update.update).floor)
+              .then(resolve)
+              .catch(reject);
+          break;
+        case 'addFloor':
+          console.log(`[DEBUG;${mapId}]: Request to add floor ... `);
+          this.addFloor(mapId, (<AddFloorUpdate>update.update).background)
               .then(resolve)
               .catch(reject);
           break;

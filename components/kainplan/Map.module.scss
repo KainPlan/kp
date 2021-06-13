@@ -1,6 +1,33 @@
 .root {
   box-sizing: border-box;
   margin: 0;
+  position: relative;
+
+  .floorTools {
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+    z-index: 2;
+    background-color: #000;
+    color: #cfcfcf;
+    padding: 7.5px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    border-radius: 5px;
+
+    & > i {
+      transition: .2s ease;
+      
+      &:hover {
+        cursor: pointer;
+        opacity: .8;
+        transform: scale(1.1);
+      }
+    }
+  }
 
   canvas {
     position: relative;

@@ -5,5 +5,6 @@
   "node": "Knoten",
   "connection": "Verbindung",
   "erase": "Löschen",
-  "move": "Verschieben"
+  "move": "Verschieben",
+  "add_floor": "Neues Stockwerk"
 }

@@ -20,9 +20,10 @@ interface ToolbarProps extends WithTranslation {
   doMove: ()=>void;
   doErase: ()=>void;
   doConnect: ()=>void;
+  onAddFloor: ()=>void;
 };
 
-const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, doConnect, }: ToolbarProps) => {
+const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, doConnect,onAddFloor,  }: ToolbarProps) => {
   const onClick = (e: React.MouseEvent, next?: ()=>void) => {
     console.log(e.target);
     if(next) next();
@@ -36,7 +37,7 @@ const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, 
     { key: 'move', icon: faExpandArrowsAlt, title: t('edit:move'), callback: doMove, },
     { key: 'erase', icon: faEraser, title: t('edit:erase'), callback: doErase, },
     { key: 'connect', icon: faWrench, title: t('edit:connection'), callback: doConnect, },
-    // { key: 'idk', icon: faPlus, },
+    { key: 'add_floor', icon: faPlus, title: t('edit:add_floor'), callback: onAddFloor, },
   ];
 
   return (
