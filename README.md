@@ -26,7 +26,6 @@ Version 2.0 of our glorious project! The **hype** is real! Such _w0w_, such _4m4
     - [Postgres](#postgres)
     - [MongoDB](#mongodb)
 - [Documentation](#documentation)
-- [To-Do](#to-do)
 
 ## Setup
 
@@ -133,29 +132,6 @@ db.createUser({
 
 _Tbh, it might not be **completely** complete... but the most important things for you (like API endpoints, etc.) will be there ... ^^_
 
-## To-Do
-
-The following is a list of things that have to be done - it is only included here so one doesn't forget to do these things.
-
-* [ ] Fix ugly transition between `/login` and `/register`
-* [ ] Proper landing page, `/`
-* [ ] Fix `/search` "clear input"-problems
-* [ ] Proper `/search` query error handling
-* [ ] Proper `/dashboard` fetch error handling
-* [ ] Dashboard pages
-  * [ ] Overview
-  * [ ] Settings
-  * [ ] Maps
-    * [ ] maybe don't refresh page on edit map?
-* [ ] API
-  * [ ] Check MongoDB user permissions
-  * [ ] Limit amount of maps per `/api/maps` request
-  * [ ] User session storage in `redis` - current express production warning
-
-... the suggestions / _To-Dos_ from above are already a bit older (Summer 2020). The current project is better documented on [Trello](https://trello.com/b/IHdyDLFq/kainplan).
-
 ---
 
-| Version | Date       | Clearance   |
-| ------- | ---------- | ----------- |
-| 0.14    | 2021.01.18 | _Team only_ |
+... The KainPlan Team, *June 2021*
