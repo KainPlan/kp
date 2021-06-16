@@ -6,5 +6,6 @@
   "connection": "Connection",
   "erase": "Erase",
   "move": "Move",
-  "add_floor": "New floor"
+  "add_floor": "New floor",
+  "add_stairs": "New staircase"
 }

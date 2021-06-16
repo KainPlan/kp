@@ -24,6 +24,11 @@ export interface Node {
   body?: any;
 };
 
+export interface FloorNode {
+  floor: number;
+  node: Node;
+};
+
 export interface MapUpdate {
   action: string;
   stamp: number;
@@ -44,7 +49,7 @@ interface MoveNodeUpdate {
 
 interface DeleteNodeUpdate {
   floor: number;
-  node: number;
+  node: Node;
 }
 
 interface ConnectNodesUpdate {
@@ -67,6 +72,11 @@ interface UpdateNodeBodyUpdate {
 
 interface AddFloorUpdate {
   background: string;
+}
+
+interface AddStairsUpdate {
+  a: FloorNode;
+  b: FloorNode;
 }
 
 interface MapRow {
@@ -274,19 +284,23 @@ export default class Map {
     });
   }
 
-  private static deleteNode (mapId: string, nodeId: number, floor: number): Promise<void> {
+  private static deleteNode (mapId: string, node: Node, floor: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       const update: any = { $pull: {} };
       const session: mongoose.ClientSession = await mongoose.startSession();
       await session.withTransaction(async () => {
         try {
-          update['$pull'][`nodes.${floor}.$[].edges`] = nodeId;
+          update['$pull'][`nodes.${floor}.$[].edges`] = node.id;
+          if (node._type === 'stairs_up') update['$pull'][`nodes.${floor+1}.$[].edges`] = node.body!.upper;
+          else if (node._type === 'stairs_down') update['$pull'][`nodes.${floor-1}.$[].edges`] = node.body!.lower;
           await MapModel.updateOne(
             { _id: mongoose.Types.ObjectId(mapId), },
             update
           );
           delete update['$pull'][`nodes.${floor}.$[].edges`];
-          update['$pull'][`nodes.${floor}`] = { id: nodeId, };
+          update['$pull'][`nodes.${floor}`] = { id: node.id, };
+          if (node._type === 'stairs_up') update['$pull'][`nodes.${floor+1}`] = { id: node.body!.upper, };
+          else if (node._type === 'stairs_down') update['$pull'][`nodes.${floor-1}`] = { id: node.body!.lower, };
           await MapModel.updateOne(
             { _id: mongoose.Types.ObjectId(mapId), }, 
             update
@@ -372,6 +386,23 @@ export default class Map {
     });
   }
 
+  private static addStairs (mapId: string, a: FloorNode, b: FloorNode): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const update: any = { $push: {} };
+      update['$push'][`nodes.${a.floor}`] = a.node;
+      update['$push'][`nodes.${b.floor}`] = b.node;
+      MapModel.updateOne(
+        { _id: mongoose.Types.ObjectId(mapId), }, 
+        update,
+        null,
+        (err: mongoose.Error, res: any) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
   public static update (mapId: string, update: MapUpdate): Promise<void> {
     return new Promise((resolve, reject) => {
       switch(update.action) {
@@ -388,7 +419,7 @@ export default class Map {
               .catch(reject);
           break;
         case 'deleteNode':
-          console.log(`[DEBUG;${mapId}]: Request to delete node ${(<DeleteNodeUpdate>update.update).node} ... `);          
+          console.log(`[DEBUG;${mapId}]: Request to delete node ${(<DeleteNodeUpdate>update.update).node.id} ... `);          
           this.deleteNode(mapId, (<DeleteNodeUpdate>update.update).node, (<DeleteNodeUpdate>update.update).floor)
               .then(resolve)
               .catch(reject);
@@ -414,6 +445,12 @@ export default class Map {
         case 'addFloor':
           console.log(`[DEBUG;${mapId}]: Request to add floor ... `);
           this.addFloor(mapId, (<AddFloorUpdate>update.update).background)
+              .then(resolve)
+              .catch(reject);
+          break;
+        case 'addStairs':
+          console.log(`[DEBUG;${mapId}]: Request to add stairs`);
+          this.addStairs(mapId, (<AddStairsUpdate>update.update).a, (<AddStairsUpdate>update.update).b)
               .then(resolve)
               .catch(reject);
           break;

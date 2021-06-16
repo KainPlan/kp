@@ -6,5 +6,6 @@
   "connection": "Verbindung",
   "erase": "Löschen",
   "move": "Verschieben",
-  "add_floor": "Neues Stockwerk"
+  "add_floor": "Neues Stockwerk",
+  "add_stairs": "Neue Stiege"
 }

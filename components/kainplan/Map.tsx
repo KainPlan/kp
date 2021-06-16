@@ -73,6 +73,7 @@ interface AStarNode {
   g: number;
   h: number;
   pre: AStarNode;
+  floor: number;
 };
 
 export enum MapMode {
@@ -205,7 +206,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   public setStart(floor: number, n: Node) {
     this.startNode = { floor, node: n, };
-    this.highlightedPath = this.endNode ? this.shortestPath(this.startNode.node, this.endNode.node) : [];
+    this.highlightedPath = this.endNode ? this.shortestPath(this.startNode, this.endNode) : [];
     this.refresh();
     this.panIntoView(n, floor);
   }
@@ -218,7 +219,7 @@ class Map extends React.Component<MapProps, MapState> {
 
   public setEnd(floor: number, n: Node) {
     this.endNode = { floor, node: n, };
-    this.highlightedPath = this.startNode ? this.shortestPath(this.startNode.node, this.endNode.node) : [];
+    this.highlightedPath = this.startNode ? this.shortestPath(this.startNode, this.endNode) : [];
     if (this.startNode) this.refresh();
     this.panIntoView(n, floor);
   }
@@ -229,8 +230,8 @@ class Map extends React.Component<MapProps, MapState> {
     this.refresh();
   }
 
-  public shortestPath(a: Node, b: Node): Node[] {
-    const open: AStarNode[] = [this.node2star(a),];
+  public shortestPath(a: FloorNode, b: FloorNode): Node[] {
+    const open: AStarNode[] = [this.node2star(a.node, a.floor),];
     const closed: AStarNode[] = [];
     let q: AStarNode;
 
@@ -241,11 +242,15 @@ class Map extends React.Component<MapProps, MapState> {
       }
       q = open.splice(minI, 1)[0];
 
-      for (let e of q.edges) {
-        const n: AStarNode = this.node2star(e);
+      const edges: Node[] = q.edges;
+      if (q._type === 'stairs_up') edges.push(this.state.nodes[q.floor+1].filter(n => n.id === q.body!.upper)[0]);
+      else if (q._type === 'stairs_down') edges.push(this.state.nodes[q.floor-1].filter(n => n.id === q.body!.lower)[0]);
+
+      for (let e of edges) {
+        const n: AStarNode = this.node2star(e, q._type === 'stairs_up' ? q.floor+1 : q._type === 'stairs_down' ? q.floor-1 : q.floor);
         n.pre = q;
 
-        if (n.id === b.id) return this.reconstructPath(n);
+        if (n.id === b.node.id) return this.reconstructPath(n);
 
         n.g = q.g + Math.sqrt(Math.abs(q.x - n.x) + Math.abs(q.y - n.y));
         n.h = Math.sqrt(Math.abs(b.x - n.x) + Math.abs(b.y - n.y));
@@ -270,8 +275,8 @@ class Map extends React.Component<MapProps, MapState> {
 
   // MAP VIEWER HELPER FUNCTIONS -------------------------------------------------------- //
 
-  private node2star(n: Node): AStarNode {
-    return { ...n, f: 0, g: 0, h: 0, pre: null, };
+  private node2star(n: Node, floor?: number): AStarNode {
+    return { ...n, f: 0, g: 0, h: 0, pre: null, floor: !(typeof floor === 'number') ? this.state.currentFloor : floor, };
   }
 
   private star2node(n: AStarNode): Node {
@@ -315,6 +320,19 @@ class Map extends React.Component<MapProps, MapState> {
     });
   }
 
+  public addStairs(a: FloorNode, b: FloorNode) {
+    if (!this.isFloor(a.floor) || !this.isFloor(b.floor)) return;
+    const nodes: Node[][] = this.state.nodes;
+    nodes[a.floor].push(a.node);
+    nodes[b.floor].push(b.node);
+    this.setState({
+      nodes,
+    }, () => {
+      this.refresh();
+      this.queueUpdate('addStairs', { a, b, });
+    });
+  }
+
   public updateNodeBody(node: Node, body: object, floor?: number) {
     floor = floor || this.state.currentFloor;
     if (!this.isFloor(floor)) return;
@@ -354,7 +372,7 @@ class Map extends React.Component<MapProps, MapState> {
       nodes,
     }, () => {
       this.refresh();
-      this.queueUpdate('deleteNode', { floor, node: node.id, })
+      this.queueUpdate('deleteNode', { floor, node, })
     });
   }
 
@@ -652,11 +670,13 @@ class Map extends React.Component<MapProps, MapState> {
       // const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id) || _ids.includes(n.id);
       // const highlight: boolean = (this.startNode && this.startNode.node.id === n.id) || (this.endNode && this.endNode.node.id === n.id);
       // if (!highlight && viewOnly) return;
+      const fillColour: string = n._type === 'endpoint' ? 'rgba(0,182,255,.5)' : n._type.startsWith('stairs') ? 'rgba(220,255,0,.5)' : 'rgba(0,255,197,.5)';
+      const strokeColour: string = n._type === 'endpoint' ? '#00b6ff' : n._type.startsWith('stairs') ? '#dcff00' : '#00FF2C';
       const isStart: boolean = (this.startNode && this.startNode.node.id === n.id);
       const isEnd: boolean = (this.endNode && this.endNode.node.id === n.id);
-      if (!isStart && !isEnd && viewOnly) return;
-      this.ctx.fillStyle = isStart ? 'rgba(0,2,255,.5)' : isEnd ? 'rgba(0,255,233,.5)' : 'rgba(0,255,197,.5)';
-      this.ctx.strokeStyle = isStart ? '#0002FF' : isEnd ? '#00FFDF' : n._type === 'node' ? '#00FFC5' : '#00FF2C';
+      if (!isStart && !isEnd && !(n._type.startsWith('stairs') && _ids.includes(n.id)) && viewOnly) return;
+      this.ctx.fillStyle = isStart ? 'rgba(0,2,255,.5)' : isEnd ? 'rgba(0,255,233,.5)' : fillColour;
+      this.ctx.strokeStyle = isStart ? '#0002FF' : isEnd ? '#00FFDF' : n._type === 'node' ? '#00FFC5' : strokeColour;
       this.ctx.beginPath();
       this.ctx.ellipse(this.m2px(n.x), this.m2px(n.y),
                      this.m2px(1.5), this.m2px(1.5), 
@@ -679,7 +699,7 @@ class Map extends React.Component<MapProps, MapState> {
     this.state.nodes[this.state.currentFloor].forEach(n => {
       drawn.push(n.id);
       n.edges.forEach(e => {
-        const highlight: boolean = _ids.includes(n.id) && _ids.includes(e.id);
+        const highlight: boolean = _ids.includes(n.id) && _ids.includes(e.id) && !(n._type.startsWith('stairs') && e._type.startsWith('stairs'));
         if (!highlight && viewOnly) return;
         this.ctx.strokeStyle = highlight ? '#FF0056' : '#00FFC5';
         if (drawn.includes(e.id)) return;

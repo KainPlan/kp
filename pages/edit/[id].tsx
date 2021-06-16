@@ -18,6 +18,7 @@ import EditEndpointTool from '../../components/kainplan/tools/EditEndpointTool';
 import AddFloor from '../../components/kainplan/prompts/AddFloor';
 import Popup from '../../components/kainplan/Popup';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import AddStairsTool from '../../components/kainplan/tools/AddStairsTool';
 
 interface EditProps extends WithTranslation, WithUser {
 };
@@ -70,6 +71,7 @@ const Edit = ({ t, }: EditProps) => {
           doErase={() => map.current.changeTool(EraseNodeTool)}
           doConnect={() => map.current.changeTool(ConnectNodesTool)}
           onAddFloor={addFloor}
+          doAddStairs={() => map.current.changeTool(AddStairsTool)}
         />
         <div>
           <Map 
@@ -84,6 +86,7 @@ const Edit = ({ t, }: EditProps) => {
               EditEndpointTool,
               EraseNodeTool,
               ConnectNodesTool,
+              AddStairsTool,
             ]}
             ctrlTool={PanTool}
           ></Map>

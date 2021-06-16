@@ -1,6 +1,6 @@
 import style from './Toolbar.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faEraser, faWrench, faPlus, faCircle, faArrowsAlt, IconDefinition, faExpandArrowsAlt, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt, faEraser, faWrench, faPlus, faCircle, faArrowsAlt, IconDefinition, faExpandArrowsAlt, faPencilAlt, faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons';
 import { WithTranslation } from 'next-i18next';
 import { withTranslation } from '../../../i18n';
@@ -21,9 +21,10 @@ interface ToolbarProps extends WithTranslation {
   doErase: ()=>void;
   doConnect: ()=>void;
   onAddFloor: ()=>void;
+  doAddStairs: ()=>void;
 };
 
-const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, doConnect,onAddFloor,  }: ToolbarProps) => {
+const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, doConnect,onAddFloor, doAddStairs, }: ToolbarProps) => {
   const onClick = (e: React.MouseEvent, next?: ()=>void) => {
     console.log(e.target);
     if(next) next();
@@ -38,6 +39,7 @@ const Toolbar = ({ t, doPan, placeNode, placeEndpoint, doEdit, doMove, doErase, 
     { key: 'erase', icon: faEraser, title: t('edit:erase'), callback: doErase, },
     { key: 'connect', icon: faWrench, title: t('edit:connection'), callback: doConnect, },
     { key: 'add_floor', icon: faPlus, title: t('edit:add_floor'), callback: onAddFloor, },
+    { key: 'add_stairs', icon: faLevelUpAlt, title: t('edit:add_stairs'), callback: doAddStairs, },
   ];
 
   return (
