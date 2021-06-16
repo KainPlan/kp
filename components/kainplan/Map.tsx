@@ -253,7 +253,7 @@ class Map extends React.Component<MapProps, MapState> {
         if (n.id === b.node.id) return this.reconstructPath(n);
 
         n.g = q.g + Math.sqrt(Math.abs(q.x - n.x) + Math.abs(q.y - n.y));
-        n.h = Math.sqrt(Math.abs(b.x - n.x) + Math.abs(b.y - n.y));
+        n.h = Math.sqrt(Math.abs(b.node.x - n.x) + Math.abs(b.node.y - n.y));
         n.f = n.g + n.h;
 
         const openI: number = open.map(x => x.id).indexOf(n.id);
